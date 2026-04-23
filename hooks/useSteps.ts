@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { Pedometer } from 'expo-pedometer';
+import { Pedometer } from 'expo-sensors';
 import { useUserStore } from '@/store/userStore';
 
 export function useSteps() {
