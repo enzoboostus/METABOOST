@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "MetaBoost",
+    "slug": "metaboost",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F0F14"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.metaboost.app",
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "MetaBoost utilise vos données de santé pour suivre vos pas.",
+        "NSHealthUpdateUsageDescription": "MetaBoost met à jour vos données de santé.",
+        "NSCameraUsageDescription": "MetaBoost utilise la caméra pour analyser vos repas.",
+        "NSPhotoLibraryUsageDescription": "MetaBoost accède à vos photos pour analyser vos repas."
+      }
+    },
+    "android": {
+      "package": "com.metaboost.app",
+      "permissions": [
+        "android.permission.ACTIVITY_RECOGNITION",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "MetaBoost accède à vos photos pour analyser vos repas.",
+          "cameraPermission": "MetaBoost utilise la caméra pour analyser vos repas."
+        }
+      ]
+    ],
+    "scheme": "metaboost",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
