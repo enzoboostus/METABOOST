@@ -4,13 +4,7 @@
     "slug": "metaboost",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0F0F14"
-    },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
@@ -30,9 +24,12 @@
         "android.permission.READ_EXTERNAL_STORAGE"
       ]
     },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
     "plugins": [
       "expo-router",
-      "expo-font",
       [
         "expo-image-picker",
         {
