@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, Feeling, Session } from '@/store/userStore';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 
@@ -21,11 +22,11 @@ export default function Activity() {
   const [effort, setEffort] = useState(5);
   const [feeling, setFeeling] = useState<Feeling>('top');
   const [validated, setValidated] = useState(false);
-  const { sessions, addSession, todaySteps } = useUserStore((s) => ({
+  const { sessions, addSession, todaySteps } = useUserStore(useShallow((s) => ({
     sessions: s.sessions,
     addSession: s.addSession,
     todaySteps: s.todaySteps,
-  }));
+  })));
 
   function handleValidate() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

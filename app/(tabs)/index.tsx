@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import Avatar from '@/components/Avatar';
 import StatCard from '@/components/StatCard';
+import { useShallow } from 'zustand/react/shallow';
 import { useUserStore } from '@/store/userStore';
 import { useAvatarParams } from '@/hooks/useAvatarParams';
 import { useSteps } from '@/hooks/useSteps';
@@ -23,13 +24,13 @@ type View2 = 'current' | 'start';
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState<View2>('current');
   const { profile, getCurrentMeasure, initialMeasure, sessions, todaySteps } = useUserStore(
-    (s) => ({
+    useShallow((s) => ({
       profile: s.profile,
       getCurrentMeasure: s.getCurrentMeasure,
       initialMeasure: s.initialMeasure,
       sessions: s.sessions,
       todaySteps: s.todaySteps,
-    })
+    }))
   );
 
   useSteps();

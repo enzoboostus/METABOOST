@@ -11,17 +11,18 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, BodyMeasure } from '@/store/userStore';
 import { useAvatarParams } from '@/hooks/useAvatarParams';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 
 export default function Profile() {
-  const { profile, measures, addMeasure, getCurrentMeasure } = useUserStore((s) => ({
+  const { profile, measures, addMeasure, getCurrentMeasure } = useUserStore(useShallow((s) => ({
     profile: s.profile,
     measures: s.measures,
     addMeasure: s.addMeasure,
     getCurrentMeasure: s.getCurrentMeasure,
-  }));
+  })));
   const params = useAvatarParams();
 
   const currentMeasure = getCurrentMeasure();

@@ -15,6 +15,7 @@ import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import Avatar from '@/components/Avatar';
+import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, Gender } from '@/store/userStore';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 
@@ -31,12 +32,12 @@ export default function Onboarding() {
   const [weight, setWeight] = useState('75');
   const [waist, setWaist] = useState('85');
 
-  const { setProfile, addMeasure, setInitialMeasure, completeOnboarding } = useUserStore((s) => ({
+  const { setProfile, addMeasure, setInitialMeasure, completeOnboarding } = useUserStore(useShallow((s) => ({
     setProfile: s.setProfile,
     addMeasure: s.addMeasure,
     setInitialMeasure: s.setInitialMeasure,
     completeOnboarding: s.completeOnboarding,
-  }));
+  })));
 
   function next() {
     Haptics.selectionAsync();

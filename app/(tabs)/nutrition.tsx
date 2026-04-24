@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
+import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, MealLog } from '@/store/userStore';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 
@@ -67,10 +68,10 @@ export default function Nutrition() {
   const [analyzing, setAnalyzing] = useState(false);
   const [lastResult, setLastResult] = useState<MealFeedback | null>(null);
   const [lastPhoto, setLastPhoto] = useState<string | null>(null);
-  const { meals, addMeal } = useUserStore((s) => ({
+  const { meals, addMeal } = useUserStore(useShallow((s) => ({
     meals: s.meals,
     addMeal: s.addMeal,
-  }));
+  })));
 
   async function handlePhoto(source: 'camera' | 'gallery') {
     let result;

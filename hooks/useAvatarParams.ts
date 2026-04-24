@@ -1,3 +1,4 @@
+import { useShallow } from 'zustand/react/shallow';
 import { useUserStore } from '@/store/userStore';
 
 export interface AvatarParams {
@@ -10,12 +11,12 @@ export interface AvatarParams {
 }
 
 export function useAvatarParams(): AvatarParams {
-  const { getCurrentMeasure, profile, sessions, weekSteps } = useUserStore((s) => ({
+  const { getCurrentMeasure, profile, sessions, weekSteps } = useUserStore(useShallow((s) => ({
     getCurrentMeasure: s.getCurrentMeasure,
     profile: s.profile,
     sessions: s.sessions,
     weekSteps: s.weekSteps,
-  }));
+  })));
 
   const measure = getCurrentMeasure();
 
