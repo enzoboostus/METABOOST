@@ -24,6 +24,10 @@ const { width } = Dimensions.get('window');
 const STEPS = ['welcome', 'name', 'gender', 'body', 'done'] as const;
 type Step = (typeof STEPS)[number];
 
+const BG: any = {
+  backgroundImage: 'radial-gradient(ellipse at 50% 0%, #0D1520 0%, #020202 80%)',
+};
+
 export default function Onboarding() {
   const [step, setStep] = useState<Step>('welcome');
   const [name, setName] = useState('');
@@ -71,7 +75,7 @@ export default function Onboarding() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+    <SafeAreaView style={[styles.safe, BG]} edges={['top', 'bottom']}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {/* Step indicators */}
         <View style={styles.steps}>
@@ -287,7 +291,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   logoText: { fontSize: 52 },
-  welcomeTitle: { fontSize: 36, fontWeight: '900', color: Colors.text, marginBottom: Spacing.sm },
+  welcomeTitle: { fontSize: 40, fontWeight: '900', color: Colors.text, marginBottom: Spacing.sm, letterSpacing: -1 },
   welcomeSub: {
     fontSize: 16,
     color: Colors.textSecondary,
@@ -310,7 +314,7 @@ const styles = StyleSheet.create({
   featureEmoji: { fontSize: 24 },
   featureText: { fontSize: 15, color: Colors.text, flex: 1 },
 
-  stepTitle: { fontSize: 26, fontWeight: '800', color: Colors.text, textAlign: 'center', marginBottom: Spacing.sm },
+  stepTitle: { fontSize: 28, fontWeight: '900', color: Colors.text, textAlign: 'center', marginBottom: Spacing.sm, letterSpacing: -0.5 },
   stepSub: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center', marginBottom: Spacing.xl, lineHeight: 22, paddingHorizontal: Spacing.md },
 
   bigInput: {

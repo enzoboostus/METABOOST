@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 
+const GLASS: any = { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' };
+
 interface StatCardProps {
   label: string;
   value: string | number;
@@ -12,7 +14,7 @@ interface StatCardProps {
 
 export default function StatCard({ label, value, unit, icon, color = Colors.primary }: StatCardProps) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, GLASS]}>
       {icon && <Text style={[styles.icon, { color }]}>{icon}</Text>}
       <Text style={[styles.value, { color }]}>
         {value}
@@ -35,25 +37,26 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   icon: {
-    fontSize: 20,
+    fontSize: 22,
     marginBottom: Spacing.xs,
   },
   value: {
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: 24,
+    fontWeight: '900',
     letterSpacing: -0.5,
   },
   unit: {
     fontSize: 13,
-    fontWeight: '400',
+    fontWeight: '300',
     color: Colors.textSecondary,
   },
   label: {
-    fontSize: 11,
+    fontSize: 10,
+    fontWeight: '300',
     color: Colors.textSecondary,
     marginTop: Spacing.xs,
     textAlign: 'center',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
 });

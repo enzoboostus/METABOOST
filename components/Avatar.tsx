@@ -77,6 +77,11 @@ export default function Avatar({ gender, params, size = 280, minimal = false }: 
           </RadialGradient>
         </Defs>
 
+        {/* ── Bio-energy aura ── */}
+        <Ellipse cx={cx} cy={160} rx={92 * bodyWidth * slim} ry={120} fill="rgba(0,229,255,0.055)" />
+        <Ellipse cx={cx} cy={148} rx={74 * bodyWidth * slim} ry={96} fill="rgba(0,229,255,0.04)" />
+        <Ellipse cx={cx - postureOffset} cy={75} rx={52} ry={54} fill="rgba(0,229,255,0.05)" />
+
         {/* === LEGS === */}
         <G>
           {/* Left leg */}
@@ -116,6 +121,20 @@ export default function Avatar({ gender, params, size = 280, minimal = false }: 
               C${cx + waistW} 158 ${cx + shoulderW * 0.95} 140 ${cx + shoulderW} 118
               Z`}
           fill="url(#topGrad)"
+        />
+
+        {/* Cyan bio wireframe outline */}
+        <Path
+          d={`M${cx - shoulderW} 118
+              C${cx - shoulderW * 0.95} 140 ${cx - waistW} 158 ${cx - waistW} 175
+              C${cx - waistW * 0.95} 195 ${cx - hipW * 0.85} 210 ${cx - hipW} 220
+              L${cx + hipW} 220
+              C${cx + hipW * 0.85} 210 ${cx + waistW * 0.95} 195 ${cx + waistW} 175
+              C${cx + waistW} 158 ${cx + shoulderW * 0.95} 140 ${cx + shoulderW} 118 Z`}
+          stroke="#00E5FF"
+          strokeWidth={1.5}
+          strokeOpacity={0.22}
+          fill="none"
         />
 
         {/* Muscle definition overlay */}
@@ -166,6 +185,18 @@ export default function Avatar({ gender, params, size = 280, minimal = false }: 
           rx={isMale ? 32 : 30}
           ry={isMale ? 36 : 34}
           fill="url(#headGrad)"
+        />
+
+        {/* Head bio outline */}
+        <Ellipse
+          cx={cx - postureOffset}
+          cy={75}
+          rx={(isMale ? 32 : 30) + 3}
+          ry={(isMale ? 36 : 34) + 3}
+          stroke="#00E5FF"
+          strokeWidth={1}
+          strokeOpacity={0.18}
+          fill="none"
         />
 
         {/* Hair */}

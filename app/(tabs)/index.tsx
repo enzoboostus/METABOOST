@@ -19,6 +19,11 @@ import { Colors, Spacing, Radius } from '@/constants/theme';
 
 const { width } = Dimensions.get('window');
 
+const BG: any = {
+  backgroundImage: 'radial-gradient(ellipse at 50% 0%, #0D1520 0%, #020202 75%)',
+};
+const GLASS: any = { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' };
+
 type View2 = 'current' | 'start';
 
 export default function Dashboard() {
@@ -63,8 +68,10 @@ export default function Dashboard() {
         ) / 10
       : 0;
 
+  const stepPct = Math.min(100, Math.round((todaySteps / 10000) * 100));
+
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, BG]} edges={['top']}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -83,12 +90,11 @@ export default function Dashboard() {
         </View>
 
         {/* Avatar Section */}
-        <View style={styles.avatarSection}>
+        <View style={[styles.avatarSection, { boxShadow: '0 0 60px rgba(0,229,255,0.10)' } as any]}>
           <LinearGradient
-            colors={[Colors.card, Colors.background]}
-            style={styles.avatarBg}
+            colors={['rgba(13,21,32,0.95)', 'rgba(2,2,2,0.85)']}
+            style={[styles.avatarBg, GLASS]}
           >
-            {/* Toggle */}
             <View style={styles.toggle}>
               <TouchableOpacity
                 style={[styles.toggleBtn, viewMode === 'start' && styles.toggleActive]}
@@ -129,7 +135,6 @@ export default function Dashboard() {
               )}
             </View>
 
-            {/* Comparison label */}
             {progressPercent !== 0 && (
               <View style={styles.progressBadge}>
                 <Text style={styles.progressText}>
@@ -143,52 +148,26 @@ export default function Dashboard() {
         {/* Quick Stats */}
         <Text style={styles.sectionTitle}>Statistiques rapides</Text>
         <View style={styles.statsRow}>
-          <StatCard
-            label="Poids"
-            value={currentMeasure?.weight ?? '—'}
-            unit="kg"
-            icon="⚖️"
-            color={Colors.primary}
-          />
-          <StatCard
-            label="Tour de taille"
-            value={currentMeasure?.waist ?? '—'}
-            unit="cm"
-            icon="📏"
-            color={Colors.primaryLight}
-          />
+          <StatCard label="Poids" value={currentMeasure?.weight ?? '—'} unit="kg" icon="⚖️" color={Colors.primary} />
+          <StatCard label="Tour de taille" value={currentMeasure?.waist ?? '—'} unit="cm" icon="📏" color={Colors.primaryLight} />
         </View>
         <View style={[styles.statsRow, { marginTop: Spacing.sm }]}>
-          <StatCard
-            label="Séances"
-            value={sessions.length}
-            icon="🏋️"
-            color={Colors.accentGreen}
-          />
-          <StatCard
-            label="Pas aujourd'hui"
-            value={todaySteps.toLocaleString('fr-FR')}
-            icon="👟"
-            color={Colors.accentOrange}
-          />
+          <StatCard label="Séances" value={sessions.length} icon="🏋️" color={Colors.accentGreen} />
+          <StatCard label="Pas aujourd'hui" value={todaySteps.toLocaleString('fr-FR')} icon="👟" color={Colors.accentOrange} />
         </View>
 
         {/* Step progress */}
-        <View style={styles.stepBar}>
+        <View style={[styles.stepBar, GLASS]}>
           <View style={styles.stepBarHeader}>
             <Text style={styles.stepBarLabel}>Objectif 10 000 pas</Text>
-            <Text style={styles.stepBarValue}>
-              {Math.min(100, Math.round((todaySteps / 10000) * 100))}%
-            </Text>
+            <Text style={styles.stepBarValue}>{stepPct}%</Text>
           </View>
           <View style={styles.stepBarTrack}>
-            <View
-              style={[
-                styles.stepBarFill,
-                { width: `${Math.min(100, (todaySteps / 10000) * 100)}%` },
-              ]}
-            />
+            <View style={[styles.stepBarFill, { width: `${stepPct}%` }]} />
           </View>
+          {stepPct >= 100 && (
+            <Text style={styles.stepBarDone}>✅ Objectif atteint !</Text>
+          )}
         </View>
 
         {/* Recent sessions */}
@@ -196,17 +175,14 @@ export default function Dashboard() {
           <>
             <Text style={styles.sectionTitle}>Dernières séances</Text>
             {sessions.slice(0, 3).map((session) => (
-              <View key={session.id} style={styles.sessionItem}>
+              <View key={session.id} style={[styles.sessionItem, GLASS]}>
                 <View style={styles.sessionLeft}>
                   <Text style={styles.sessionEmoji}>
                     {session.feeling === 'top' ? '🔥' : session.feeling === 'medium' ? '😐' : '😓'}
                   </Text>
                   <View>
                     <Text style={styles.sessionDate}>
-                      {new Date(session.date).toLocaleDateString('fr-FR', {
-                        day: 'numeric',
-                        month: 'short',
-                      })}
+                      {new Date(session.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                     </Text>
                     <Text style={styles.sessionSub}>
                       Effort {session.effort}/10 · {session.steps.toLocaleString('fr-FR')} pas
@@ -244,8 +220,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: Spacing.md,
   },
-  greeting: { fontSize: 14, color: Colors.textSecondary },
-  name: { fontSize: 24, fontWeight: '700', color: Colors.text, marginTop: 2 },
+  greeting: { fontSize: 13, fontWeight: '300', color: Colors.textSecondary, letterSpacing: 1 },
+  name: { fontSize: 26, fontWeight: '900', color: Colors.text, marginTop: 2 },
   bmiPill: {
     borderRadius: Radius.full,
     borderWidth: 1,
@@ -253,47 +229,51 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
     alignItems: 'center',
   },
-  bmiText: { fontSize: 14, fontWeight: '700' },
-  bmiLabel: { fontSize: 10, fontWeight: '500', textTransform: 'uppercase' },
+  bmiText: { fontSize: 14, fontWeight: '900' },
+  bmiLabel: { fontSize: 9, fontWeight: '300', textTransform: 'uppercase', letterSpacing: 1.5 },
 
-  avatarSection: { marginBottom: Spacing.lg },
+  avatarSection: { marginBottom: Spacing.lg, borderRadius: Radius.xl },
   avatarBg: {
     borderRadius: Radius.xl,
     alignItems: 'center',
     paddingVertical: Spacing.md,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(0,229,255,0.15)',
   },
   avatarWrapper: { alignItems: 'center' },
   toggle: {
     flexDirection: 'row',
-    backgroundColor: Colors.background,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: Radius.full,
     padding: 3,
     marginBottom: Spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
-  toggleBtn: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.xs,
-    borderRadius: Radius.full,
-  },
+  toggleBtn: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.xs, borderRadius: Radius.full },
   toggleActive: { backgroundColor: Colors.primary },
   toggleText: { fontSize: 13, fontWeight: '600', color: Colors.textMuted },
-  toggleTextActive: { color: Colors.text },
+  toggleTextActive: { color: Colors.text, fontWeight: '700' },
   progressBadge: {
     marginTop: Spacing.sm,
     backgroundColor: Colors.accentGreen + '22',
     borderRadius: Radius.full,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
+    borderWidth: 1,
+    borderColor: Colors.accentGreen + '44',
   },
-  progressText: { color: Colors.accentGreen, fontSize: 13, fontWeight: '600' },
+  progressText: { color: Colors.accentGreen, fontSize: 13, fontWeight: '700' },
 
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 11,
     fontWeight: '700',
-    color: Colors.text,
+    color: Colors.textMuted,
     marginBottom: Spacing.sm,
     marginTop: Spacing.xs,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
   },
   statsRow: { flexDirection: 'row', gap: Spacing.sm },
 
@@ -305,16 +285,13 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     marginTop: Spacing.md,
   },
-  stepBarHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.sm,
-  },
-  stepBarLabel: { fontSize: 13, color: Colors.textSecondary },
-  stepBarValue: { fontSize: 13, fontWeight: '700', color: Colors.accentOrange },
+  stepBarHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: Spacing.sm },
+  stepBarLabel: { fontSize: 12, fontWeight: '300', color: Colors.textSecondary, letterSpacing: 0.5 },
+  stepBarValue: { fontSize: 14, fontWeight: '900', color: Colors.accentOrange },
+  stepBarDone: { fontSize: 12, color: Colors.accentGreen, fontWeight: '700', marginTop: Spacing.xs, textAlign: 'center' },
   stepBarTrack: {
-    height: 8,
-    backgroundColor: Colors.cardBorder,
+    height: 6,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     borderRadius: Radius.full,
     overflow: 'hidden',
   },
@@ -337,8 +314,8 @@ const styles = StyleSheet.create({
   },
   sessionLeft: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
   sessionEmoji: { fontSize: 24 },
-  sessionDate: { fontSize: 14, fontWeight: '600', color: Colors.text },
-  sessionSub: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
+  sessionDate: { fontSize: 14, fontWeight: '700', color: Colors.text },
+  sessionSub: { fontSize: 12, fontWeight: '300', color: Colors.textSecondary, marginTop: 2 },
   effortBadge: { borderRadius: Radius.sm, paddingHorizontal: Spacing.sm, paddingVertical: 4 },
-  effortText: { fontSize: 13, fontWeight: '700' },
+  effortText: { fontSize: 13, fontWeight: '900' },
 });

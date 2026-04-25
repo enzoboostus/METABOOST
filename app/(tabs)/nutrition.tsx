@@ -35,7 +35,7 @@ const MEAL_FEEDBACKS: Record<MealCategory, MealFeedback> = {
     label: 'Repas riche',
     emoji: '⚡',
     color: Colors.accentOrange,
-    tips: ["Riche en calories", "Pensez à bouger aujourd'hui"],
+    tips: ['Riche en calories', "Pensez à bouger aujourd'hui"],
   },
   protein: {
     label: 'Bonne source de protéines',
@@ -53,16 +53,20 @@ const MEAL_FEEDBACKS: Record<MealCategory, MealFeedback> = {
     label: 'Analyse incomplète',
     emoji: '🤔',
     color: Colors.textSecondary,
-    tips: ["Photo peu nette ?", 'Essayez une meilleure prise de vue'],
+    tips: ['Photo peu nette ?', 'Essayez une meilleure prise de vue'],
   },
 };
 
 function mockAnalysis(uri: string): MealCategory {
-  // Pseudo-random analysis based on URI hash
   const hash = uri.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   const categories: MealCategory[] = ['balanced', 'rich', 'protein', 'light', 'balanced', 'protein'];
   return categories[hash % categories.length];
 }
+
+const BG: any = {
+  backgroundImage: 'radial-gradient(ellipse at 50% 0%, #0D1520 0%, #020202 75%)',
+};
+const GLASS: any = { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' };
 
 export default function Nutrition() {
   const [analyzing, setAnalyzing] = useState(false);
@@ -100,7 +104,6 @@ export default function Nutrition() {
     setLastResult(null);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    // Simulate AI analysis delay
     await new Promise((r) => setTimeout(r, 1800));
 
     const category = mockAnalysis(uri);
@@ -120,7 +123,7 @@ export default function Nutrition() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, BG]} edges={['top']}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Nutrition</Text>
         <Text style={styles.subtitle}>Photographiez votre repas pour une analyse rapide</Text>
@@ -132,7 +135,7 @@ export default function Nutrition() {
             <Text style={styles.photoBtnText}>Prendre une photo</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.photoBtn, styles.photoBtnSecondary]}
+            style={[styles.photoBtn, styles.photoBtnSecondary, GLASS]}
             onPress={() => handlePhoto('gallery')}
             activeOpacity={0.85}
           >
@@ -143,13 +146,13 @@ export default function Nutrition() {
 
         {/* Analysis result */}
         {(lastPhoto || analyzing) && (
-          <View style={styles.resultCard}>
+          <View style={[styles.resultCard, GLASS]}>
             {lastPhoto && (
               <Image source={{ uri: lastPhoto }} style={styles.mealImage} resizeMode="cover" />
             )}
             {analyzing ? (
               <View style={styles.analyzingRow}>
-                <ActivityIndicator color={Colors.primary} size="small" />
+                <ActivityIndicator color={Colors.cyan} size="small" />
                 <Text style={styles.analyzingText}>Analyse en cours...</Text>
               </View>
             ) : lastResult ? (
@@ -160,9 +163,7 @@ export default function Nutrition() {
                     {lastResult.label}
                   </Text>
                   {lastResult.tips.map((tip, i) => (
-                    <Text key={i} style={styles.feedbackTip}>
-                      · {tip}
-                    </Text>
+                    <Text key={i} style={styles.feedbackTip}>· {tip}</Text>
                   ))}
                 </View>
               </View>
@@ -171,7 +172,7 @@ export default function Nutrition() {
         )}
 
         {/* Disclaimer */}
-        <View style={styles.disclaimer}>
+        <View style={[styles.disclaimer, GLASS]}>
           <Text style={styles.disclaimerText}>
             ⚠️ L'analyse est estimative et non médicale. Elle ne remplace pas un suivi nutritionnel professionnel.
           </Text>
@@ -184,7 +185,7 @@ export default function Nutrition() {
             {meals.slice(0, 10).map((meal) => {
               const fb = MEAL_FEEDBACKS[meal.category];
               return (
-                <View key={meal.id} style={styles.historyItem}>
+                <View key={meal.id} style={[styles.historyItem, GLASS]}>
                   {meal.photo ? (
                     <Image source={{ uri: meal.photo }} style={styles.historyThumb} />
                   ) : (
@@ -219,8 +220,8 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: Spacing.md, paddingBottom: Spacing.xxl },
 
-  title: { fontSize: 28, fontWeight: '800', color: Colors.text, marginBottom: 4 },
-  subtitle: { fontSize: 14, color: Colors.textSecondary, marginBottom: Spacing.lg },
+  title: { fontSize: 32, fontWeight: '900', color: Colors.text, marginBottom: 4 },
+  subtitle: { fontSize: 13, fontWeight: '300', color: Colors.textSecondary, marginBottom: Spacing.lg, letterSpacing: 0.3 },
 
   photoRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.lg },
   photoBtn: {
@@ -230,6 +231,8 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     alignItems: 'center',
     gap: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.primaryLight + '44',
   },
   photoBtnSecondary: {
     backgroundColor: Colors.card,
@@ -248,35 +251,32 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   mealImage: { width: '100%', height: 180 },
-  analyzingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    padding: Spacing.md,
-  },
-  analyzingText: { fontSize: 14, color: Colors.textSecondary },
-  feedbackRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.md,
-    padding: Spacing.md,
-  },
+  analyzingRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, padding: Spacing.md },
+  analyzingText: { fontSize: 14, fontWeight: '300', color: Colors.textSecondary },
+  feedbackRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.md, padding: Spacing.md },
   feedbackEmoji: { fontSize: 32 },
   feedbackContent: { flex: 1 },
-  feedbackLabel: { fontSize: 16, fontWeight: '700', marginBottom: 4 },
-  feedbackTip: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  feedbackLabel: { fontSize: 16, fontWeight: '900', marginBottom: 4 },
+  feedbackTip: { fontSize: 13, fontWeight: '300', color: Colors.textSecondary, marginTop: 2 },
 
   disclaimer: {
-    backgroundColor: Colors.accentOrange + '18',
+    backgroundColor: Colors.accentOrange + '12',
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: Colors.accentOrange + '44',
+    borderColor: Colors.accentOrange + '33',
     padding: Spacing.md,
     marginBottom: Spacing.lg,
   },
-  disclaimerText: { fontSize: 12, color: Colors.accentOrange, lineHeight: 18 },
+  disclaimerText: { fontSize: 12, fontWeight: '300', color: Colors.accentOrange, lineHeight: 18 },
 
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: Colors.text, marginBottom: Spacing.sm },
+  sectionTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    marginBottom: Spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
+  },
 
   historyItem: {
     backgroundColor: Colors.card,
@@ -291,12 +291,12 @@ const styles = StyleSheet.create({
   },
   historyThumb: { width: 52, height: 52, borderRadius: Radius.sm },
   historyThumbFallback: {
-    backgroundColor: Colors.cardBorder,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   historyInfo: { flex: 1 },
-  historyLabel: { fontSize: 14, fontWeight: '600', color: Colors.text },
-  historyDate: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
+  historyLabel: { fontSize: 14, fontWeight: '700', color: Colors.text },
+  historyDate: { fontSize: 12, fontWeight: '300', color: Colors.textSecondary, marginTop: 2 },
   historyEmoji: { fontSize: 24 },
 });

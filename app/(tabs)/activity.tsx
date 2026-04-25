@@ -11,6 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, Feeling, Session } from '@/store/userStore';
 import { Colors, Spacing, Radius } from '@/constants/theme';
+import ParticleEffect from '@/components/ParticleEffect';
 
 const FEELINGS: { key: Feeling; label: string; emoji: string; color: string }[] = [
   { key: 'top', label: 'Top', emoji: '🔥', color: Colors.accentGreen },
@@ -18,10 +19,17 @@ const FEELINGS: { key: Feeling; label: string; emoji: string; color: string }[] 
   { key: 'tired', label: 'Fatigue / Douleur', emoji: '😓', color: Colors.accent },
 ];
 
+const BG: any = {
+  backgroundImage: 'radial-gradient(ellipse at 50% 0%, #0D1520 0%, #020202 75%)',
+};
+const GLASS: any = { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' };
+
 export default function Activity() {
   const [effort, setEffort] = useState(5);
   const [feeling, setFeeling] = useState<Feeling>('top');
   const [validated, setValidated] = useState(false);
+  const [particleTrigger, setParticleTrigger] = useState(0);
+
   const { sessions, addSession, todaySteps } = useUserStore(useShallow((s) => ({
     sessions: s.sessions,
     addSession: s.addSession,
@@ -39,6 +47,7 @@ export default function Activity() {
     };
     addSession(session);
     setValidated(true);
+    setParticleTrigger((t) => t + 1);
     setTimeout(() => setValidated(false), 2500);
   }
 
@@ -46,7 +55,7 @@ export default function Activity() {
     effort >= 8 ? Colors.accent : effort >= 5 ? Colors.accentOrange : Colors.accentGreen;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={[styles.safe, BG]} edges={['top']}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -55,7 +64,7 @@ export default function Activity() {
         <Text style={styles.title}>Activité</Text>
 
         {/* Steps today */}
-        <View style={styles.stepsCard}>
+        <View style={[styles.stepsCard, GLASS]}>
           <Text style={styles.stepsEmoji}>👟</Text>
           <View>
             <Text style={styles.stepsValue}>{todaySteps.toLocaleString('fr-FR')}</Text>
@@ -69,10 +78,9 @@ export default function Activity() {
         </View>
 
         {/* New session */}
-        <View style={styles.card}>
+        <View style={[styles.card, GLASS]}>
           <Text style={styles.cardTitle}>Nouvelle séance</Text>
 
-          {/* Effort slider */}
           <Text style={styles.label}>Niveau d'effort</Text>
           <View style={styles.effortRow}>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
@@ -88,21 +96,18 @@ export default function Activity() {
                   Haptics.selectionAsync();
                 }}
               >
-                {n === effort && (
-                  <Text style={styles.effortDotLabel}>{n}</Text>
-                )}
+                {n === effort && <Text style={styles.effortDotLabel}>{n}</Text>}
               </TouchableOpacity>
             ))}
           </View>
           <View style={styles.effortLabels}>
             <Text style={styles.effortLabelText}>Facile</Text>
-            <Text style={[styles.effortLabelText, { color: effortColor, fontWeight: '700' }]}>
+            <Text style={[styles.effortLabelText, { color: effortColor, fontWeight: '900' }]}>
               {effort}/10
             </Text>
             <Text style={styles.effortLabelText}>Intense</Text>
           </View>
 
-          {/* Feeling */}
           <Text style={[styles.label, { marginTop: Spacing.lg }]}>Ressenti</Text>
           <View style={styles.feelingRow}>
             {FEELINGS.map((f) => (
@@ -110,10 +115,7 @@ export default function Activity() {
                 key={f.key}
                 style={[
                   styles.feelingBtn,
-                  feeling === f.key && {
-                    borderColor: f.color,
-                    backgroundColor: f.color + '22',
-                  },
+                  feeling === f.key && { borderColor: f.color, backgroundColor: f.color + '22' },
                 ]}
                 onPress={() => {
                   setFeeling(f.key);
@@ -121,28 +123,26 @@ export default function Activity() {
                 }}
               >
                 <Text style={styles.feelingEmoji}>{f.emoji}</Text>
-                <Text
-                  style={[
-                    styles.feelingLabel,
-                    feeling === f.key && { color: f.color },
-                  ]}
-                >
+                <Text style={[styles.feelingLabel, feeling === f.key && { color: f.color }]}>
                   {f.label}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
 
-          {/* Validate button */}
-          <TouchableOpacity
-            style={[styles.validateBtn, validated && styles.validateBtnDone]}
-            onPress={handleValidate}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.validateText}>
-              {validated ? '✅ Séance enregistrée !' : '⚡ Valider la séance'}
-            </Text>
-          </TouchableOpacity>
+          {/* Validate + particles */}
+          <View style={styles.validateWrap}>
+            <TouchableOpacity
+              style={[styles.validateBtn, validated && styles.validateBtnDone]}
+              onPress={handleValidate}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.validateText}>
+                {validated ? '✅ Séance enregistrée !' : '⚡ Valider la séance'}
+              </Text>
+            </TouchableOpacity>
+            <ParticleEffect trigger={particleTrigger} />
+          </View>
         </View>
 
         {/* History */}
@@ -150,7 +150,7 @@ export default function Activity() {
           <>
             <Text style={styles.sectionTitle}>Historique des séances</Text>
             {sessions.map((session) => (
-              <View key={session.id} style={styles.historyItem}>
+              <View key={session.id} style={[styles.historyItem, GLASS]}>
                 <View style={styles.historyLeft}>
                   <Text style={styles.historyEmoji}>
                     {session.feeling === 'top' ? '🔥' : session.feeling === 'medium' ? '😐' : '😓'}
@@ -168,21 +168,8 @@ export default function Activity() {
                     </Text>
                   </View>
                 </View>
-                <View
-                  style={[
-                    styles.effortChip,
-                    {
-                      backgroundColor:
-                        getEffortColor(session.effort) + '22',
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.effortChipText,
-                      { color: getEffortColor(session.effort) },
-                    ]}
-                  >
+                <View style={[styles.effortChip, { backgroundColor: getEffortColor(session.effort) + '22' }]}>
+                  <Text style={[styles.effortChipText, { color: getEffortColor(session.effort) }]}>
                     {session.effort}/10
                   </Text>
                 </View>
@@ -206,7 +193,7 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: Spacing.md, paddingBottom: Spacing.xxl },
 
-  title: { fontSize: 28, fontWeight: '800', color: Colors.text, marginBottom: Spacing.md },
+  title: { fontSize: 32, fontWeight: '900', color: Colors.text, marginBottom: Spacing.md },
 
   stepsCard: {
     backgroundColor: Colors.card,
@@ -220,16 +207,18 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   stepsEmoji: { fontSize: 32 },
-  stepsValue: { fontSize: 28, fontWeight: '800', color: Colors.accentOrange },
-  stepsLabel: { fontSize: 12, color: Colors.textSecondary },
+  stepsValue: { fontSize: 30, fontWeight: '900', color: Colors.accentOrange },
+  stepsLabel: { fontSize: 11, fontWeight: '300', color: Colors.textSecondary, letterSpacing: 0.5 },
   stepsGoal: {
     marginLeft: 'auto' as any,
     backgroundColor: Colors.accentOrange + '18',
     borderRadius: Radius.sm,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: Colors.accentOrange + '33',
   },
-  stepsGoalText: { fontSize: 12, color: Colors.accentOrange, fontWeight: '600' },
+  stepsGoalText: { fontSize: 12, color: Colors.accentOrange, fontWeight: '700' },
 
   card: {
     backgroundColor: Colors.card,
@@ -239,38 +228,36 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     marginBottom: Spacing.lg,
   },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.text,
-    marginBottom: Spacing.md,
+  cardTitle: { fontSize: 20, fontWeight: '900', color: Colors.text, marginBottom: Spacing.md },
+  label: {
+    fontSize: 10,
+    fontWeight: '300',
+    color: Colors.textSecondary,
+    marginBottom: Spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
   },
-  label: { fontSize: 13, color: Colors.textSecondary, marginBottom: Spacing.sm, textTransform: 'uppercase', letterSpacing: 0.5 },
 
   effortRow: { flexDirection: 'row', gap: Spacing.xs, alignItems: 'center' },
   effortDot: {
     flex: 1,
     height: 36,
     borderRadius: Radius.sm,
-    backgroundColor: Colors.cardBorder,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   effortDotActive: { transform: [{ scaleY: 1.3 }] },
-  effortDotLabel: { fontSize: 10, fontWeight: '800', color: Colors.text },
-  effortLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: Spacing.xs,
-  },
-  effortLabelText: { fontSize: 11, color: Colors.textMuted },
+  effortDotLabel: { fontSize: 10, fontWeight: '900', color: Colors.text },
+  effortLabels: { flexDirection: 'row', justifyContent: 'space-between', marginTop: Spacing.xs },
+  effortLabelText: { fontSize: 11, fontWeight: '300', color: Colors.textMuted },
 
   feelingRow: { flexDirection: 'row', gap: Spacing.sm },
   feelingBtn: {
     flex: 1,
     borderRadius: Radius.md,
     borderWidth: 1.5,
-    borderColor: Colors.cardBorder,
+    borderColor: 'rgba(255,255,255,0.10)',
     alignItems: 'center',
     paddingVertical: Spacing.sm,
     gap: 4,
@@ -278,21 +265,29 @@ const styles = StyleSheet.create({
   feelingEmoji: { fontSize: 24 },
   feelingLabel: { fontSize: 11, fontWeight: '600', color: Colors.textSecondary, textAlign: 'center' },
 
+  validateWrap: { marginTop: Spacing.lg, position: 'relative', alignItems: 'center' },
   validateBtn: {
-    marginTop: Spacing.lg,
+    width: '100%',
     backgroundColor: Colors.primary,
     borderRadius: Radius.full,
     paddingVertical: Spacing.md,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.primaryLight + '44',
   },
-  validateBtnDone: { backgroundColor: Colors.accentGreen },
-  validateText: { fontSize: 16, fontWeight: '700', color: Colors.text },
+  validateBtnDone: {
+    backgroundColor: Colors.accentGreen,
+    borderColor: Colors.accentGreen + '44',
+  },
+  validateText: { fontSize: 16, fontWeight: '900', color: Colors.text, letterSpacing: 0.5 },
 
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 11,
     fontWeight: '700',
-    color: Colors.text,
+    color: Colors.textMuted,
     marginBottom: Spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: 2,
   },
   historyItem: {
     backgroundColor: Colors.card,
@@ -307,8 +302,8 @@ const styles = StyleSheet.create({
   },
   historyLeft: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
   historyEmoji: { fontSize: 24 },
-  historyDate: { fontSize: 14, fontWeight: '600', color: Colors.text, textTransform: 'capitalize' },
-  historySub: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
+  historyDate: { fontSize: 14, fontWeight: '700', color: Colors.text, textTransform: 'capitalize' },
+  historySub: { fontSize: 12, fontWeight: '300', color: Colors.textSecondary, marginTop: 2 },
   effortChip: { borderRadius: Radius.sm, paddingHorizontal: Spacing.sm, paddingVertical: 4 },
-  effortChipText: { fontSize: 13, fontWeight: '700' },
+  effortChipText: { fontSize: 13, fontWeight: '900' },
 });

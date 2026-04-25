@@ -62,12 +62,14 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: Colors.card,
-    borderTopColor: Colors.cardBorder,
+    backgroundColor: 'rgba(10, 14, 18, 0.92)',
+    borderTopColor: 'rgba(255,255,255,0.10)',
     borderTopWidth: 1,
     height: Platform.OS === 'ios' ? 88 : 64,
     paddingBottom: Platform.OS === 'ios' ? 24 : 8,
     paddingTop: 8,
+    backdropFilter: 'blur(24px)' as any,
+    WebkitBackdropFilter: 'blur(24px)' as any,
   },
   tabLabel: {
     fontSize: 11,
