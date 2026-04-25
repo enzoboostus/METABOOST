@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.card,
     borderRadius: Radius.lg,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: Colors.cardBorder,
     padding: Spacing.md,
     alignItems: 'center',
@@ -36,23 +36,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   iconWrap: { marginBottom: 2 },
-  value: {
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: -0.8,
-  },
-  unit: {
-    fontSize: 12,
-    fontWeight: '400',
-    color: Colors.textSecondary,
-  },
-  label: {
-    fontSize: 10,
-    fontWeight: '500',
-    color: Colors.textSecondary,
-    marginTop: 2,
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
+  value:    { fontSize: 26, fontWeight: '900', letterSpacing: -0.8 },
+  unit:     { fontSize: 12, fontWeight: '300', color: Colors.textSecondary },
+  label:    { fontSize: 9, fontWeight: '500', color: Colors.textSecondary, marginTop: 2, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 },
 });

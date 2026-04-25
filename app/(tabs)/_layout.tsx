@@ -9,9 +9,10 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: Colors.text,
-        tabBarInactiveTintColor: Colors.textTertiary,
+        tabBarActiveTintColor: '#FFFFFF',
+        tabBarInactiveTintColor: '#444444',
         tabBarLabelStyle: styles.tabLabel,
+        tabBarItemStyle: styles.tabItem,
       }}
     >
       <Tabs.Screen
@@ -19,7 +20,7 @@ export default function TabsLayout() {
         options={{
           title: 'Accueil',
           tabBarIcon: ({ color, size }) => (
-            <LayoutDashboard size={size} color={color} strokeWidth={1.8} />
+            <LayoutDashboard size={22} color={color} strokeWidth={1.5} />
           ),
         }}
       />
@@ -28,7 +29,7 @@ export default function TabsLayout() {
         options={{
           title: 'Activité',
           tabBarIcon: ({ color, size }) => (
-            <Zap size={size} color={color} strokeWidth={1.8} />
+            <Zap size={22} color={color} strokeWidth={1.5} />
           ),
         }}
       />
@@ -37,7 +38,7 @@ export default function TabsLayout() {
         options={{
           title: 'Nutrition',
           tabBarIcon: ({ color, size }) => (
-            <Salad size={size} color={color} strokeWidth={1.8} />
+            <Salad size={22} color={color} strokeWidth={1.5} />
           ),
         }}
       />
@@ -46,7 +47,7 @@ export default function TabsLayout() {
         options={{
           title: 'Profil',
           tabBarIcon: ({ color, size }) => (
-            <User size={size} color={color} strokeWidth={1.8} />
+            <User size={22} color={color} strokeWidth={1.5} />
           ),
         }}
       />
@@ -56,18 +57,22 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: 'rgba(255,255,255,0.94)',
-    borderTopColor: 'rgba(0,0,0,0.08)',
+    backgroundColor: '#0A0A0A',
+    borderTopColor: 'rgba(255,255,255,0.06)',
     borderTopWidth: 0.5,
-    height: Platform.OS === 'ios' ? 88 : 64,
-    paddingBottom: Platform.OS === 'ios' ? 24 : 8,
-    paddingTop: 8,
-    backdropFilter: 'blur(20px)' as any,
-    WebkitBackdropFilter: 'blur(20px)' as any,
+    height: Platform.OS === 'ios' ? 84 : 62,
+    paddingBottom: Platform.OS === 'ios' ? 24 : 6,
+    paddingTop: 10,
+    backdropFilter: 'blur(40px)' as any,
+    WebkitBackdropFilter: 'blur(40px)' as any,
+  },
+  tabItem: {
+    gap: 3,
   },
   tabLabel: {
     fontSize: 10,
     fontWeight: '500',
-    letterSpacing: 0.2,
+    letterSpacing: 0.3,
+    textTransform: 'none',
   },
 });
