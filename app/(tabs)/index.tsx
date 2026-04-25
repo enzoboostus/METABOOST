@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Search, User, ChevronRight, Play, TrendingDown } from 'lucide-react-native';
+import { Search, ChevronRight, Play, TrendingDown, User } from 'lucide-react-native';
+import Avatar from '@/components/Avatar';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore } from '@/store/userStore';
 import { useAvatarParams } from '@/hooks/useAvatarParams';
@@ -62,7 +63,8 @@ const PROGRAMS: Program[] = [
 const FILTERS = ['Pour toi', 'Nouveau', 'Force', 'Cardio', 'Souplesse'];
 
 export default function Dashboard() {
-  const [activeFilter, setActiveFilter] = useState(0);
+  const [activeFilter,   setActiveFilter]   = useState(0);
+  const [avatarGender,   setAvatarGender]   = useState<'male' | 'female'>('female');
 
   const { profile, getCurrentMeasure, sessions, todaySteps } = useUserStore(
     useShallow((s) => ({
@@ -74,10 +76,21 @@ export default function Dashboard() {
   );
 
   useSteps();
+
+  // Sync gender toggle with profile on first render
+  React.useEffect(() => {
+    if (profile.gender) setAvatarGender(profile.gender);
+  }, [profile.gender]);
+
   const currentMeasure = getCurrentMeasure();
   const params         = useAvatarParams();
-  const featured       = PROGRAMS[0];
   const stepPct        = Math.min(100, Math.round((todaySteps / 10000) * 100));
+
+  const bmiColor =
+    params.bmi < 18.5 ? Colors.warning
+    : params.bmi < 25  ? Colors.success
+    : params.bmi < 30  ? Colors.warning
+    : Colors.red;
 
   return (
     <ScrollView
@@ -85,72 +98,106 @@ export default function Dashboard() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* ── Hero plein écran ── */}
-      <View style={styles.hero}>
-        <Image source={{ uri: featured.image }} style={styles.heroImage} resizeMode="cover" />
-
-        {/* Header flottant sur l'image */}
-        <SafeAreaView style={styles.heroHeader} edges={['top']}>
-          <Text style={styles.brandName}>METABOOST</Text>
-          <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.headerIconBtn}>
-              <Search size={20} color="#fff" strokeWidth={2} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.headerIconBtn}>
-              <User size={20} color="#fff" strokeWidth={2} />
-            </TouchableOpacity>
+      {/* ── Header ── */}
+      <SafeAreaView edges={['top']}>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>Bonjour,</Text>
+            <Text style={styles.name}>Pour {profile.name || 'vous'}</Text>
           </View>
-        </SafeAreaView>
+          <View style={styles.headerRight}>
+            <TouchableOpacity style={styles.iconBtn}>
+              <Search size={20} color={Colors.text} strokeWidth={2} />
+            </TouchableOpacity>
+            <View style={styles.avatarCircle}>
+              <Text style={styles.avatarInitial}>
+                {(profile.name || 'A').charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </SafeAreaView>
 
-        {/* Gradient overlay bas */}
+      {/* ── Avatar Hero ── */}
+      <View style={styles.avatarSection}>
+        {/* Dark background */}
         <LinearGradient
-          colors={['transparent', 'rgba(10,10,10,0.5)', Colors.background]}
-          locations={[0.3, 0.7, 1]}
-          style={styles.heroGradient}
+          colors={['#0D0D16', '#060608', '#0D0D16']}
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
         />
 
-        {/* Texte hero */}
-        <View style={styles.heroContent}>
-          <Text style={styles.heroTag}>{featured.tag}</Text>
-          <Text style={styles.heroTitle}>{featured.title}</Text>
-          <Text style={styles.heroDesc}>{featured.desc}</Text>
-          <View style={styles.heroFooter}>
-            <TouchableOpacity style={styles.pillBtn} activeOpacity={0.85}>
-              <Text style={styles.pillBtnTxt}>Commencer</Text>
+        {/* Gender toggle */}
+        <View style={styles.genderRow}>
+          {(['female', 'male'] as const).map((g) => (
+            <TouchableOpacity
+              key={g}
+              style={[styles.genderPill, avatarGender === g && styles.genderPillActive]}
+              onPress={() => setAvatarGender(g)}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.genderPillTxt, avatarGender === g && styles.genderPillTxtActive]}>
+                {g === 'female' ? '♀  Femme' : '♂  Homme'}
+              </Text>
             </TouchableOpacity>
-            <Text style={styles.heroMeta}>{featured.meta}</Text>
-          </View>
+          ))}
         </View>
-      </View>
 
-      {/* ── Stats strip ── */}
-      <View style={styles.statsStrip}>
-        <View style={[styles.statBlock, { borderRightWidth: 0.5, borderRightColor: Colors.cardBorder }]}>
-          <Text style={styles.statVal}>{currentMeasure?.weight ?? '—'}<Text style={styles.statUnit}> kg</Text></Text>
-          <Text style={styles.statLbl}>Poids</Text>
+        {/* Avatar centered */}
+        <View style={styles.avatarWrap}>
+          <Avatar
+            gender={avatarGender}
+            params={params}
+            size={W * 0.72}
+          />
         </View>
-        <View style={[styles.statBlock, { borderRightWidth: 0.5, borderRightColor: Colors.cardBorder }]}>
-          <Text style={styles.statVal}>{todaySteps.toLocaleString('fr-FR')}</Text>
-          <Text style={styles.statLbl}>Pas aujourd'hui</Text>
-        </View>
-        <View style={styles.statBlock}>
-          <Text style={styles.statVal}>{sessions.length}</Text>
-          <Text style={styles.statLbl}>Séances</Text>
+
+        {/* Body stats overlay row */}
+        <View style={styles.bodyStatsRow}>
+          <View style={styles.bodyStat}>
+            <Text style={styles.bodyStatVal}>{currentMeasure?.weight ?? '—'}</Text>
+            <Text style={styles.bodyStatUnit}>kg</Text>
+            <Text style={styles.bodyStatLbl}>Poids</Text>
+          </View>
+          <View style={[styles.bodyStat, styles.bodyStatCenter]}>
+            <Text style={[styles.bodyStatVal, { color: bmiColor, fontSize: 34 }]}>
+              {params.bmi.toFixed(1)}
+            </Text>
+            <Text style={[styles.bodyStatUnit, { color: bmiColor }]}>IMC</Text>
+            <Text style={styles.bodyStatLbl}>
+              {params.bmi < 25 ? 'Normal' : params.bmi < 30 ? 'Surpoids' : 'Obésité'}
+            </Text>
+          </View>
+          <View style={styles.bodyStat}>
+            <Text style={styles.bodyStatVal}>{currentMeasure?.waist ?? '—'}</Text>
+            <Text style={styles.bodyStatUnit}>cm</Text>
+            <Text style={styles.bodyStatLbl}>Taille</Text>
+          </View>
         </View>
       </View>
 
       {/* ── Step bar ── */}
-      {stepPct > 0 && (
-        <View style={styles.stepWrap}>
-          <View style={styles.stepRow}>
-            <Text style={styles.stepLabel}>Objectif quotidien</Text>
-            <Text style={styles.stepPct}>{stepPct}%</Text>
+      <View style={styles.stepWrap}>
+        <View style={styles.statsStrip}>
+          <View style={[styles.statBlock, { borderRightWidth: 0.5, borderRightColor: Colors.cardBorder }]}>
+            <Text style={styles.statVal}>{todaySteps.toLocaleString('fr-FR')}</Text>
+            <Text style={styles.statLbl}>Pas aujourd'hui</Text>
           </View>
-          <View style={styles.stepTrack}>
-            <View style={[styles.stepFill, { width: `${stepPct}%` } as any]} />
+          <View style={[styles.statBlock, { borderRightWidth: 0.5, borderRightColor: Colors.cardBorder }]}>
+            <Text style={styles.statVal}>{sessions.length}</Text>
+            <Text style={styles.statLbl}>Séances</Text>
+          </View>
+          <View style={styles.statBlock}>
+            <Text style={[styles.statVal, { color: stepPct >= 100 ? Colors.success : Colors.text }]}>
+              {stepPct}%
+            </Text>
+            <Text style={styles.statLbl}>Objectif</Text>
           </View>
         </View>
-      )}
+        <View style={styles.stepTrack}>
+          <View style={[styles.stepFill, { width: `${stepPct}%` } as any]} />
+        </View>
+      </View>
 
       {/* ── Filters ── */}
       <ScrollView
@@ -170,7 +217,7 @@ export default function Dashboard() {
         ))}
       </ScrollView>
 
-      {/* ── Programme du jour ── */}
+      {/* ── Programmes ── */}
       <View style={styles.sectionRow}>
         <Text style={styles.sectionTitle}>PROGRAMMES</Text>
         <TouchableOpacity>
@@ -180,15 +227,11 @@ export default function Dashboard() {
 
       {PROGRAMS.map((p) => (
         <TouchableOpacity key={p.id} style={[styles.programCard, Shadow.lg]} activeOpacity={0.9}>
-          {/* Photo */}
           <Image source={{ uri: p.image }} style={styles.programImg} resizeMode="cover" />
-
           <LinearGradient
             colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.82)']}
             style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
           />
-
-          {/* Content overlay */}
           <View style={styles.programOverlay}>
             <View style={styles.programTop}>
               <View style={styles.levelPill}>
@@ -198,21 +241,20 @@ export default function Dashboard() {
                 <Play size={14} color={Colors.background} fill={Colors.background} />
               </TouchableOpacity>
             </View>
-
-            <View style={styles.programBottom}>
+            <View>
               <Text style={styles.programTag}>{p.tag}</Text>
               <Text style={styles.programTitle}>{p.title}</Text>
               <Text style={styles.programMeta}>{p.meta}</Text>
               <TouchableOpacity style={styles.programCta} activeOpacity={0.85}>
+                <Play size={12} color={Colors.background} fill={Colors.background} />
                 <Text style={styles.programCtaTxt}>Démarrer</Text>
-                <ChevronRight size={14} color={Colors.background} strokeWidth={2.5} />
               </TouchableOpacity>
             </View>
           </View>
         </TouchableOpacity>
       ))}
 
-      {/* ── Progression récente ── */}
+      {/* ── Sessions récentes ── */}
       {sessions.length > 0 && (
         <>
           <View style={[styles.sectionRow, { marginTop: Spacing.xl }]}>
@@ -252,67 +294,107 @@ const styles = StyleSheet.create({
   scroll:  { flex: 1, backgroundColor: Colors.background },
   content: { paddingBottom: Spacing.xxl },
 
-  /* Hero */
-  hero:        { width: W, height: W * 1.3, position: 'relative' },
-  heroImage:   { ...StyleSheet.absoluteFillObject },
-  heroHeader:  { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, paddingTop: Spacing.sm },
-  brandName:   { fontSize: 18, fontWeight: '900', color: '#fff', letterSpacing: 3, textTransform: 'uppercase' },
-  headerIcons: { flexDirection: 'row', gap: Spacing.sm },
-  headerIconBtn:{ width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center' },
-  heroGradient:{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '70%' },
-  heroContent: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: Spacing.md, paddingBottom: Spacing.xl },
-  heroTag:     { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.65)', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 },
-  heroTitle:   { fontSize: 52, fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: -1.5, lineHeight: 52, marginBottom: 12 },
-  heroDesc:    { fontSize: 15, fontWeight: '300', color: 'rgba(255,255,255,0.80)', lineHeight: 22, marginBottom: 20 },
-  heroFooter:  { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
-  heroMeta:    { fontSize: 12, color: 'rgba(255,255,255,0.55)', fontWeight: '400' },
+  /* Header */
+  header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm },
+  greeting:     { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
+  name:         { fontSize: 24, fontWeight: '800', color: Colors.text, letterSpacing: -0.5, marginTop: 2 },
+  headerRight:  { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  iconBtn:      { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center' },
+  avatarCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: Colors.cardBorder },
+  avatarInitial:{ fontSize: 16, fontWeight: '700', color: Colors.text },
 
-  pillBtn:    { backgroundColor: '#fff', borderRadius: Radius.full, paddingHorizontal: 28, paddingVertical: 13 },
-  pillBtnTxt: { fontSize: 15, fontWeight: '700', color: Colors.background, letterSpacing: 0.2 },
+  /* Avatar section */
+  avatarSection: {
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    borderRadius: Radius.xxl,
+    overflow: 'hidden',
+    paddingBottom: Spacing.lg,
+  },
+  genderRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.md,
+    marginBottom: Spacing.sm,
+  },
+  genderPill: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    alignItems: 'center',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.10)',
+  },
+  genderPillActive: {
+    backgroundColor: '#fff',
+    borderColor: '#fff',
+  },
+  genderPillTxt:       { fontSize: 14, fontWeight: '600', color: Colors.textSecondary },
+  genderPillTxtActive: { color: Colors.background, fontWeight: '800' },
 
-  /* Stats */
+  avatarWrap: { alignItems: 'center' },
+
+  /* Body stats below avatar */
+  bodyStatsRow: {
+    flexDirection: 'row',
+    marginHorizontal: Spacing.md,
+    marginTop: -Spacing.md, // pull up to overlap gradient
+  },
+  bodyStat: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255,255,255,0.07)',
+  },
+  bodyStatCenter: {
+    borderLeftWidth: 0.5,
+    borderRightWidth: 0.5,
+    borderLeftColor: 'rgba(255,255,255,0.07)',
+    borderRightColor: 'rgba(255,255,255,0.07)',
+  },
+  bodyStatVal:  { fontSize: 28, fontWeight: '900', color: Colors.text, letterSpacing: -1 },
+  bodyStatUnit: { fontSize: 11, color: Colors.textSecondary, fontWeight: '400', marginTop: 1 },
+  bodyStatLbl:  { fontSize: 10, color: Colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 },
+
+  /* Step / stats strip */
+  stepWrap: { marginHorizontal: Spacing.md, marginTop: Spacing.md },
   statsStrip: {
     flexDirection: 'row',
     backgroundColor: Colors.card,
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.md,
     borderRadius: Radius.xl,
     overflow: 'hidden',
     borderWidth: 0.5,
     borderColor: Colors.cardBorder,
   },
-  statBlock:  { flex: 1, paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm, alignItems: 'center' },
-  statVal:    { fontSize: 22, fontWeight: '900', color: Colors.text, letterSpacing: -0.5 },
-  statUnit:   { fontSize: 13, fontWeight: '300', color: Colors.textSecondary },
-  statLbl:    { fontSize: 10, fontWeight: '400', color: Colors.textSecondary, marginTop: 3, textAlign: 'center' },
-
-  /* Step bar */
-  stepWrap: { marginHorizontal: Spacing.md, marginTop: Spacing.md },
-  stepRow:  { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  stepLabel:{ fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
-  stepPct:  { fontSize: 13, fontWeight: '800', color: Colors.accent },
-  stepTrack:{ height: 3, backgroundColor: Colors.surface, borderRadius: Radius.full, overflow: 'hidden' },
-  stepFill: { height: '100%', backgroundColor: Colors.accent, borderRadius: Radius.full },
+  statBlock: { flex: 1, paddingVertical: Spacing.md, alignItems: 'center' },
+  statVal:   { fontSize: 20, fontWeight: '900', color: Colors.text, letterSpacing: -0.5 },
+  statLbl:   { fontSize: 10, color: Colors.textSecondary, marginTop: 2 },
+  stepTrack: { height: 3, backgroundColor: Colors.surface, borderRadius: Radius.full, overflow: 'hidden', marginTop: 8 },
+  stepFill:  { height: '100%', backgroundColor: Colors.accent, borderRadius: Radius.full },
 
   /* Filters */
   filtersScroll: { marginTop: Spacing.lg },
   filtersRow:    { paddingHorizontal: Spacing.md, gap: Spacing.sm },
   filterPill:    { paddingHorizontal: Spacing.md, paddingVertical: 8, borderRadius: Radius.full, backgroundColor: Colors.surface, borderWidth: 0.5, borderColor: Colors.cardBorder },
-  filterPillActive: { backgroundColor: '#fff', borderColor: '#fff' },
-  filterTxt:    { fontSize: 13, fontWeight: '500', color: Colors.textSecondary },
-  filterTxtActive:{ color: Colors.background, fontWeight: '700' },
+  filterPillActive:  { backgroundColor: '#fff', borderColor: '#fff' },
+  filterTxt:         { fontSize: 13, fontWeight: '500', color: Colors.textSecondary },
+  filterTxtActive:   { color: Colors.background, fontWeight: '700' },
 
   /* Section header */
-  sectionRow:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, marginTop: Spacing.xl, marginBottom: Spacing.md },
-  sectionTitle:{ fontSize: 11, fontWeight: '800', color: Colors.text, letterSpacing: 3, textTransform: 'uppercase' },
-  sectionLink: { fontSize: 12, fontWeight: '500', color: Colors.textSecondary },
+  sectionRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, marginTop: Spacing.xl, marginBottom: Spacing.md },
+  sectionTitle: { fontSize: 11, fontWeight: '800', color: Colors.text, letterSpacing: 3, textTransform: 'uppercase' },
+  sectionLink:  { fontSize: 12, fontWeight: '500', color: Colors.textSecondary },
 
   /* Program cards */
   programCard: {
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
     borderRadius: Radius.xl,
-    height: 360,
+    height: 340,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -322,29 +404,21 @@ const styles = StyleSheet.create({
   levelPill:      { paddingHorizontal: 10, paddingVertical: 5, backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: Radius.full, borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.3)' },
   levelTxt:       { fontSize: 11, fontWeight: '600', color: '#fff' },
   playBtn:        { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
-  programBottom:  { gap: 4 },
-  programTag:     { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: 2 },
-  programTitle:   { fontSize: 40, fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: -1.5, lineHeight: 40 },
-  programMeta:    { fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 4 },
-  programCta:     { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fff', borderRadius: Radius.full, paddingHorizontal: 18, paddingVertical: 10, alignSelf: 'flex-start', marginTop: 8 },
+  programTag:     { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 },
+  programTitle:   { fontSize: 38, fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: -1.5, lineHeight: 38 },
+  programMeta:    { fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 6 },
+  programCta:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: Radius.full, paddingHorizontal: 18, paddingVertical: 10, alignSelf: 'flex-start', marginTop: 10 },
   programCtaTxt:  { fontSize: 13, fontWeight: '700', color: Colors.background },
 
   /* Recent sessions */
   sessionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
-    padding: Spacing.md,
-    marginHorizontal: Spacing.md,
-    marginBottom: Spacing.sm,
-    gap: Spacing.md,
-    borderWidth: 0.5,
-    borderColor: Colors.cardBorder,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.card,
+    borderRadius: Radius.lg, padding: Spacing.md, marginHorizontal: Spacing.md,
+    marginBottom: Spacing.sm, gap: Spacing.md, borderWidth: 0.5, borderColor: Colors.cardBorder,
   },
-  sessionDot:  { width: 44, height: 44, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
-  sessionDate: { fontSize: 14, fontWeight: '600', color: Colors.text, textTransform: 'capitalize' },
-  sessionSub:  { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  effortTag:   { borderRadius: Radius.sm, paddingHorizontal: 8, paddingVertical: 5 },
-  effortTagTxt:{ fontSize: 12, fontWeight: '800' },
+  sessionDot:    { width: 44, height: 44, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  sessionDate:   { fontSize: 14, fontWeight: '600', color: Colors.text, textTransform: 'capitalize' },
+  sessionSub:    { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
+  effortTag:     { borderRadius: Radius.sm, paddingHorizontal: 8, paddingVertical: 5 },
+  effortTagTxt:  { fontSize: 12, fontWeight: '800' },
 });
