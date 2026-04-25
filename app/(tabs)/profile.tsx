@@ -10,15 +10,21 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Activity, TrendingDown, TrendingUp, User } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, BodyMeasure } from '@/store/userStore';
 import { useAvatarParams } from '@/hooks/useAvatarParams';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 
-const BG: any    = { backgroundImage: 'radial-gradient(ellipse at 50% 0%, #0A1018 0%, #020305 80%)' };
-const GLASS: any = { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' };
-const FLOAT: any = { boxShadow: '0 8px 32px rgba(0,0,0,0.6), 0 0 1px rgba(0,242,255,0.06)' };
+const BG: any    = { backgroundImage: 'radial-gradient(ellipse at 50% 30%, #0A0E12 0%, #020202 70%)' };
+const GRAIN: any = {
+  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, pointerEvents: 'none',
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+  opacity: 0.03,
+};
+const GLASS: any = { backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)' };
+const FLOAT: any = { boxShadow: '0 8px 40px rgba(0,0,0,0.7), 0 0 1px rgba(0,242,255,0.06)' };
 
 export default function Profile() {
   const { profile, measures, addMeasure, getCurrentMeasure } = useUserStore(useShallow((s) => ({
@@ -27,7 +33,7 @@ export default function Profile() {
     addMeasure:        s.addMeasure,
     getCurrentMeasure: s.getCurrentMeasure,
   })));
-  const params = useAvatarParams();
+  const params         = useAvatarParams();
   const currentMeasure = getCurrentMeasure();
 
   const [weight, setWeight] = useState(currentMeasure?.weight?.toString() ?? '');
@@ -35,11 +41,10 @@ export default function Profile() {
   const [saved,  setSaved]  = useState(false);
 
   function handleSave() {
-    const w = parseFloat(weight);
+    const w  = parseFloat(weight);
     const wa = parseFloat(waist);
     if (isNaN(w) || isNaN(wa) || w <= 0 || wa <= 0) return;
-    const measure: BodyMeasure = { date: new Date().toISOString(), weight: w, waist: wa };
-    addMeasure(measure);
+    addMeasure({ date: new Date().toISOString(), weight: w, waist: wa } as BodyMeasure);
     setSaved(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setTimeout(() => setSaved(false), 2000);
@@ -59,13 +64,16 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={[styles.safe, BG]} edges={['top']}>
+      <View style={GRAIN} />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <Text style={styles.title}>Profil & Stats</Text>
 
           {/* Profile card */}
           <View style={[styles.profileCard, GLASS, FLOAT]}>
-            <Text style={styles.avatarEmoji}>{profile.gender === 'male' ? '👤' : '👤'}</Text>
+            <View style={styles.avatarIcon}>
+              <User size={32} color={Colors.cyan} strokeWidth={1} />
+            </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.profileName}>{profile.name || 'Athlète'}</Text>
               <Text style={styles.profileSub}>
@@ -74,12 +82,12 @@ export default function Profile() {
             </View>
           </View>
 
-          {/* BMI */}
-          <View style={[styles.bmiCard, { borderColor: bmiColor + '33' }, GLASS, FLOAT]}>
+          {/* BMI card */}
+          <View style={[styles.bmiCard, { borderColor: bmiColor + '28' }, GLASS, FLOAT]}>
             <View style={{ flex: 1 }}>
               <Text style={styles.bmiCaption}>Indice de Masse Corporelle</Text>
               <Text style={[styles.bmiNum, { color: bmiColor }]}>{params.bmi.toFixed(1)}</Text>
-              <Text style={[styles.bmiLabelTxt, { color: bmiColor }]}>{bmiLabel}</Text>
+              <Text style={[styles.bmiLabelTxt, { color: bmiColor + 'CC' }]}>{bmiLabel}</Text>
             </View>
             <View style={styles.bmiScale}>
               {[
@@ -88,7 +96,10 @@ export default function Profile() {
                 { range: '25–30', active: params.bmi >= 25 && params.bmi < 30 },
                 { range: '>30',   active: params.bmi >= 30 },
               ].map((z) => (
-                <View key={z.range} style={[styles.bmiZone, z.active && { borderColor: bmiColor + '55', backgroundColor: bmiColor + '15' }]}>
+                <View key={z.range} style={[
+                  styles.bmiZone,
+                  z.active && { borderColor: bmiColor + '44', backgroundColor: bmiColor + '12' },
+                ]}>
                   <Text style={[styles.bmiZoneTxt, z.active && { color: bmiColor }]}>{z.range}</Text>
                 </View>
               ))}
@@ -163,17 +174,15 @@ export default function Profile() {
                         {new Date(m.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                       </Text>
                       <Text style={styles.tableCell}>
-                        {m.weight}{diff !== 0 && (
+                        {m.weight}
+                        {diff !== 0 && (
                           <Text style={{ color: diff < 0 ? Colors.cyan : Colors.accent, fontSize: 10 }}>
                             {' '}{diff > 0 ? '+' : ''}{diff.toFixed(1)}
                           </Text>
                         )}
                       </Text>
                       <Text style={styles.tableCell}>{m.waist} cm</Text>
-                      <Text style={[styles.tableCell, {
-                        color: bmi < 25 ? Colors.cyan : Colors.accent,
-                        fontWeight: '700',
-                      }]}>
+                      <Text style={[styles.tableCell, { color: bmi < 25 ? Colors.cyan : Colors.accent, fontWeight: '700' }]}>
                         {bmi.toFixed(1)}
                       </Text>
                     </View>
@@ -189,8 +198,8 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
-  scroll: { flex: 1 },
+  safe:    { flex: 1, backgroundColor: Colors.background },
+  scroll:  { flex: 1 },
   content: { padding: Spacing.md, paddingBottom: Spacing.xxl },
 
   title: { fontSize: 34, fontWeight: '900', color: Colors.text, marginBottom: Spacing.md, letterSpacing: -1 },
@@ -198,7 +207,7 @@ const styles = StyleSheet.create({
   profileCard: {
     backgroundColor: Colors.card,
     borderRadius: Radius.lg,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: Colors.cardBorder,
     flexDirection: 'row',
     alignItems: 'center',
@@ -206,33 +215,41 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
     marginBottom: Spacing.md,
   },
-  avatarEmoji: { fontSize: 44, opacity: 0.7 },
+  avatarIcon: {
+    width: 56, height: 56,
+    borderRadius: Radius.md,
+    backgroundColor: 'rgba(0,242,255,0.06)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(0,242,255,0.20)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   profileName: { fontSize: 22, fontWeight: '900', color: Colors.text },
-  profileSub: { fontSize: 11, fontWeight: '300', color: Colors.textSecondary, marginTop: 3, letterSpacing: 0.8 },
+  profileSub:  { fontSize: 11, fontWeight: '300', color: Colors.textSecondary, marginTop: 3, letterSpacing: 0.8 },
 
   bmiCard: {
     backgroundColor: Colors.card,
     borderRadius: Radius.lg,
-    borderWidth: 1,
+    borderWidth: 0.5,
     padding: Spacing.md,
     marginBottom: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
   },
-  bmiCaption: { fontSize: 9, fontWeight: '300', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 2 },
-  bmiNum: { fontSize: 46, fontWeight: '900', letterSpacing: -2, marginTop: 2 },
-  bmiLabelTxt: { fontSize: 13, fontWeight: '700', marginTop: 2, textTransform: 'uppercase', letterSpacing: 1 },
-  bmiScale: { gap: 4 },
+  bmiCaption:   { fontSize: 9, fontWeight: '300', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 2 },
+  bmiNum:       { fontSize: 52, fontWeight: '900', letterSpacing: -2, marginTop: 2 },
+  bmiLabelTxt:  { fontSize: 12, fontWeight: '700', marginTop: 2, textTransform: 'uppercase', letterSpacing: 1.5 },
+  bmiScale:     { gap: 4 },
   bmiZone: {
     borderRadius: Radius.sm,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 5,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: 'rgba(255,255,255,0.06)',
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: 'rgba(255,255,255,0.02)',
     alignItems: 'center',
-    minWidth: 60,
+    minWidth: 58,
   },
   bmiZoneTxt: { fontSize: 10, fontWeight: '600', color: Colors.textSecondary },
 
@@ -241,7 +258,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.card,
     borderRadius: Radius.md,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: Colors.cardBorder,
     padding: Spacing.md,
     alignItems: 'center',
@@ -252,54 +269,47 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.card,
     borderRadius: Radius.lg,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: Colors.cardBorder,
     padding: Spacing.md,
     marginBottom: Spacing.lg,
   },
-  cardTitle: { fontSize: 18, fontWeight: '900', color: Colors.text, marginBottom: Spacing.md, letterSpacing: -0.3 },
-  inputRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.md },
+  cardTitle:  { fontSize: 18, fontWeight: '900', color: Colors.text, marginBottom: Spacing.md, letterSpacing: -0.3 },
+  inputRow:   { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.md },
   inputGroup: { flex: 1 },
-  inputLabel: { fontSize: 9, fontWeight: '300', color: Colors.textSecondary, marginBottom: Spacing.xs, textTransform: 'uppercase', letterSpacing: 1.5 },
+  inputLabel: {
+    fontSize: 9, fontWeight: '300', color: Colors.textSecondary,
+    marginBottom: Spacing.xs, textTransform: 'uppercase', letterSpacing: 1.5,
+  },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: 'rgba(255,255,255,0.02)',
     borderRadius: Radius.sm,
-    borderWidth: 1,
-    borderColor: 'rgba(0,242,255,0.18)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(0,242,255,0.20)',
     padding: Spacing.sm,
     color: Colors.text,
     fontSize: 20,
     fontWeight: '700',
   },
   saveBtn: {
-    backgroundColor: 'rgba(0,242,255,0.08)',
+    backgroundColor: 'rgba(0,242,255,0.06)',
     borderRadius: Radius.full,
     paddingVertical: Spacing.md,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(0,242,255,0.30)',
+    borderWidth: 0.5,
+    borderColor: 'rgba(0,242,255,0.25)',
   },
-  saveBtnDone: { borderColor: 'rgba(0,242,255,0.60)', boxShadow: '0 0 16px rgba(0,242,255,0.20)' as any },
-  saveBtnTxt: { fontSize: 13, fontWeight: '700', color: Colors.text, textTransform: 'uppercase', letterSpacing: 2 },
+  saveBtnDone: { borderColor: 'rgba(0,242,255,0.55)', boxShadow: '0 0 16px rgba(0,242,255,0.18)' as any },
+  saveBtnTxt:  { fontSize: 12, fontWeight: '700', color: Colors.text, textTransform: 'uppercase', letterSpacing: 2 },
 
   sectionTitle: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: Colors.textSecondary,
-    marginBottom: Spacing.sm,
-    textTransform: 'uppercase',
-    letterSpacing: 3,
+    fontSize: 9, fontWeight: '300', color: Colors.textSecondary,
+    marginBottom: Spacing.sm, textTransform: 'uppercase', letterSpacing: 3,
   },
-  table: {
-    backgroundColor: Colors.card,
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    overflow: 'hidden',
-  },
-  tableRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)' },
-  tableRowFirst: { backgroundColor: 'rgba(0,242,255,0.05)' },
-  tableHead: { backgroundColor: 'rgba(255,255,255,0.03)' },
+  table:        { backgroundColor: Colors.card, borderRadius: Radius.md, borderWidth: 0.5, borderColor: Colors.cardBorder, overflow: 'hidden' },
+  tableRow:     { flexDirection: 'row', borderBottomWidth: 0.5, borderBottomColor: 'rgba(255,255,255,0.04)' },
+  tableRowFirst:{ backgroundColor: 'rgba(0,242,255,0.04)' },
+  tableHead:    { backgroundColor: 'rgba(255,255,255,0.02)' },
   tableHeadTxt: { flex: 1, fontSize: 9, fontWeight: '700', color: Colors.textSecondary, padding: Spacing.sm, textTransform: 'uppercase', letterSpacing: 1.5 },
-  tableCell: { flex: 1, fontSize: 13, fontWeight: '300', color: Colors.text, padding: Spacing.sm },
+  tableCell:    { flex: 1, fontSize: 13, fontWeight: '300', color: Colors.text, padding: Spacing.sm },
 });

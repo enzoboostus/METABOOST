@@ -1,7 +1,7 @@
 export const Colors = {
-  background: '#050709',
-  card: 'rgba(255, 255, 255, 0.04)',
-  cardBorder: 'rgba(255, 255, 255, 0.08)',
+  background: '#020202',
+  card: 'rgba(255, 255, 255, 0.03)',
+  cardBorder: 'rgba(255, 255, 255, 0.12)',
   primary: '#00F2FF',
   primaryLight: 'rgba(0, 242, 255, 0.6)',
   accent: '#FF3A3A',
@@ -10,12 +10,12 @@ export const Colors = {
   cyan: '#00F2FF',
   gold: '#FFD700',
   text: '#E8EDF2',
-  textSecondary: '#4A5A6A',
-  textMuted: '#1E2530',
+  textSecondary: '#3A4A5A',
+  textMuted: '#1A2030',
   male: '#4A90D9',
   female: '#D94A90',
   success: '#00F2FF',
-  warning: '#606E7A',
+  warning: '#505E6A',
   error: '#FF3A3A',
 };
 

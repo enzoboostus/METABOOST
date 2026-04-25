@@ -1,13 +1,7 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { LayoutDashboard, Zap, Salad, User } from 'lucide-react-native';
 import { Colors } from '@/constants/theme';
 import { Platform, StyleSheet } from 'react-native';
-
-type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
-
-function TabIcon({ name, focused, color }: { name: IoniconsName; focused: boolean; color: string }) {
-  return <Ionicons name={focused ? name : (`${name}-outline` as IoniconsName)} size={24} color={color} />;
-}
 
 export default function TabsLayout() {
   return (
@@ -15,8 +9,8 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarActiveTintColor: Colors.cyan,
+        tabBarInactiveTintColor: Colors.textSecondary,
         tabBarLabelStyle: styles.tabLabel,
       }}
     >
@@ -24,8 +18,8 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Dashboard',
-          tabBarIcon: ({ focused, color }) => (
-            <TabIcon name="body" focused={focused} color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <LayoutDashboard size={size} color={color} strokeWidth={1.5} />
           ),
         }}
       />
@@ -33,8 +27,8 @@ export default function TabsLayout() {
         name="activity"
         options={{
           title: 'Activité',
-          tabBarIcon: ({ focused, color }) => (
-            <TabIcon name="flame" focused={focused} color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <Zap size={size} color={color} strokeWidth={1.5} />
           ),
         }}
       />
@@ -42,8 +36,8 @@ export default function TabsLayout() {
         name="nutrition"
         options={{
           title: 'Nutrition',
-          tabBarIcon: ({ focused, color }) => (
-            <TabIcon name="camera" focused={focused} color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <Salad size={size} color={color} strokeWidth={1.5} />
           ),
         }}
       />
@@ -51,8 +45,8 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: 'Profil',
-          tabBarIcon: ({ focused, color }) => (
-            <TabIcon name="stats-chart" focused={focused} color={color} />
+          tabBarIcon: ({ color, size }) => (
+            <User size={size} color={color} strokeWidth={1.5} />
           ),
         }}
       />
@@ -62,18 +56,19 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: 'rgba(10, 14, 18, 0.92)',
-    borderTopColor: 'rgba(255,255,255,0.10)',
-    borderTopWidth: 1,
+    backgroundColor: 'rgba(2,2,2,0.94)',
+    borderTopColor: 'rgba(255,255,255,0.08)',
+    borderTopWidth: 0.5,
     height: Platform.OS === 'ios' ? 88 : 64,
     paddingBottom: Platform.OS === 'ios' ? 24 : 8,
     paddingTop: 8,
-    backdropFilter: 'blur(24px)' as any,
-    WebkitBackdropFilter: 'blur(24px)' as any,
+    backdropFilter: 'blur(32px)' as any,
+    WebkitBackdropFilter: 'blur(32px)' as any,
   },
   tabLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    letterSpacing: 0.2,
+    fontSize: 10,
+    fontWeight: '300',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
 });

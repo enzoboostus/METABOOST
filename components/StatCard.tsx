@@ -2,21 +2,21 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 
-const GLASS: any = { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' };
-const FLOAT: any = { boxShadow: '0 4px 24px rgba(0,0,0,0.5), 0 0 1px rgba(0,242,255,0.06)' };
+const GLASS: any = { backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)' };
+const FLOAT: any = { boxShadow: '0 4px 24px rgba(0,0,0,0.6), 0 0 1px rgba(0,242,255,0.06)' };
 
 interface StatCardProps {
   label: string;
   value: string | number;
   unit?: string;
-  icon?: string;
+  icon?: React.ReactNode;
   color?: string;
 }
 
 export default function StatCard({ label, value, unit, icon, color = Colors.cyan }: StatCardProps) {
   return (
     <View style={[styles.card, GLASS, FLOAT]}>
-      {icon && <Text style={styles.icon}>{icon}</Text>}
+      {icon && <View style={styles.iconWrap}>{icon}</View>}
       <Text style={[styles.value, { color }]}>
         {value}
         {unit && <Text style={styles.unit}> {unit}</Text>}
@@ -30,16 +30,16 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.card,
     borderRadius: Radius.md,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: Colors.cardBorder,
     padding: Spacing.md,
     alignItems: 'center',
     flex: 1,
     minWidth: 80,
+    gap: 4,
   },
-  icon: {
-    fontSize: 20,
-    marginBottom: Spacing.xs,
+  iconWrap: {
+    marginBottom: 2,
     opacity: 0.7,
   },
   value: {
@@ -56,9 +56,9 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: '300',
     color: Colors.textSecondary,
-    marginTop: Spacing.xs,
+    marginTop: 2,
     textAlign: 'center',
     textTransform: 'uppercase',
-    letterSpacing: 1.5,
+    letterSpacing: 1,
   },
 });
