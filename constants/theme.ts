@@ -1,22 +1,23 @@
 export const Colors = {
-  background: '#020202',
-  card: 'rgba(255, 255, 255, 0.03)',
-  cardBorder: 'rgba(255, 255, 255, 0.12)',
-  primary: '#00F2FF',
-  primaryLight: 'rgba(0, 242, 255, 0.6)',
-  accent: '#FF3A3A',
-  accentGreen: '#00F2FF',
-  accentOrange: '#00F2FF',
-  cyan: '#00F2FF',
+  background: '#F2F2F7',
+  card: '#FFFFFF',
+  cardBorder: 'rgba(0,0,0,0.06)',
+  text: '#1C1C1E',
+  textSecondary: '#8E8E93',
+  textTertiary: '#AEAEB2',
+  accent: '#FF4B2B',
+  accentLight: 'rgba(255,75,43,0.10)',
+  primary: '#1C1C1E',
+  primaryLight: '#3A3A3C',
+  cyan: '#007AFF',
+  cyan2: '#00F2FF',
   gold: '#FFD700',
-  text: '#E8EDF2',
-  textSecondary: '#3A4A5A',
-  textMuted: '#1A2030',
-  male: '#4A90D9',
-  female: '#D94A90',
-  success: '#00F2FF',
-  warning: '#505E6A',
-  error: '#FF3A3A',
+  success: '#34C759',
+  warning: '#FF9F0A',
+  error: '#FF3B30',
+  // legacy compat
+  cardBorderOld: 'rgba(255,255,255,0.12)',
+  textMuted: '#C7C7CC',
 };
 
 export const Spacing = {
@@ -33,5 +34,30 @@ export const Radius = {
   md: 12,
   lg: 16,
   xl: 24,
+  xxl: 32,
   full: 999,
+};
+
+export const Shadow = {
+  sm: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  md: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.10,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  lg: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.14,
+    shadowRadius: 24,
+    elevation: 12,
+  },
 };

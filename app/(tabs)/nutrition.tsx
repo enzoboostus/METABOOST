@@ -9,46 +9,57 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Camera, ImageIcon, Leaf, CheckCircle } from 'lucide-react-native';
+import { Camera, ImageIcon, Leaf, CheckCircle, Zap, Apple } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, MealLog } from '@/store/userStore';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Shadow } from '@/constants/theme';
 
 type MealCategory = MealLog['category'];
 
-interface MealFeedback { label: string; icon: React.ReactNode; color: string; tips: string[] }
+interface MealFeedback {
+  label: string;
+  icon: React.ReactNode;
+  color: string;
+  bg: string;
+  tips: string[];
+}
 
 const MEAL_FEEDBACKS: Record<MealCategory, MealFeedback> = {
   balanced: {
     label: 'Repas équilibré',
-    icon:  <CheckCircle size={28} color={Colors.cyan}          strokeWidth={1.5} />,
-    color: Colors.cyan,
+    icon:  <CheckCircle size={26} color="#34C759" strokeWidth={2} />,
+    color: Colors.success,
+    bg:    '#F0FDF4',
     tips:  ['Assiette bien équilibrée', 'Continuez ainsi 💪'],
   },
   rich: {
     label: 'Repas riche',
-    icon:  <Leaf size={28} color={Colors.warning} strokeWidth={1.5} />,
+    icon:  <Zap size={26} color={Colors.warning} strokeWidth={2} />,
     color: Colors.warning,
+    bg:    '#FFFBEB',
     tips:  ['Calorique', "Bougez aujourd'hui"],
   },
   protein: {
     label: 'Bonne source de protéines',
-    icon:  <CheckCircle size={28} color={Colors.cyan}          strokeWidth={1.5} />,
+    icon:  <Apple size={26} color={Colors.cyan} strokeWidth={2} />,
     color: Colors.cyan,
+    bg:    '#EFF6FF',
     tips:  ['Idéal pour la récupération', 'Parfait après séance'],
   },
   light: {
     label: 'Repas léger',
-    icon:  <Leaf size={28} color={Colors.cyan}                 strokeWidth={1.5} />,
-    color: Colors.cyan,
+    icon:  <Leaf size={26} color={Colors.success} strokeWidth={2} />,
+    color: Colors.success,
+    bg:    '#F0FDF4',
     tips:  ['Peu calorique', 'Complétez si besoin'],
   },
   unknown: {
     label: 'Analyse incomplète',
-    icon:  <ImageIcon size={28} color={Colors.textSecondary}  strokeWidth={1.5} />,
+    icon:  <ImageIcon size={26} color={Colors.textSecondary} strokeWidth={2} />,
     color: Colors.textSecondary,
+    bg:    Colors.background,
     tips:  ['Photo peu nette ?', 'Réessayez'],
   },
 };
@@ -58,15 +69,6 @@ function mockAnalysis(uri: string): MealCategory {
   const cats: MealCategory[] = ['balanced', 'rich', 'protein', 'light', 'balanced', 'protein'];
   return cats[hash % cats.length];
 }
-
-const BG: any    = { backgroundImage: 'radial-gradient(ellipse at 50% 30%, #0A0E12 0%, #020202 70%)' };
-const GRAIN: any = {
-  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, pointerEvents: 'none',
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-  opacity: 0.03,
-};
-const GLASS: any = { backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)' };
-const FLOAT: any = { boxShadow: '0 8px 40px rgba(0,0,0,0.7), 0 0 1px rgba(0,242,255,0.06)' };
 
 export default function Nutrition() {
   const [analyzing,  setAnalyzing]  = useState(false);
@@ -102,34 +104,46 @@ export default function Nutrition() {
   }
 
   return (
-    <SafeAreaView style={[styles.safe, BG]} edges={['top']}>
-      <View style={GRAIN} />
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Nutrition</Text>
         <Text style={styles.subtitle}>Analysez votre repas en photo</Text>
 
+        {/* Action buttons */}
         <View style={styles.photoRow}>
-          <TouchableOpacity style={[styles.photoBtn, FLOAT]} onPress={() => handlePhoto('camera')} activeOpacity={0.85}>
-            <Camera size={28} color={Colors.cyan} strokeWidth={1.5} />
-            <Text style={styles.photoBtnTxt}>Photo</Text>
+          <TouchableOpacity style={[styles.photoBtn, Shadow.md]} onPress={() => handlePhoto('camera')} activeOpacity={0.85}>
+            <View style={styles.photoBtnIcon}>
+              <Camera size={26} color={Colors.accent} strokeWidth={2} />
+            </View>
+            <Text style={styles.photoBtnTxt}>Prendre une photo</Text>
+            <Text style={styles.photoBtnSub}>Analyser en temps réel</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.photoBtnSecondary, GLASS, FLOAT]} onPress={() => handlePhoto('gallery')} activeOpacity={0.85}>
-            <ImageIcon size={28} color={Colors.textSecondary} strokeWidth={1.5} />
-            <Text style={[styles.photoBtnTxt, { color: Colors.textSecondary }]}>Galerie</Text>
+
+          <TouchableOpacity style={[styles.photoBtnSecondary, Shadow.sm]} onPress={() => handlePhoto('gallery')} activeOpacity={0.85}>
+            <View style={[styles.photoBtnIcon, { backgroundColor: Colors.background }]}>
+              <ImageIcon size={26} color={Colors.textSecondary} strokeWidth={2} />
+            </View>
+            <Text style={[styles.photoBtnTxt, { color: Colors.text }]}>Galerie</Text>
+            <Text style={styles.photoBtnSub}>Choisir une image</Text>
           </TouchableOpacity>
         </View>
 
+        {/* Result card */}
         {(lastPhoto || analyzing) && (
-          <View style={[styles.resultCard, GLASS, FLOAT]}>
-            {lastPhoto && <Image source={{ uri: lastPhoto }} style={styles.mealImage} resizeMode="cover" />}
+          <View style={[styles.resultCard, Shadow.md]}>
+            {lastPhoto && (
+              <Image source={{ uri: lastPhoto }} style={styles.mealImage} resizeMode="cover" />
+            )}
             {analyzing ? (
               <View style={styles.analyzingRow}>
-                <ActivityIndicator color={Colors.cyan} size="small" />
+                <ActivityIndicator color={Colors.accent} size="small" />
                 <Text style={styles.analyzingTxt}>Analyse en cours...</Text>
               </View>
             ) : lastResult ? (
-              <View style={styles.feedbackRow}>
-                {lastResult.icon}
+              <View style={[styles.feedbackRow, { backgroundColor: lastResult.bg }]}>
+                <View style={[styles.feedbackIconWrap, { borderColor: lastResult.color + '33' }]}>
+                  {lastResult.icon}
+                </View>
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.feedbackLabel, { color: lastResult.color }]}>{lastResult.label}</Text>
                   {lastResult.tips.map((tip, i) => (
@@ -141,22 +155,28 @@ export default function Nutrition() {
           </View>
         )}
 
-        <View style={[styles.disclaimer, GLASS]}>
+        {/* Disclaimer */}
+        <View style={styles.disclaimer}>
           <Text style={styles.disclaimerTxt}>
-            Analyse estimative — non médicale. Ne remplace pas un suivi nutritionnel professionnel.
+            ⚠️ Analyse estimative — non médicale. Ne remplace pas un suivi nutritionnel professionnel.
           </Text>
         </View>
 
+        {/* Meal history */}
         {meals.length > 0 && (
           <>
             <Text style={styles.sectionTitle}>Historique des repas</Text>
             {meals.slice(0, 10).map((meal) => {
               const fb = MEAL_FEEDBACKS[meal.category];
               return (
-                <View key={meal.id} style={[styles.historyRow, GLASS]}>
+                <View key={meal.id} style={[styles.historyRow, Shadow.sm]}>
                   {meal.photo
                     ? <Image source={{ uri: meal.photo }} style={styles.thumb} />
-                    : <View style={[styles.thumb, styles.thumbFallback]}><Leaf size={20} color={Colors.textSecondary} strokeWidth={1.5} /></View>
+                    : (
+                      <View style={[styles.thumb, styles.thumbFallback, { backgroundColor: fb.bg }]}>
+                        {fb.icon}
+                      </View>
+                    )
                   }
                   <View style={{ flex: 1 }}>
                     <Text style={styles.historyLabel}>{meal.analysis}</Text>
@@ -164,7 +184,7 @@ export default function Nutrition() {
                       {new Date(meal.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                     </Text>
                   </View>
-                  <View style={[styles.iconWrap, { borderColor: fb.color + '33', backgroundColor: fb.color + '0D' }]}>
+                  <View style={[styles.mealBadge, { backgroundColor: fb.bg }]}>
                     {fb.icon}
                   </View>
                 </View>
@@ -182,80 +202,79 @@ const styles = StyleSheet.create({
   scroll:  { flex: 1 },
   content: { padding: Spacing.md, paddingBottom: Spacing.xxl },
 
-  title:    { fontSize: 34, fontWeight: '900', color: Colors.text, marginBottom: 4, letterSpacing: -1 },
-  subtitle: { fontSize: 11, fontWeight: '300', color: Colors.textSecondary, marginBottom: Spacing.lg, letterSpacing: 1 },
+  title:    { fontSize: 30, fontWeight: '900', color: Colors.text, marginBottom: 4, letterSpacing: -0.8 },
+  subtitle: { fontSize: 13, color: Colors.textSecondary, marginBottom: Spacing.lg },
 
-  photoRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.lg },
+  photoRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.md },
   photoBtn: {
-    flex: 1,
-    backgroundColor: 'rgba(0,242,255,0.08)',
-    borderRadius: Radius.lg,
-    padding: Spacing.lg,
-    alignItems: 'center',
+    flex: 1.4,
+    backgroundColor: Colors.accent,
+    borderRadius: Radius.xl,
+    padding: Spacing.md,
     gap: Spacing.sm,
-    borderWidth: 0.5,
-    borderColor: 'rgba(0,242,255,0.28)',
   },
   photoBtnSecondary: {
     flex: 1,
     backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
-    padding: Spacing.lg,
-    alignItems: 'center',
+    borderRadius: Radius.xl,
+    padding: Spacing.md,
     gap: Spacing.sm,
-    borderWidth: 0.5,
-    borderColor: Colors.cardBorder,
   },
-  photoBtnTxt: { fontSize: 12, fontWeight: '700', color: Colors.cyan, textTransform: 'uppercase', letterSpacing: 1.5 },
+  photoBtnIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: Radius.md,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  photoBtnTxt: { fontSize: 15, fontWeight: '800', color: '#fff', letterSpacing: -0.3 },
+  photoBtnSub: { fontSize: 11, color: 'rgba(255,255,255,0.75)' },
 
-  resultCard: {
-    backgroundColor: Colors.card,
-    borderRadius: Radius.lg,
-    borderWidth: 0.5,
-    borderColor: Colors.cardBorder,
-    overflow: 'hidden',
-    marginBottom: Spacing.md,
-  },
-  mealImage:    { width: '100%', height: 200 },
+  resultCard:   { backgroundColor: Colors.card, borderRadius: Radius.xl, overflow: 'hidden', marginBottom: Spacing.md },
+  mealImage:    { width: '100%', height: 220 },
   analyzingRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, padding: Spacing.md },
-  analyzingTxt: { fontSize: 13, fontWeight: '300', color: Colors.textSecondary, letterSpacing: 0.5 },
-  feedbackRow:  { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.md, padding: Spacing.md },
-  feedbackLabel:{ fontSize: 16, fontWeight: '900', marginBottom: 4 },
-  feedbackTip:  { fontSize: 12, fontWeight: '300', color: Colors.textSecondary, marginTop: 2 },
+  analyzingTxt: { fontSize: 14, color: Colors.textSecondary },
+  feedbackRow:  { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, padding: Spacing.md },
+  feedbackIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: Radius.md,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  feedbackLabel: { fontSize: 15, fontWeight: '800', marginBottom: 4, letterSpacing: -0.3 },
+  feedbackTip:   { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
 
   disclaimer: {
-    backgroundColor: 'rgba(255,255,255,0.02)',
-    borderRadius: Radius.md,
-    borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: Colors.card,
+    borderRadius: Radius.lg,
     padding: Spacing.md,
     marginBottom: Spacing.lg,
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.warning,
   },
-  disclaimerTxt: { fontSize: 11, fontWeight: '300', color: Colors.textSecondary, lineHeight: 18, letterSpacing: 0.3 },
+  disclaimerTxt: { fontSize: 12, color: Colors.textSecondary, lineHeight: 18 },
 
-  sectionTitle: {
-    fontSize: 9, fontWeight: '300', color: Colors.textSecondary,
-    marginBottom: Spacing.sm, textTransform: 'uppercase', letterSpacing: 3,
-  },
+  sectionTitle: { fontSize: 20, fontWeight: '800', color: Colors.text, marginBottom: Spacing.sm, letterSpacing: -0.4 },
   historyRow: {
     backgroundColor: Colors.card,
-    borderRadius: Radius.md,
-    borderWidth: 0.5,
-    borderColor: Colors.cardBorder,
+    borderRadius: Radius.lg,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
     padding: Spacing.sm,
     marginBottom: Spacing.sm,
   },
-  thumb:        { width: 52, height: 52, borderRadius: Radius.sm },
-  thumbFallback:{ backgroundColor: 'rgba(255,255,255,0.03)', alignItems: 'center', justifyContent: 'center' },
-  historyLabel: { fontSize: 14, fontWeight: '700', color: Colors.text },
-  historyDate:  { fontSize: 11, fontWeight: '300', color: Colors.textSecondary, marginTop: 2, letterSpacing: 0.3 },
-  iconWrap: {
+  thumb:         { width: 56, height: 56, borderRadius: Radius.md },
+  thumbFallback: { alignItems: 'center', justifyContent: 'center' },
+  historyLabel:  { fontSize: 14, fontWeight: '700', color: Colors.text },
+  historyDate:   { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
+  mealBadge: {
     width: 40, height: 40,
-    borderRadius: Radius.sm,
-    borderWidth: 0.5,
+    borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },

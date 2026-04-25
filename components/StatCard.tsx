@@ -1,9 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors, Radius, Spacing } from '@/constants/theme';
-
-const GLASS: any = { backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)' };
-const FLOAT: any = { boxShadow: '0 4px 24px rgba(0,0,0,0.6), 0 0 1px rgba(0,242,255,0.06)' };
+import { Colors, Radius, Spacing, Shadow } from '@/constants/theme';
 
 interface StatCardProps {
   label: string;
@@ -13,9 +10,9 @@ interface StatCardProps {
   color?: string;
 }
 
-export default function StatCard({ label, value, unit, icon, color = Colors.cyan }: StatCardProps) {
+export default function StatCard({ label, value, unit, icon, color = Colors.text }: StatCardProps) {
   return (
-    <View style={[styles.card, GLASS, FLOAT]}>
+    <View style={[styles.card, Shadow.sm]}>
       {icon && <View style={styles.iconWrap}>{icon}</View>}
       <Text style={[styles.value, { color }]}>
         {value}
@@ -29,8 +26,8 @@ export default function StatCard({ label, value, unit, icon, color = Colors.cyan
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.card,
-    borderRadius: Radius.md,
-    borderWidth: 0.5,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
     borderColor: Colors.cardBorder,
     padding: Spacing.md,
     alignItems: 'center',
@@ -38,10 +35,7 @@ const styles = StyleSheet.create({
     minWidth: 80,
     gap: 4,
   },
-  iconWrap: {
-    marginBottom: 2,
-    opacity: 0.7,
-  },
+  iconWrap: { marginBottom: 2 },
   value: {
     fontSize: 26,
     fontWeight: '900',
@@ -49,16 +43,16 @@ const styles = StyleSheet.create({
   },
   unit: {
     fontSize: 12,
-    fontWeight: '300',
+    fontWeight: '400',
     color: Colors.textSecondary,
   },
   label: {
-    fontSize: 9,
-    fontWeight: '300',
+    fontSize: 10,
+    fontWeight: '500',
     color: Colors.textSecondary,
     marginTop: 2,
     textAlign: 'center',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 0.8,
   },
 });
