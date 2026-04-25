@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 
 const GLASS: any = { backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' };
+const FLOAT: any = { boxShadow: '0 4px 24px rgba(0,0,0,0.5), 0 0 1px rgba(0,242,255,0.06)' };
 
 interface StatCardProps {
   label: string;
@@ -12,10 +13,10 @@ interface StatCardProps {
   color?: string;
 }
 
-export default function StatCard({ label, value, unit, icon, color = Colors.primary }: StatCardProps) {
+export default function StatCard({ label, value, unit, icon, color = Colors.cyan }: StatCardProps) {
   return (
-    <View style={[styles.card, GLASS]}>
-      {icon && <Text style={[styles.icon, { color }]}>{icon}</Text>}
+    <View style={[styles.card, GLASS, FLOAT]}>
+      {icon && <Text style={styles.icon}>{icon}</Text>}
       <Text style={[styles.value, { color }]}>
         {value}
         {unit && <Text style={styles.unit}> {unit}</Text>}
@@ -37,26 +38,27 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   icon: {
-    fontSize: 22,
+    fontSize: 20,
     marginBottom: Spacing.xs,
+    opacity: 0.7,
   },
   value: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '900',
-    letterSpacing: -0.5,
+    letterSpacing: -0.8,
   },
   unit: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '300',
     color: Colors.textSecondary,
   },
   label: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '300',
     color: Colors.textSecondary,
     marginTop: Spacing.xs,
     textAlign: 'center',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 1.5,
   },
 });

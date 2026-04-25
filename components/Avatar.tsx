@@ -5,13 +5,11 @@ import Svg, {
   Path,
   Circle,
   G,
+  Line,
   Defs,
-  RadialGradient,
-  Stop,
-  LinearGradient,
+  ClipPath,
 } from 'react-native-svg';
 import { AvatarParams } from '@/hooks/useAvatarParams';
-import { Colors } from '@/constants/theme';
 
 interface AvatarProps {
   gender: 'male' | 'female';
@@ -20,271 +18,219 @@ interface AvatarProps {
   minimal?: boolean;
 }
 
+const C = '#00F2FF';
+const FILL = 'rgba(0, 242, 255, 0.04)';
+
 export default function Avatar({ gender, params, size = 280, minimal = false }: AvatarProps) {
   const isMale = gender === 'male';
-  const scale = size / 280;
 
-  const {
-    bodyWidth,
-    waistWidth,
-    toneLevel,
-    posture,
-    stepSlim,
-  } = params;
-
+  const { bodyWidth, waistWidth, toneLevel, posture, stepSlim } = params;
   const slim = 1 - stepSlim;
 
-  // Skin tone
-  const skinBase = isMale ? '#D4956A' : '#E8A87C';
-  const skinShadow = isMale ? '#B87A50' : '#CC8860';
-  const clothTop = isMale ? Colors.male : Colors.female;
-  const clothBottom = isMale ? '#2A3A5C' : '#5C2A4A';
-
-  // Body proportions
   const shoulderW = 70 * bodyWidth * slim * (isMale ? 1.15 : 0.95);
-  const torsoW = 52 * bodyWidth * slim;
-  const waistW = 44 * waistWidth * slim;
-  const hipW = isMale ? 50 * bodyWidth * slim : 58 * bodyWidth * slim;
-  const legW = 22 * bodyWidth * slim;
+  const waistW    = 44 * waistWidth * slim;
+  const hipW      = isMale ? 50 * bodyWidth * slim : 58 * bodyWidth * slim;
+  const legW      = 22 * bodyWidth * slim;
 
-  // Posture offset: straighter = head slightly back, chest forward
   const postureOffset = posture * 3;
+  const cx = 140;
 
-  // Tone: muscle definition opacity
-  const muscleOpacity = toneLevel * 0.4;
+  const headRx = isMale ? 32 : 30;
+  const headRy = isMale ? 36 : 34;
+  const hcx    = cx - postureOffset;
+  const hcy    = 75;
 
-  const cx = 140; // center X
+  const torsoPath = [
+    `M${cx - shoulderW} 118`,
+    `C${cx - shoulderW * 0.95} 140 ${cx - waistW} 158 ${cx - waistW} 175`,
+    `C${cx - waistW * 0.95} 195 ${cx - hipW * 0.85} 210 ${cx - hipW} 220`,
+    `L${cx + hipW} 220`,
+    `C${cx + hipW * 0.85} 210 ${cx + waistW * 0.95} 195 ${cx + waistW} 175`,
+    `C${cx + waistW} 158 ${cx + shoulderW * 0.95} 140 ${cx + shoulderW} 118 Z`,
+  ].join(' ');
+
+  const leftLegPath = [
+    `M${cx - hipW * 0.45} 220`,
+    `C${cx - hipW * 0.48} 250 ${cx - legW * 1.1} 270 ${cx - legW * 1.05} 300`,
+    `L${cx - legW * 0.4} 302`,
+    `C${cx - legW * 0.4} 275 ${cx - hipW * 0.1} 252 ${cx - hipW * 0.08} 222 Z`,
+  ].join(' ');
+
+  const rightLegPath = [
+    `M${cx + hipW * 0.45} 220`,
+    `C${cx + hipW * 0.48} 250 ${cx + legW * 1.1} 270 ${cx + legW * 1.05} 300`,
+    `L${cx + legW * 0.4} 302`,
+    `C${cx + legW * 0.4} 275 ${cx + hipW * 0.1} 252 ${cx + hipW * 0.08} 222 Z`,
+  ].join(' ');
+
+  const leftArmPath = [
+    `M${cx - shoulderW + 8} 120`,
+    `C${cx - shoulderW - 15} 140 ${cx - shoulderW - 20} 165 ${cx - shoulderW - 12} 185`,
+    `L${cx - shoulderW + 2} 183`,
+    `C${cx - shoulderW - 5} 164 ${cx - shoulderW - 2} 140 ${cx - shoulderW + 16} 122 Z`,
+  ].join(' ');
+
+  const rightArmPath = [
+    `M${cx + shoulderW - 8} 120`,
+    `C${cx + shoulderW + 15} 140 ${cx + shoulderW + 20} 165 ${cx + shoulderW + 12} 185`,
+    `L${cx + shoulderW - 2} 183`,
+    `C${cx + shoulderW + 5} 164 ${cx + shoulderW + 2} 140 ${cx + shoulderW - 16} 122 Z`,
+  ].join(' ');
+
+  const scanYs = [132, 144, 156, 167, 177, 188, 198, 208];
 
   return (
     <View style={{ width: size, height: size }}>
       <Svg width={size} height={size} viewBox="0 0 280 320">
         <Defs>
-          <RadialGradient id="skinGrad" cx="50%" cy="40%" r="60%">
-            <Stop offset="0%" stopColor={skinBase} />
-            <Stop offset="100%" stopColor={skinShadow} />
-          </RadialGradient>
-          <LinearGradient id="topGrad" x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0%" stopColor={clothTop} />
-            <Stop offset="100%" stopColor={clothTop + 'BB'} />
-          </LinearGradient>
-          <LinearGradient id="botGrad" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0%" stopColor={clothBottom} />
-            <Stop offset="100%" stopColor={clothBottom + 'CC'} />
-          </LinearGradient>
-          <RadialGradient id="headGrad" cx="45%" cy="35%" r="65%">
-            <Stop offset="0%" stopColor={skinBase} />
-            <Stop offset="100%" stopColor={skinShadow} />
-          </RadialGradient>
+          <ClipPath id="bodyClip">
+            <Path d={torsoPath} />
+          </ClipPath>
+          <ClipPath id="headClip">
+            <Ellipse cx={hcx} cy={hcy} rx={headRx} ry={headRy} />
+          </ClipPath>
         </Defs>
 
-        {/* ── Bio-energy aura ── */}
-        <Ellipse cx={cx} cy={160} rx={92 * bodyWidth * slim} ry={120} fill="rgba(0,229,255,0.055)" />
-        <Ellipse cx={cx} cy={148} rx={74 * bodyWidth * slim} ry={96} fill="rgba(0,229,255,0.04)" />
-        <Ellipse cx={cx - postureOffset} cy={75} rx={52} ry={54} fill="rgba(0,229,255,0.05)" />
+        {/* ── Ambient aura ── */}
+        <Ellipse cx={cx} cy={165} rx={85 * bodyWidth * slim} ry={115}
+          fill="rgba(0,242,255,0.045)" />
+        <Ellipse cx={hcx} cy={hcy} rx={52} ry={54}
+          fill="rgba(0,242,255,0.04)" />
 
-        {/* === LEGS === */}
-        <G>
-          {/* Left leg */}
-          <Path
-            d={`M${cx - hipW * 0.45} 220
-                C${cx - hipW * 0.48} 250 ${cx - legW * 1.1} 270 ${cx - legW * 1.05} 300
-                L${cx - legW * 0.4} 302
-                C${cx - legW * 0.4} 275 ${cx - hipW * 0.1} 252 ${cx - hipW * 0.08} 222 Z`}
-            fill="url(#botGrad)"
-          />
-          {/* Right leg */}
-          <Path
-            d={`M${cx + hipW * 0.45} 220
-                C${cx + hipW * 0.48} 250 ${cx + legW * 1.1} 270 ${cx + legW * 1.05} 300
-                L${cx + legW * 0.4} 302
-                C${cx + legW * 0.4} 275 ${cx + hipW * 0.1} 252 ${cx + hipW * 0.08} 222 Z`}
-            fill="url(#botGrad)"
-          />
-        </G>
+        {/* ── LEGS ── */}
+        <Path d={leftLegPath}  fill="none" stroke={C} strokeWidth={8}   strokeOpacity={0.03} />
+        <Path d={leftLegPath}  fill="none" stroke={C} strokeWidth={4}   strokeOpacity={0.07} />
+        <Path d={leftLegPath}  fill="none" stroke={C} strokeWidth={2}   strokeOpacity={0.18} />
+        <Path d={leftLegPath}  fill={FILL} stroke={C} strokeWidth={1}   strokeOpacity={0.72} />
 
-        {/* === HIPS === */}
-        <Ellipse
-          cx={cx}
-          cy={215}
-          rx={hipW}
-          ry={18}
-          fill="url(#botGrad)"
-        />
+        <Path d={rightLegPath} fill="none" stroke={C} strokeWidth={8}   strokeOpacity={0.03} />
+        <Path d={rightLegPath} fill="none" stroke={C} strokeWidth={4}   strokeOpacity={0.07} />
+        <Path d={rightLegPath} fill="none" stroke={C} strokeWidth={2}   strokeOpacity={0.18} />
+        <Path d={rightLegPath} fill={FILL} stroke={C} strokeWidth={1}   strokeOpacity={0.72} />
 
-        {/* === TORSO / WAIST === */}
-        <Path
-          d={`M${cx - shoulderW} 118
-              C${cx - shoulderW * 0.95} 140 ${cx - waistW} 158 ${cx - waistW} 175
-              C${cx - waistW * 0.95} 195 ${cx - hipW * 0.85} 210 ${cx - hipW} 220
-              L${cx + hipW} 220
-              C${cx + hipW * 0.85} 210 ${cx + waistW * 0.95} 195 ${cx + waistW} 175
-              C${cx + waistW} 158 ${cx + shoulderW * 0.95} 140 ${cx + shoulderW} 118
-              Z`}
-          fill="url(#topGrad)"
-        />
+        {/* ── HIPS ── */}
+        <Ellipse cx={cx} cy={215} rx={hipW} ry={18}
+          fill="none" stroke={C} strokeWidth={8} strokeOpacity={0.03} />
+        <Ellipse cx={cx} cy={215} rx={hipW} ry={18}
+          fill="none" stroke={C} strokeWidth={3} strokeOpacity={0.10} />
+        <Ellipse cx={cx} cy={215} rx={hipW} ry={18}
+          fill={FILL} stroke={C} strokeWidth={1} strokeOpacity={0.65} />
 
-        {/* Cyan bio wireframe outline */}
-        <Path
-          d={`M${cx - shoulderW} 118
-              C${cx - shoulderW * 0.95} 140 ${cx - waistW} 158 ${cx - waistW} 175
-              C${cx - waistW * 0.95} 195 ${cx - hipW * 0.85} 210 ${cx - hipW} 220
-              L${cx + hipW} 220
-              C${cx + hipW * 0.85} 210 ${cx + waistW * 0.95} 195 ${cx + waistW} 175
-              C${cx + waistW} 158 ${cx + shoulderW * 0.95} 140 ${cx + shoulderW} 118 Z`}
-          stroke="#00E5FF"
-          strokeWidth={1.5}
-          strokeOpacity={0.22}
-          fill="none"
-        />
+        {/* ── TORSO ── */}
+        <Path d={torsoPath} fill="none" stroke={C} strokeWidth={12}  strokeOpacity={0.025} />
+        <Path d={torsoPath} fill="none" stroke={C} strokeWidth={6}   strokeOpacity={0.06} />
+        <Path d={torsoPath} fill="none" stroke={C} strokeWidth={2.5} strokeOpacity={0.16} />
+        <Path d={torsoPath} fill={FILL} stroke={C} strokeWidth={1}   strokeOpacity={0.78} />
 
-        {/* Muscle definition overlay */}
-        {!minimal && toneLevel > 0.2 && (
-          <Path
-            d={`M${cx - 15} 130 C${cx - 12} 155 ${cx - 10} 170 ${cx - 8} 185
-                M${cx + 15} 130 C${cx + 12} 155 ${cx + 10} 170 ${cx + 8} 185`}
-            stroke="rgba(255,255,255,0.15)"
-            strokeWidth={2}
-            strokeLinecap="round"
-            fill="none"
-            opacity={muscleOpacity}
-          />
+        {/* ── Scan lines (clipped to torso) ── */}
+        {!minimal && (
+          <G clipPath="url(#bodyClip)">
+            {scanYs.map((y, i) => (
+              <Line
+                key={y}
+                x1={cx - shoulderW - 5}
+                y1={y}
+                x2={cx + shoulderW + 5}
+                y2={y}
+                stroke={C}
+                strokeWidth={0.5}
+                strokeOpacity={0.13 - i * 0.012}
+              />
+            ))}
+          </G>
         )}
 
-        {/* === ARMS === */}
-        {/* Left arm */}
-        <Path
-          d={`M${cx - shoulderW + 8} 120
-              C${cx - shoulderW - 15} 140 ${cx - shoulderW - 20} 165 ${cx - shoulderW - 12} 185
-              L${cx - shoulderW + 2} 183
-              C${cx - shoulderW - 5} 164 ${cx - shoulderW - 2} 140 ${cx - shoulderW + 16} 122 Z`}
-          fill="url(#skinGrad)"
-        />
-        {/* Right arm */}
-        <Path
-          d={`M${cx + shoulderW - 8} 120
-              C${cx + shoulderW + 15} 140 ${cx + shoulderW + 20} 165 ${cx + shoulderW + 12} 185
-              L${cx + shoulderW - 2} 183
-              C${cx + shoulderW + 5} 164 ${cx + shoulderW + 2} 140 ${cx + shoulderW - 16} 122 Z`}
-          fill="url(#skinGrad)"
-        />
+        {/* ── Tone geometry ── */}
+        {!minimal && toneLevel > 0.3 && (
+          <G>
+            <Line x1={cx} y1={128} x2={cx} y2={205}
+              stroke={C} strokeWidth={0.7} strokeOpacity={toneLevel * 0.22} />
+            <Path d={`M${cx - 18} 136 C${cx - 15} 158 ${cx - 13} 172 ${cx - 11} 184`}
+              stroke={C} strokeWidth={0.7} strokeOpacity={toneLevel * 0.18} fill="none" />
+            <Path d={`M${cx + 18} 136 C${cx + 15} 158 ${cx + 13} 172 ${cx + 11} 184`}
+              stroke={C} strokeWidth={0.7} strokeOpacity={toneLevel * 0.18} fill="none" />
+          </G>
+        )}
 
-        {/* Hands */}
-        <Ellipse cx={cx - shoulderW - 7} cy={190} rx={7} ry={9} fill="url(#skinGrad)" />
-        <Ellipse cx={cx + shoulderW + 7} cy={190} rx={7} ry={9} fill="url(#skinGrad)" />
+        {/* ── ARMS ── */}
+        <Path d={leftArmPath}  fill="none" stroke={C} strokeWidth={7}  strokeOpacity={0.03} />
+        <Path d={leftArmPath}  fill="none" stroke={C} strokeWidth={3}  strokeOpacity={0.08} />
+        <Path d={leftArmPath}  fill="none" stroke={C} strokeWidth={1.5} strokeOpacity={0.18} />
+        <Path d={leftArmPath}  fill={FILL} stroke={C} strokeWidth={0.8} strokeOpacity={0.65} />
 
-        {/* === NECK === */}
-        <Path
-          d={`M${cx - 14} 98 C${cx - 13} 112 ${cx + 13} 112 ${cx + 14} 98 Z`}
-          fill="url(#skinGrad)"
-        />
+        <Path d={rightArmPath} fill="none" stroke={C} strokeWidth={7}  strokeOpacity={0.03} />
+        <Path d={rightArmPath} fill="none" stroke={C} strokeWidth={3}  strokeOpacity={0.08} />
+        <Path d={rightArmPath} fill="none" stroke={C} strokeWidth={1.5} strokeOpacity={0.18} />
+        <Path d={rightArmPath} fill={FILL} stroke={C} strokeWidth={0.8} strokeOpacity={0.65} />
 
-        {/* === HEAD === */}
-        <Ellipse
-          cx={cx - postureOffset}
-          cy={75}
-          rx={isMale ? 32 : 30}
-          ry={isMale ? 36 : 34}
-          fill="url(#headGrad)"
-        />
+        {/* ── Hands ── */}
+        <Ellipse cx={cx - shoulderW - 7} cy={190} rx={7} ry={9}
+          fill={FILL} stroke={C} strokeWidth={0.8} strokeOpacity={0.60} />
+        <Ellipse cx={cx + shoulderW + 7} cy={190} rx={7} ry={9}
+          fill={FILL} stroke={C} strokeWidth={0.8} strokeOpacity={0.60} />
 
-        {/* Head bio outline */}
-        <Ellipse
-          cx={cx - postureOffset}
-          cy={75}
-          rx={(isMale ? 32 : 30) + 3}
-          ry={(isMale ? 36 : 34) + 3}
-          stroke="#00E5FF"
-          strokeWidth={1}
-          strokeOpacity={0.18}
-          fill="none"
-        />
+        {/* ── Neck ── */}
+        <Path d={`M${hcx - 13} 98 C${hcx - 12} 112 ${hcx + 12} 112 ${hcx + 13} 98 Z`}
+          fill={FILL} stroke={C} strokeWidth={0.8} strokeOpacity={0.50} />
 
-        {/* Hair */}
-        {isMale ? (
-          <Path
-            d={`M${cx - postureOffset - 30} 68
-                C${cx - postureOffset - 32} 45 ${cx - postureOffset - 15} 35 ${cx - postureOffset} 34
-                C${cx - postureOffset + 15} 35 ${cx - postureOffset + 32} 45 ${cx - postureOffset + 30} 68
-                C${cx - postureOffset + 20} 52 ${cx - postureOffset} 48 ${cx - postureOffset - 20} 52 Z`}
-            fill="#2A1F14"
+        {/* ── HEAD ── */}
+        <Ellipse cx={hcx} cy={hcy} rx={headRx} ry={headRy}
+          fill="none" stroke={C} strokeWidth={10} strokeOpacity={0.025} />
+        <Ellipse cx={hcx} cy={hcy} rx={headRx} ry={headRy}
+          fill="none" stroke={C} strokeWidth={5}  strokeOpacity={0.06} />
+        <Ellipse cx={hcx} cy={hcy} rx={headRx} ry={headRy}
+          fill="none" stroke={C} strokeWidth={2}  strokeOpacity={0.18} />
+        <Ellipse cx={hcx} cy={hcy} rx={headRx} ry={headRy}
+          fill={FILL} stroke={C} strokeWidth={1}  strokeOpacity={0.80} />
+
+        {/* ── Head scan lines ── */}
+        {!minimal && (
+          <G clipPath="url(#headClip)">
+            {[62, 70, 78, 86].map((y, i) => (
+              <Line key={y}
+                x1={hcx - headRx + 4} y1={y}
+                x2={hcx + headRx - 4} y2={y}
+                stroke={C} strokeWidth={0.4} strokeOpacity={0.14 - i * 0.02}
+              />
+            ))}
+          </G>
+        )}
+
+        {/* ── Joint data-points ── */}
+        {!minimal && (
+          <G>
+            {/* Shoulders */}
+            <Circle cx={cx - shoulderW + 5} cy={120} r={2.5} fill={C} fillOpacity={0.75} />
+            <Circle cx={cx - shoulderW + 5} cy={120} r={5.5} fill="none" stroke={C} strokeWidth={0.8} strokeOpacity={0.22} />
+            <Circle cx={cx + shoulderW - 5} cy={120} r={2.5} fill={C} fillOpacity={0.75} />
+            <Circle cx={cx + shoulderW - 5} cy={120} r={5.5} fill="none" stroke={C} strokeWidth={0.8} strokeOpacity={0.22} />
+
+            {/* Waist center */}
+            <Circle cx={cx} cy={175} r={2}   fill={C} fillOpacity={0.55} />
+            <Circle cx={cx} cy={175} r={5}   fill="none" stroke={C} strokeWidth={0.7} strokeOpacity={0.18} />
+
+            {/* Head center */}
+            <Circle cx={hcx} cy={hcy} r={2.5} fill={C} fillOpacity={0.45} />
+            <Circle cx={hcx} cy={hcy} r={6}   fill="none" stroke={C} strokeWidth={0.7} strokeOpacity={0.14} />
+
+            {/* Hip joints */}
+            <Circle cx={cx - hipW * 0.6} cy={218} r={1.8} fill={C} fillOpacity={0.50} />
+            <Circle cx={cx + hipW * 0.6} cy={218} r={1.8} fill={C} fillOpacity={0.50} />
+
+            {/* Elbow joints */}
+            <Circle cx={cx - shoulderW - 14} cy={163} r={1.8} fill={C} fillOpacity={0.45} />
+            <Circle cx={cx + shoulderW + 14} cy={163} r={1.8} fill={C} fillOpacity={0.45} />
+          </G>
+        )}
+
+        {/* ── Waist dashed indicator ── */}
+        {!minimal && (
+          <Line
+            x1={cx - waistW - 8} y1={175}
+            x2={cx + waistW + 8} y2={175}
+            stroke={C} strokeWidth={0.7} strokeOpacity={0.22}
+            strokeDasharray="3,5"
           />
-        ) : (
-          <>
-            <Path
-              d={`M${cx - postureOffset - 30} 68
-                  C${cx - postureOffset - 32} 40 ${cx - postureOffset - 10} 32 ${cx - postureOffset} 32
-                  C${cx - postureOffset + 10} 32 ${cx - postureOffset + 32} 40 ${cx - postureOffset + 30} 68
-                  C${cx - postureOffset + 18} 48 ${cx - postureOffset} 44 ${cx - postureOffset - 18} 48 Z`}
-              fill="#4A2820"
-            />
-            {/* Long hair strands */}
-            <Path
-              d={`M${cx - postureOffset - 30} 68 C${cx - postureOffset - 38} 90 ${cx - postureOffset - 40} 115 ${cx - postureOffset - 35} 130`}
-              stroke="#4A2820"
-              strokeWidth={10}
-              strokeLinecap="round"
-              fill="none"
-            />
-            <Path
-              d={`M${cx - postureOffset + 30} 68 C${cx - postureOffset + 38} 90 ${cx - postureOffset + 40} 115 ${cx - postureOffset + 35} 130`}
-              stroke="#4A2820"
-              strokeWidth={10}
-              strokeLinecap="round"
-              fill="none"
-            />
-          </>
-        )}
-
-        {/* Eyes */}
-        <Circle cx={cx - postureOffset - 11} cy={74} r={4} fill="#FFFFFF" />
-        <Circle cx={cx - postureOffset + 11} cy={74} r={4} fill="#FFFFFF" />
-        <Circle cx={cx - postureOffset - 11} cy={74} r={2.5} fill="#2A1F14" />
-        <Circle cx={cx - postureOffset + 11} cy={74} r={2.5} fill="#2A1F14" />
-        <Circle cx={cx - postureOffset - 10} cy={73} r={0.8} fill="#FFFFFF" />
-        <Circle cx={cx - postureOffset + 12} cy={73} r={0.8} fill="#FFFFFF" />
-
-        {/* Nose */}
-        <Path
-          d={`M${cx - postureOffset - 3} 82 C${cx - postureOffset - 4} 86 ${cx - postureOffset + 4} 86 ${cx - postureOffset + 3} 82`}
-          stroke={skinShadow}
-          strokeWidth={1.5}
-          fill="none"
-          strokeLinecap="round"
-        />
-
-        {/* Mouth */}
-        <Path
-          d={`M${cx - postureOffset - 8} 91 C${cx - postureOffset - 4} 95 ${cx - postureOffset + 4} 95 ${cx - postureOffset + 8} 91`}
-          stroke={skinShadow}
-          strokeWidth={1.8}
-          fill="none"
-          strokeLinecap="round"
-        />
-
-        {/* Shoulders line for posture */}
-        {!minimal && posture > 0.4 && (
-          <Path
-            d={`M${cx - shoulderW + 5} 115 L${cx + shoulderW - 5} 115`}
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth={2}
-            fill="none"
-          />
-        )}
-
-        {/* Female chest hint */}
-        {!minimal && !isMale && (
-          <>
-            <Ellipse cx={cx - 16} cy={140} rx={14 * bodyWidth} ry={10} fill={clothTop + 'DD'} />
-            <Ellipse cx={cx + 16} cy={140} rx={14 * bodyWidth} ry={10} fill={clothTop + 'DD'} />
-          </>
-        )}
-
-        {/* Male chest definition */}
-        {!minimal && isMale && toneLevel > 0.3 && (
-          <>
-            <Ellipse cx={cx - 18} cy={135} rx={15 * bodyWidth * 0.8} ry={10} fill="rgba(255,255,255,0.04)" />
-            <Ellipse cx={cx + 18} cy={135} rx={15 * bodyWidth * 0.8} ry={10} fill="rgba(255,255,255,0.04)" />
-          </>
         )}
       </Svg>
     </View>
