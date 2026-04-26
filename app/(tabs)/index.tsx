@@ -99,15 +99,19 @@ export default function Dashboard() {
       showsVerticalScrollIndicator={false}
     >
       {/* ── Header ── */}
-      <SafeAreaView edges={['top']}>
+      <SafeAreaView edges={['top']} style={styles.headerArea}>
+        <LinearGradient
+          colors={['rgba(255,92,57,0.09)', 'rgba(255,92,57,0)']}
+          style={StyleSheet.absoluteFill}
+        />
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>Bonjour,</Text>
-            <Text style={styles.name}>Pour {profile.name || 'vous'}</Text>
+            <Text style={styles.name}>{profile.name || 'Athlète'}</Text>
           </View>
           <View style={styles.headerRight}>
             <TouchableOpacity style={styles.iconBtn}>
-              <Search size={20} color={Colors.text} strokeWidth={2} />
+              <Search size={20} color={Colors.text} strokeWidth={1.8} />
             </TouchableOpacity>
             <View style={styles.avatarCircle}>
               <Text style={styles.avatarInitial}>
@@ -121,10 +125,12 @@ export default function Dashboard() {
       {/* ── Avatar Hero ── */}
       <View style={[styles.avatarSection, Shadow.md]}>
         <LinearGradient
-          colors={['#0D1117', '#080B12', '#0D1117']}
+          colors={['#0C1428', '#060E1C', '#0C1428']}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
+        {/* Coral top accent line */}
+        <View style={styles.avatarTopAccent} />
 
         {/* Gender toggle */}
         <View style={styles.genderRow}>
@@ -215,7 +221,10 @@ export default function Dashboard() {
 
       {/* ── Programmes ── */}
       <View style={styles.sectionRow}>
-        <Text style={styles.sectionTitle}>PROGRAMMES</Text>
+        <View style={styles.sectionTitleRow}>
+          <View style={styles.accentBar} />
+          <Text style={styles.sectionTitle}>PROGRAMMES</Text>
+        </View>
         <TouchableOpacity>
           <Text style={styles.sectionLink}>Voir tout</Text>
         </TouchableOpacity>
@@ -225,7 +234,7 @@ export default function Dashboard() {
         <TouchableOpacity key={p.id} style={[styles.programCard, Shadow.lg]} activeOpacity={0.9}>
           <Image source={{ uri: p.image }} style={styles.programImg} resizeMode="cover" />
           <LinearGradient
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.82)']}
+            colors={['rgba(6,14,28,0)', 'rgba(6,14,28,0.55)', 'rgba(6,14,28,0.92)']}
             style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
           />
           <View style={styles.programOverlay}>
@@ -254,7 +263,10 @@ export default function Dashboard() {
       {sessions.length > 0 && (
         <>
           <View style={[styles.sectionRow, { marginTop: Spacing.xl }]}>
-            <Text style={styles.sectionTitle}>RÉCENT</Text>
+            <View style={styles.sectionTitleRow}>
+              <View style={styles.accentBar} />
+              <Text style={styles.sectionTitle}>RÉCENT</Text>
+            </View>
           </View>
           {sessions.slice(0, 3).map((s) => (
             <View key={s.id} style={[styles.sessionRow, Shadow.sm]}>
@@ -291,69 +303,65 @@ const styles = StyleSheet.create({
   content: { paddingBottom: Spacing.xxl },
 
   /* Header */
-  header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm },
-  greeting:     { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
-  name:         { fontSize: 24, fontWeight: '800', color: Colors.text, letterSpacing: -0.5, marginTop: 2 },
+  headerArea:   { overflow: 'hidden' },
+  header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md },
+  greeting:     { fontSize: 12, color: Colors.textSecondary, fontWeight: '400', letterSpacing: 0.3 },
+  name:         { fontSize: 28, fontWeight: '900', color: Colors.text, letterSpacing: -1, marginTop: 1 },
   headerRight:  { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  iconBtn:      { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center' },
-  avatarCircle: { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: Colors.cardBorder },
-  avatarInitial:{ fontSize: 16, fontWeight: '700', color: Colors.text },
+  iconBtn:      { width: 42, height: 42, borderRadius: 21, backgroundColor: Colors.card, alignItems: 'center', justifyContent: 'center', borderWidth: 0.5, borderColor: Colors.cardBorder },
+  avatarCircle: { width: 42, height: 42, borderRadius: 21, backgroundColor: Colors.accent, alignItems: 'center', justifyContent: 'center' },
+  avatarInitial:{ fontSize: 16, fontWeight: '800', color: '#fff' },
 
-  /* Avatar section */
+  /* Avatar card */
   avatarSection: {
     marginHorizontal: Spacing.md,
-    marginTop: Spacing.sm,
     borderRadius: Radius.xxl,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,92,57,0.20)',
+  },
+  avatarTopAccent: {
+    height: 3,
+    backgroundColor: Colors.accent,
+    marginHorizontal: 0,
   },
   genderRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
+    paddingTop: Spacing.sm,
     marginBottom: 4,
   },
   genderPill: {
     flex: 1,
     paddingVertical: 9,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     alignItems: 'center',
     borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(255,255,255,0.10)',
   },
   genderPillActive: {
-    backgroundColor: '#fff',
-    borderColor: '#fff',
+    backgroundColor: Colors.accent,
+    borderColor: Colors.accent,
   },
-  genderPillTxt:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
-  genderPillTxtActive: { color: '#0D1117', fontWeight: '800' },
+  genderPillTxt:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.45)' },
+  genderPillTxtActive: { color: '#fff', fontWeight: '800' },
 
-  /* Horizontal row: avatar + stats */
+  /* Horizontal: avatar left, stats right */
   avatarBodyRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingRight: Spacing.md,
   },
-  statsCol: {
-    flex: 1,
-    paddingLeft: Spacing.md,
-    gap: 0,
-  },
-  statItem: {
-    alignItems: 'center',
-    paddingVertical: 14,
-  },
-  statSep: {
-    height: 0.5,
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    marginHorizontal: Spacing.sm,
-  },
-  statBigVal:  { fontSize: 30, fontWeight: '900', color: '#FFFFFF', letterSpacing: -1 },
-  statBigUnit: { fontSize: 11, fontWeight: '400', color: 'rgba(255,255,255,0.5)', marginTop: 1 },
-  statBigLbl:  { fontSize: 9, fontWeight: '700', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: 1.2, marginTop: 3 },
+  statsCol:  { flex: 1, paddingLeft: Spacing.md },
+  statItem:  { alignItems: 'center', paddingVertical: 16 },
+  statSep:   { height: 0.5, backgroundColor: 'rgba(255,255,255,0.08)', marginHorizontal: Spacing.sm },
+  statBigVal:  { fontSize: 32, fontWeight: '900', color: '#fff', letterSpacing: -1.2 },
+  statBigUnit: { fontSize: 11, fontWeight: '400', color: 'rgba(255,255,255,0.45)', marginTop: 2 },
+  statBigLbl:  { fontSize: 9, fontWeight: '700', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 4 },
 
-  /* Step / stats strip */
+  /* Step strip */
   stepWrap: { marginHorizontal: Spacing.md, marginTop: Spacing.md },
   statsStrip: {
     flexDirection: 'row',
@@ -364,23 +372,25 @@ const styles = StyleSheet.create({
     borderColor: Colors.cardBorder,
   },
   statBlock: { flex: 1, paddingVertical: Spacing.md, alignItems: 'center' },
-  statVal:   { fontSize: 20, fontWeight: '900', color: Colors.text, letterSpacing: -0.5 },
-  statLbl:   { fontSize: 10, color: Colors.textSecondary, marginTop: 2 },
-  stepTrack: { height: 3, backgroundColor: Colors.surface, borderRadius: Radius.full, overflow: 'hidden', marginTop: 8 },
+  statVal:   { fontSize: 22, fontWeight: '900', color: Colors.text, letterSpacing: -0.8 },
+  statLbl:   { fontSize: 9, color: Colors.textSecondary, marginTop: 3, textTransform: 'uppercase', letterSpacing: 0.8 },
+  stepTrack: { height: 4, backgroundColor: Colors.surface, borderRadius: Radius.full, overflow: 'hidden', marginTop: 10, borderRadius: Radius.full },
   stepFill:  { height: '100%', backgroundColor: Colors.accent, borderRadius: Radius.full },
 
   /* Filters */
   filtersScroll: { marginTop: Spacing.lg },
   filtersRow:    { paddingHorizontal: Spacing.md, gap: Spacing.sm },
-  filterPill:    { paddingHorizontal: Spacing.md, paddingVertical: 8, borderRadius: Radius.full, backgroundColor: Colors.surface, borderWidth: 0.5, borderColor: Colors.cardBorder },
-  filterPillActive:  { backgroundColor: '#fff', borderColor: '#fff' },
-  filterTxt:         { fontSize: 13, fontWeight: '500', color: Colors.textSecondary },
-  filterTxtActive:   { color: Colors.background, fontWeight: '700' },
+  filterPill:       { paddingHorizontal: 18, paddingVertical: 9, borderRadius: Radius.full, backgroundColor: Colors.card, borderWidth: 0.5, borderColor: Colors.cardBorder },
+  filterPillActive: { backgroundColor: Colors.text, borderColor: Colors.text },
+  filterTxt:        { fontSize: 13, fontWeight: '500', color: Colors.textSecondary },
+  filterTxtActive:  { color: '#fff', fontWeight: '700' },
 
-  /* Section header */
-  sectionRow:   { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, marginTop: Spacing.xl, marginBottom: Spacing.md },
-  sectionTitle: { fontSize: 11, fontWeight: '800', color: Colors.text, letterSpacing: 3, textTransform: 'uppercase' },
-  sectionLink:  { fontSize: 12, fontWeight: '500', color: Colors.textSecondary },
+  /* Section headers */
+  sectionRow:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, marginTop: Spacing.xl, marginBottom: Spacing.md },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  accentBar:       { width: 3, height: 16, borderRadius: 2, backgroundColor: Colors.accent },
+  sectionTitle:    { fontSize: 12, fontWeight: '800', color: Colors.text, letterSpacing: 2.5, textTransform: 'uppercase' },
+  sectionLink:     { fontSize: 12, fontWeight: '600', color: Colors.accent },
 
   /* Program cards */
   programCard: {
@@ -394,14 +404,14 @@ const styles = StyleSheet.create({
   programImg:     { ...StyleSheet.absoluteFillObject },
   programOverlay: { ...StyleSheet.absoluteFillObject, padding: Spacing.md, justifyContent: 'space-between' },
   programTop:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  levelPill:      { paddingHorizontal: 10, paddingVertical: 5, backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: Radius.full, borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.3)' },
-  levelTxt:       { fontSize: 11, fontWeight: '600', color: '#fff' },
-  playBtn:        { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
-  programTag:     { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 4 },
-  programTitle:   { fontSize: 38, fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: -1.5, lineHeight: 38 },
-  programMeta:    { fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 6 },
-  programCta:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#fff', borderRadius: Radius.full, paddingHorizontal: 18, paddingVertical: 10, alignSelf: 'flex-start', marginTop: 10 },
-  programCtaTxt:  { fontSize: 13, fontWeight: '700', color: Colors.background },
+  levelPill:      { paddingHorizontal: 12, paddingVertical: 5, backgroundColor: 'rgba(255,255,255,0.16)', borderRadius: Radius.full, borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.28)' },
+  levelTxt:       { fontSize: 11, fontWeight: '700', color: '#fff', letterSpacing: 0.3 },
+  playBtn:        { width: 38, height: 38, borderRadius: 19, backgroundColor: Colors.accent, alignItems: 'center', justifyContent: 'center' },
+  programTag:     { fontSize: 10, fontWeight: '700', color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: 2.5, marginBottom: 6 },
+  programTitle:   { fontSize: 40, fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: -1.5, lineHeight: 40 },
+  programMeta:    { fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 8 },
+  programCta:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Colors.accent, borderRadius: Radius.full, paddingHorizontal: 20, paddingVertical: 11, alignSelf: 'flex-start', marginTop: 12 },
+  programCtaTxt:  { fontSize: 13, fontWeight: '800', color: '#fff', letterSpacing: 0.2 },
 
   /* Recent sessions */
   sessionRow: {
@@ -410,7 +420,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm, gap: Spacing.md, borderWidth: 0.5, borderColor: Colors.cardBorder,
   },
   sessionDot:    { width: 44, height: 44, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
-  sessionDate:   { fontSize: 14, fontWeight: '600', color: Colors.text, textTransform: 'capitalize' },
+  sessionDate:   { fontSize: 14, fontWeight: '700', color: Colors.text, textTransform: 'capitalize' },
   sessionSub:    { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
   effortTag:     { borderRadius: Radius.sm, paddingHorizontal: 8, paddingVertical: 5 },
   effortTagTxt:  { fontSize: 12, fontWeight: '800' },
