@@ -6,13 +6,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Play } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Shadow } from '@/constants/theme';
 
-const { width: W } = require('react-native').Dimensions.get('window');
+const { width: W } = Dimensions.get('window');
 
 const CATEGORIES = ['Tous', 'Force', 'Cardio', 'Souplesse', 'Gainage'];
 

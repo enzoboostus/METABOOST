@@ -59,7 +59,7 @@ function GlowTab({
 }) {
   const glowAnim  = useRef(new Animated.Value(isActive ? 1 : 0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const loopRef   = useRef<Animated.CompositeAnimation | null>(null);
+  const loopRef   = useRef<{ start: () => void; stop: () => void } | null>(null);
 
   useEffect(() => {
     Animated.timing(glowAnim, {

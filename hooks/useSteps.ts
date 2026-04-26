@@ -14,7 +14,7 @@ export function useSteps() {
         const { granted } = await Pedometer.requestPermissionsAsync();
         if (!granted) return;
 
-        const { available: avail } = await Pedometer.isAvailableAsync();
+        const avail = await Pedometer.isAvailableAsync();
         setAvailable(avail);
         if (!avail) return;
 

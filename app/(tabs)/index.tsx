@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   statBlock: { flex: 1, paddingVertical: Spacing.md, alignItems: 'center' },
   statVal:   { fontSize: 22, fontWeight: '900', color: Colors.text, letterSpacing: -0.8 },
   statLbl:   { fontSize: 9, color: Colors.textSecondary, marginTop: 3, textTransform: 'uppercase', letterSpacing: 0.8 },
-  stepTrack: { height: 4, backgroundColor: Colors.surface, borderRadius: Radius.full, overflow: 'hidden', marginTop: 10, borderRadius: Radius.full },
+  stepTrack: { height: 4, backgroundColor: Colors.surface, borderRadius: Radius.full, overflow: 'hidden', marginTop: 10 },
   stepFill:  { height: '100%', backgroundColor: Colors.accent, borderRadius: Radius.full },
 
   /* Filters */
