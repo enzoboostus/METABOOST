@@ -12,87 +12,87 @@ interface Props {
 }
 
 /*
- * Full-body athlete photos from Unsplash — portrait 2:3 ratio, high quality.
- * Three body types per gender (lean / normal / fuller) selected by BMI.
+ * AI-generated athlete photos, one per BMI tier per gender.
+ * Female: 3 tiers  |  Male: 4 tiers
  */
-const PHOTOS: Record<string, Record<string, string>> = {
+const PHOTOS = {
   female: {
-    lean:   'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&h=900&q=95',
-    normal: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=600&h=900&q=95',
-    fuller: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&h=900&q=95',
+    lean:    'https://i.imgur.com/lcg0eAC.png', // IMC < 21
+    normal:  'https://i.imgur.com/Ca1ZFYu.png', // IMC 21–27
+    fuller:  'https://i.imgur.com/92fJtwz.png', // IMC > 27
   },
   male: {
-    lean:   'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=600&h=900&q=95',
-    normal: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&h=900&q=95',
-    fuller: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&h=900&q=95',
+    lean:    'https://i.imgur.com/GoQRmSG.png', // IMC < 21
+    normal:  'https://i.imgur.com/5DtnVxi.png', // IMC 21–24
+    muscled: 'https://i.imgur.com/f7SAHOu.png', // IMC 24–27
+    fuller:  'https://i.imgur.com/53m4ute.png', // IMC > 27
   },
 };
 
-function pickPhoto(gender: string, bmi: number): string {
-  const set = PHOTOS[gender] ?? PHOTOS.female;
-  if (bmi < 21)      return set.lean;
-  else if (bmi < 27) return set.normal;
-  else               return set.fuller;
+function pickPhoto(gender: 'male' | 'female', bmi: number): string {
+  if (gender === 'female') {
+    if (bmi < 21)  return PHOTOS.female.lean;
+    if (bmi < 27)  return PHOTOS.female.normal;
+    return PHOTOS.female.fuller;
+  } else {
+    if (bmi < 21)  return PHOTOS.male.lean;
+    if (bmi < 24)  return PHOTOS.male.normal;
+    if (bmi < 27)  return PHOTOS.male.muscled;
+    return PHOTOS.male.fuller;
+  }
 }
 
 export default function Avatar({ gender, params, size = 300, minimal = false }: Props) {
-  const uri  = pickPhoto(gender, params.bmi);
-  const h    = Math.round(size * 1.5);
+  const uri = pickPhoto(gender, params.bmi);
+  const h   = Math.round(size * 1.6);
 
-  // Subtle body-width hint (max ±8%)
-  const scaleX = Math.max(0.92, Math.min(1.08, 0.76 + params.waistWidth * 0.26));
-
-  // Glow intensity scales with fitness level
-  const glowAlpha  = Math.round((0.22 + params.toneLevel * 0.28) * 100) / 100;
-  const glowRadius = Math.round(size * 0.85);
-  const glowSpread = Math.round(size * 0.42);
+  const glowAlpha  = Math.round((0.18 + params.toneLevel * 0.20) * 100) / 100;
+  const glowRadius = Math.round(size * 0.90);
+  const glowSpread = Math.round(size * 0.45);
 
   return (
     <View style={{ width: size, height: h, alignItems: 'center' }}>
 
-      {/* Cyan ambient halo behind photo */}
+      {/* Ambient cyan halo behind the photo */}
       {!minimal && (
         <View
           style={[
             styles.halo,
             {
-              width:     size * 0.45,
-              height:    h   * 0.60,
-              top:       h   * 0.08,
+              width:     size * 0.48,
+              height:    h   * 0.58,
+              top:       h   * 0.07,
               boxShadow: `0 0 ${glowRadius}px ${glowSpread}px rgba(0,242,255,${glowAlpha})`,
             } as any,
           ]}
         />
       )}
 
-      {/* Athlete photo */}
+      {/* Full-body athlete photo */}
       <Image
         source={{ uri }}
-        style={[
-          styles.photo,
-          { width: size, height: h, transform: [{ scaleX }] },
-        ]}
+        style={[styles.photo, { width: size, height: h }]}
         resizeMode="cover"
       />
 
-      {/* Subtle cyan rim-light overlay */}
+      {/* Subtle cyan rim-light on photo edges */}
       {!minimal && (
         <View
           style={[
             styles.rimLight,
             {
-              width:  size,
-              height: h,
-              boxShadow: `inset 0 0 ${Math.round(size * 0.18)}px rgba(0,242,255,0.06), inset 0 0 2px rgba(0,242,255,0.15)`,
+              width:     size,
+              height:    h,
+              boxShadow: `inset 0 0 ${Math.round(size * 0.18)}px rgba(0,242,255,0.05), inset 0 0 2px rgba(0,242,255,0.14)`,
             } as any,
           ]}
         />
       )}
 
-      {/* Gradient fade into background at bottom */}
+      {/* Gradient fade into background */}
       <LinearGradient
         colors={['transparent', Colors.background]}
-        style={[styles.fade, { width: size, height: Math.round(h * 0.42) }]}
+        style={[styles.fade, { width: size, height: Math.round(h * 0.38) }]}
       />
     </View>
   );
