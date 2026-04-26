@@ -1,9 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
-import Svg, {
-  Circle, Ellipse, Rect, Path, G,
-  Defs, RadialGradient as RGrad, LinearGradient as LGrad, Stop,
-} from 'react-native-svg';
+import { View, Image, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Colors } from '@/constants/theme';
 import { AvatarParams } from '@/hooks/useAvatarParams';
 
 interface Props {
@@ -13,228 +11,113 @@ interface Props {
   minimal?: boolean;
 }
 
-// ─── Palette ───────────────────────────────────────────────────────────────
-const SKIN_F   = '#F4C4A1';
-const SKIN_M   = '#E8A87C';
-const HAIR_F   = '#3D2314';
-const HAIR_M   = '#1E1610';
-const CYAN_TOP = '#00C8D4';
-const DARK_LEG = '#0A3038';
-const NAVY     = '#0B1D2E';
-const SHOE_C   = '#191722';
-const SOLE_C   = '#111';
+/*
+ * Full-body athlete photos from Unsplash — portrait 2:3 ratio, high quality.
+ * Three body types per gender (lean / normal / fuller) selected by BMI.
+ */
+const PHOTOS: Record<string, Record<string, string>> = {
+  female: {
+    lean:   'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=600&h=900&q=95',
+    normal: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=600&h=900&q=95',
+    fuller: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&h=900&q=95',
+  },
+  male: {
+    lean:   'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=600&h=900&q=95',
+    normal: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&h=900&q=95',
+    fuller: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=600&h=900&q=95',
+  },
+};
 
-// ─── Female SVG character (viewBox 0 0 200 430) ───────────────────────────
-function FemaleFigure() {
-  return (
-    <G>
-      {/* Hair mass behind head */}
-      <Ellipse cx={100} cy={32} rx={32} ry={25} fill={HAIR_F} />
-      <Path d="M 70 44 Q 62 65 64 90 Q 72 78 80 74 Z" fill={HAIR_F} />
-      <Path d="M 130 44 Q 138 65 136 90 Q 128 78 120 74 Z" fill={HAIR_F} />
-
-      {/* HEAD */}
-      <Circle cx={100} cy={48} r={30} fill={SKIN_F} />
-
-      {/* Hair on top */}
-      <Path d="M 70 44 Q 72 12 100 10 Q 128 12 130 44 Q 118 32 100 30 Q 82 32 70 44 Z" fill={HAIR_F} />
-
-      {/* Ears */}
-      <Ellipse cx={70} cy={50} rx={6} ry={9} fill={SKIN_F} />
-      <Ellipse cx={130} cy={50} rx={6} ry={9} fill={SKIN_F} />
-
-      {/* Eyebrows */}
-      <Path d="M 83 37 Q 88 34 93 36" stroke={HAIR_F} strokeWidth={2} fill="none" strokeLinecap="round" />
-      <Path d="M 107 36 Q 112 34 117 37" stroke={HAIR_F} strokeWidth={2} fill="none" strokeLinecap="round" />
-
-      {/* Eyes */}
-      <Ellipse cx={88} cy={45} rx={5} ry={6} fill="#281208" />
-      <Ellipse cx={112} cy={45} rx={5} ry={6} fill="#281208" />
-      <Circle cx={90} cy={43} r={1.8} fill="rgba(255,255,255,0.88)" />
-      <Circle cx={114} cy={43} r={1.8} fill="rgba(255,255,255,0.88)" />
-
-      {/* Nose */}
-      <Path d="M 100 53 Q 97 58 100 60 Q 103 58 100 53" fill="rgba(0,0,0,0.09)" />
-
-      {/* Lips */}
-      <Path d="M 93 64 Q 100 68 107 64 Q 104 70 100 71 Q 96 70 93 64 Z" fill="#E88275" opacity={0.7} />
-
-      {/* NECK */}
-      <Rect x={91} y={76} width={18} height={16} rx={6} fill={SKIN_F} />
-
-      {/* Shoulders (skin) */}
-      <Ellipse cx={54} cy={102} rx={22} ry={17} fill={SKIN_F} />
-      <Ellipse cx={146} cy={102} rx={22} ry={17} fill={SKIN_F} />
-
-      {/* Left arm */}
-      <Path d="M 44,102 Q 34,144 31,182" stroke={SKIN_F} strokeWidth={19} fill="none" strokeLinecap="round" />
-      <Path d="M 31,182 Q 26,218 24,254" stroke={SKIN_F} strokeWidth={15} fill="none" strokeLinecap="round" />
-      <Ellipse cx={23} cy={262} rx={10} ry={12} fill={SKIN_F} />
-
-      {/* Right arm */}
-      <Path d="M 156,102 Q 166,144 169,182" stroke={SKIN_F} strokeWidth={19} fill="none" strokeLinecap="round" />
-      <Path d="M 169,182 Q 174,218 176,254" stroke={SKIN_F} strokeWidth={15} fill="none" strokeLinecap="round" />
-      <Ellipse cx={177} cy={262} rx={10} ry={12} fill={SKIN_F} />
-
-      {/* Sports bra / crop top */}
-      <Path d="M 44,102 Q 38,122 40,138 Q 64,155 100,156 Q 136,155 160,138 Q 162,122 156,102 Q 132,95 100,93 Q 68,95 44,102 Z" fill={CYAN_TOP} />
-      <Path d="M 40,136 Q 70,152 100,153 Q 130,152 160,136 Q 130,146 100,147 Q 70,146 40,136 Z" fill={`${CYAN_TOP}88`} />
-
-      {/* Midriff (skin) */}
-      <Path d="M 52,152 Q 56,174 60,187 Q 78,196 100,197 Q 122,196 140,187 Q 144,174 148,152 Q 124,158 100,158 Q 76,158 52,152 Z" fill={SKIN_F} />
-
-      {/* High-waist leggings */}
-      <Path d="M 58,184 Q 62,202 64,218 L 136,218 Q 138,202 142,184 Q 120,197 100,197 Q 80,197 58,184 Z" fill={DARK_LEG} />
-      <Path d="M 58,184 Q 100,198 142,184" stroke={`${CYAN_TOP}55`} strokeWidth={2.5} fill="none" />
-
-      {/* Left legging */}
-      <Path d="M 64,218 Q 58,286 56,350 Q 56,366 60,384 L 80,384 Q 84,366 86,350 Q 92,286 100,218 Z" fill={DARK_LEG} />
-      {/* Right legging */}
-      <Path d="M 136,218 Q 142,286 144,350 Q 144,366 140,384 L 120,384 Q 116,366 114,350 Q 108,286 100,218 Z" fill={DARK_LEG} />
-      {/* Center seam */}
-      <Path d="M 100,218 L 100,370" stroke={`${DARK_LEG}88`} strokeWidth={1.5} fill="none" />
-      {/* Knee highlight */}
-      <Ellipse cx={70} cy={308} rx={8} ry={10} fill={`${CYAN_TOP}18`} />
-      <Ellipse cx={130} cy={308} rx={8} ry={10} fill={`${CYAN_TOP}18`} />
-
-      {/* Left shoe */}
-      <Path d="M 56,382 Q 50,394 48,408 Q 52,416 72,416 Q 86,416 88,406 Q 86,394 82,382 Z" fill={SHOE_C} />
-      <Ellipse cx={68} cy={414} rx={22} ry={5} fill={SOLE_C} />
-      <Path d="M 54,396 Q 68,393 86,396" stroke="rgba(255,255,255,0.11)" strokeWidth={1.5} fill="none" strokeLinecap="round" />
-
-      {/* Right shoe */}
-      <Path d="M 144,382 Q 150,394 152,408 Q 148,416 128,416 Q 114,416 112,406 Q 114,394 118,382 Z" fill={SHOE_C} />
-      <Ellipse cx={132} cy={414} rx={22} ry={5} fill={SOLE_C} />
-      <Path d="M 146,396 Q 132,393 114,396" stroke="rgba(255,255,255,0.11)" strokeWidth={1.5} fill="none" strokeLinecap="round" />
-    </G>
-  );
+function pickPhoto(gender: string, bmi: number): string {
+  const set = PHOTOS[gender] ?? PHOTOS.female;
+  if (bmi < 21)      return set.lean;
+  else if (bmi < 27) return set.normal;
+  else               return set.fuller;
 }
 
-// ─── Male SVG character (viewBox 0 0 200 430) ────────────────────────────
-function MaleFigure() {
-  return (
-    <G>
-      {/* Short hair */}
-      <Path d="M 64,34 Q 66,8 100,6 Q 134,8 136,34 Q 126,20 100,18 Q 74,20 64,34 Z" fill={HAIR_M} />
+export default function Avatar({ gender, params, size = 300, minimal = false }: Props) {
+  const uri  = pickPhoto(gender, params.bmi);
+  const h    = Math.round(size * 1.5);
 
-      {/* HEAD */}
-      <Circle cx={100} cy={50} r={32} fill={SKIN_M} />
+  // Subtle body-width hint (max ±8%)
+  const scaleX = Math.max(0.92, Math.min(1.08, 0.76 + params.waistWidth * 0.26));
 
-      {/* Hair on head */}
-      <Path d="M 64,34 Q 66,8 100,6 Q 134,8 136,34 Q 124,24 100,22 Q 76,24 64,34 Z" fill={HAIR_M} />
-
-      {/* Ears */}
-      <Ellipse cx={68} cy={52} rx={7} ry={10} fill={SKIN_M} />
-      <Ellipse cx={132} cy={52} rx={7} ry={10} fill={SKIN_M} />
-
-      {/* Eyebrows - thicker */}
-      <Path d="M 82 40 Q 88 37 94 39" stroke={HAIR_M} strokeWidth={2.5} fill="none" strokeLinecap="round" />
-      <Path d="M 106 39 Q 112 37 118 40" stroke={HAIR_M} strokeWidth={2.5} fill="none" strokeLinecap="round" />
-
-      {/* Eyes */}
-      <Ellipse cx={88} cy={47} rx={5.5} ry={6.5} fill="#281208" />
-      <Ellipse cx={112} cy={47} rx={5.5} ry={6.5} fill="#281208" />
-      <Circle cx={90} cy={45} r={2} fill="rgba(255,255,255,0.88)" />
-      <Circle cx={114} cy={45} r={2} fill="rgba(255,255,255,0.88)" />
-
-      {/* Nose */}
-      <Path d="M 98 56 Q 96 62 100 64 Q 104 62 102 56" fill="rgba(0,0,0,0.1)" />
-
-      {/* Lips */}
-      <Path d="M 92 70 Q 100 73 108 70" stroke="#B06050" strokeWidth={2} fill="none" strokeLinecap="round" />
-
-      {/* NECK (thick) */}
-      <Rect x={86} y={79} width={28} height={18} rx={7} fill={SKIN_M} />
-
-      {/* Broad shoulders (skin) */}
-      <Ellipse cx={44} cy={106} rx={26} ry={19} fill={SKIN_M} />
-      <Ellipse cx={156} cy={106} rx={26} ry={19} fill={SKIN_M} />
-
-      {/* Left arm */}
-      <Path d="M 30,106 Q 20,150 18,188" stroke={SKIN_M} strokeWidth={25} fill="none" strokeLinecap="round" />
-      <Path d="M 18,188 Q 14,226 12,264" stroke={SKIN_M} strokeWidth={21} fill="none" strokeLinecap="round" />
-      <Ellipse cx={11} cy={274} rx={12} ry={14} fill={SKIN_M} />
-
-      {/* Right arm */}
-      <Path d="M 170,106 Q 180,150 182,188" stroke={SKIN_M} strokeWidth={25} fill="none" strokeLinecap="round" />
-      <Path d="M 182,188 Q 186,226 188,264" stroke={SKIN_M} strokeWidth={21} fill="none" strokeLinecap="round" />
-      <Ellipse cx={189} cy={274} rx={12} ry={14} fill={SKIN_M} />
-
-      {/* Tank top */}
-      <Path d="M 30,106 Q 24,140 28,172 Q 54,188 100,190 Q 146,188 172,172 Q 176,140 170,106 Q 144,98 100,96 Q 56,98 30,106 Z" fill={NAVY} />
-      {/* Armhole cutouts */}
-      <Ellipse cx={36} cy={116} rx={18} ry={22} fill={SKIN_M} />
-      <Ellipse cx={164} cy={116} rx={18} ry={22} fill={SKIN_M} />
-      {/* Re-cover edges */}
-      <Path d="M 48,96 Q 34,104 28,126 Q 34,120 50,118 Z" fill={NAVY} />
-      <Path d="M 152,96 Q 166,104 172,126 Q 166,120 150,118 Z" fill={NAVY} />
-      {/* Abs hint */}
-      <Path d="M 96,138 L 96,185" stroke={`${NAVY}99`} strokeWidth={2} fill="none" />
-      <Path d="M 104,138 L 104,185" stroke={`${NAVY}99`} strokeWidth={2} fill="none" />
-      <Path d="M 84,153 Q 100,149 116,153" stroke={`${NAVY}66`} strokeWidth={1.5} fill="none" />
-      <Path d="M 84,168 Q 100,164 116,168" stroke={`${NAVY}66`} strokeWidth={1.5} fill="none" />
-
-      {/* Shorts */}
-      <Path d="M 52,188 Q 55,208 58,222 L 142,222 Q 145,208 148,188 Q 124,194 100,194 Q 76,194 52,188 Z" fill={`${NAVY}EE`} />
-      <Path d="M 58,222 Q 54,258 56,278 L 92,278 Q 92,256 98,222 Z" fill={NAVY} />
-      <Path d="M 142,222 Q 146,258 144,278 L 108,278 Q 108,256 102,222 Z" fill={NAVY} />
-
-      {/* Lower legs (skin) */}
-      <Path d="M 56,278 Q 52,330 54,375 L 76,375 Q 80,330 92,278 Z" fill={SKIN_M} />
-      <Path d="M 144,278 Q 148,330 146,375 L 124,375 Q 120,330 108,278 Z" fill={SKIN_M} />
-
-      {/* Socks */}
-      <Path d="M 52,360 Q 48,376 50,392 L 82,392 Q 82,376 76,360 Z" fill="rgba(255,255,255,0.88)" />
-      <Path d="M 148,360 Q 152,376 150,392 L 118,392 Q 118,376 124,360 Z" fill="rgba(255,255,255,0.88)" />
-
-      {/* Left shoe */}
-      <Path d="M 46,388 Q 40,400 38,416 Q 42,424 68,424 Q 88,424 92,412 Q 90,400 84,388 Z" fill={SHOE_C} />
-      <Ellipse cx={65} cy={422} rx={28} ry={6} fill={SOLE_C} />
-      <Path d="M 50,402 Q 66,398 86,401" stroke="rgba(255,255,255,0.11)" strokeWidth={2} fill="none" strokeLinecap="round" />
-
-      {/* Right shoe */}
-      <Path d="M 154,388 Q 160,400 162,416 Q 158,424 132,424 Q 112,424 108,412 Q 110,400 116,388 Z" fill={SHOE_C} />
-      <Ellipse cx={135} cy={422} rx={28} ry={6} fill={SOLE_C} />
-      <Path d="M 150,402 Q 134,398 114,401" stroke="rgba(255,255,255,0.11)" strokeWidth={2} fill="none" strokeLinecap="round" />
-    </G>
-  );
-}
-
-// ─── Main component ────────────────────────────────────────────────────────
-const VB_W = 200;
-const VB_H = 430;
-
-export default function Avatar({ gender, params, size = 200, minimal = false }: Props) {
-  const svgH   = Math.round(size * (VB_H / VB_W));
-  const glowA  = 0.18 + params.toneLevel * 0.22;
-  const scaleX = Math.max(0.90, Math.min(1.10, 0.74 + params.waistWidth * 0.28));
+  // Glow intensity scales with fitness level
+  const glowAlpha  = Math.round((0.22 + params.toneLevel * 0.28) * 100) / 100;
+  const glowRadius = Math.round(size * 0.85);
+  const glowSpread = Math.round(size * 0.42);
 
   return (
-    <View style={{ width: size, height: svgH, transform: [{ scaleX }] }}>
-      <Svg viewBox={`0 0 ${VB_W} ${VB_H}`} width={size} height={svgH}>
-        <Defs>
-          <RGrad id="glow" cx="50%" cy="52%" r="45%">
-            <Stop offset="0%"   stopColor="#00F2FF" stopOpacity={glowA} />
-            <Stop offset="100%" stopColor="#00F2FF" stopOpacity={0}     />
-          </RGrad>
-          <LGrad id="fade" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0%"   stopColor="#0A0A0A" stopOpacity={0} />
-            <Stop offset="100%" stopColor="#0A0A0A" stopOpacity={1} />
-          </LGrad>
-        </Defs>
+    <View style={{ width: size, height: h, alignItems: 'center' }}>
 
-        {/* Ambient glow behind figure */}
-        {!minimal && (
-          <Ellipse cx={100} cy={220} rx={88} ry={195} fill="url(#glow)" />
-        )}
+      {/* Cyan ambient halo behind photo */}
+      {!minimal && (
+        <View
+          style={[
+            styles.halo,
+            {
+              width:     size * 0.45,
+              height:    h   * 0.60,
+              top:       h   * 0.08,
+              boxShadow: `0 0 ${glowRadius}px ${glowSpread}px rgba(0,242,255,${glowAlpha})`,
+            } as any,
+          ]}
+        />
+      )}
 
-        {gender === 'female' ? <FemaleFigure /> : <MaleFigure />}
+      {/* Athlete photo */}
+      <Image
+        source={{ uri }}
+        style={[
+          styles.photo,
+          { width: size, height: h, transform: [{ scaleX }] },
+        ]}
+        resizeMode="cover"
+      />
 
-        {/* Bottom fade */}
-        {!minimal && (
-          <Rect x={0} y={340} width={200} height={90} fill="url(#fade)" />
-        )}
-      </Svg>
+      {/* Subtle cyan rim-light overlay */}
+      {!minimal && (
+        <View
+          style={[
+            styles.rimLight,
+            {
+              width:  size,
+              height: h,
+              boxShadow: `inset 0 0 ${Math.round(size * 0.18)}px rgba(0,242,255,0.06), inset 0 0 2px rgba(0,242,255,0.15)`,
+            } as any,
+          ]}
+        />
+      )}
+
+      {/* Gradient fade into background at bottom */}
+      <LinearGradient
+        colors={['transparent', Colors.background]}
+        style={[styles.fade, { width: size, height: Math.round(h * 0.42) }]}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  halo: {
+    position:        'absolute',
+    alignSelf:       'center',
+    borderRadius:    9999,
+    backgroundColor: Colors.accent,
+  },
+  photo: {
+    position: 'absolute',
+    top:      0,
+    left:     0,
+  },
+  rimLight: {
+    position: 'absolute',
+    top:      0,
+    left:     0,
+  },
+  fade: {
+    position: 'absolute',
+    bottom:   0,
+    left:     0,
+  },
+});
