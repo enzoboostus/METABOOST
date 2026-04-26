@@ -119,10 +119,9 @@ export default function Dashboard() {
       </SafeAreaView>
 
       {/* ── Avatar Hero ── */}
-      <View style={styles.avatarSection}>
-        {/* Dark background */}
+      <View style={[styles.avatarSection, Shadow.md]}>
         <LinearGradient
-          colors={['#0D0D16', '#060608', '#0D0D16']}
+          colors={['#0D1117', '#080B12', '#0D1117']}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
@@ -143,35 +142,32 @@ export default function Dashboard() {
           ))}
         </View>
 
-        {/* Avatar centered */}
-        <View style={styles.avatarWrap}>
-          <Avatar
-            gender={avatarGender}
-            params={params}
-            size={W * 0.48}
-          />
-        </View>
+        {/* Avatar LEFT · Stats RIGHT */}
+        <View style={styles.avatarBodyRow}>
+          <Avatar gender={avatarGender} params={params} size={W * 0.36} />
 
-        {/* Body stats overlay row */}
-        <View style={styles.bodyStatsRow}>
-          <View style={styles.bodyStat}>
-            <Text style={styles.bodyStatVal}>{currentMeasure?.weight ?? '—'}</Text>
-            <Text style={styles.bodyStatUnit}>kg</Text>
-            <Text style={styles.bodyStatLbl}>Poids</Text>
-          </View>
-          <View style={[styles.bodyStat, styles.bodyStatCenter]}>
-            <Text style={[styles.bodyStatVal, { color: bmiColor, fontSize: 34 }]}>
-              {params.bmi.toFixed(1)}
-            </Text>
-            <Text style={[styles.bodyStatUnit, { color: bmiColor }]}>IMC</Text>
-            <Text style={styles.bodyStatLbl}>
-              {params.bmi < 25 ? 'Normal' : params.bmi < 30 ? 'Surpoids' : 'Obésité'}
-            </Text>
-          </View>
-          <View style={styles.bodyStat}>
-            <Text style={styles.bodyStatVal}>{currentMeasure?.waist ?? '—'}</Text>
-            <Text style={styles.bodyStatUnit}>cm</Text>
-            <Text style={styles.bodyStatLbl}>Taille</Text>
+          <View style={styles.statsCol}>
+            <View style={styles.statItem}>
+              <Text style={styles.statBigVal}>{currentMeasure?.weight ?? '—'}</Text>
+              <Text style={styles.statBigUnit}>kg</Text>
+              <Text style={styles.statBigLbl}>POIDS</Text>
+            </View>
+            <View style={styles.statSep} />
+            <View style={styles.statItem}>
+              <Text style={[styles.statBigVal, { color: bmiColor, fontSize: 28 }]}>
+                {params.bmi.toFixed(1)}
+              </Text>
+              <Text style={[styles.statBigUnit, { color: bmiColor }]}>IMC</Text>
+              <Text style={[styles.statBigLbl, { color: bmiColor }]}>
+                {params.bmi < 18.5 ? 'MAIGREUR' : params.bmi < 25 ? 'NORMAL' : params.bmi < 30 ? 'SURPOIDS' : 'OBÉSITÉ'}
+              </Text>
+            </View>
+            <View style={styles.statSep} />
+            <View style={styles.statItem}>
+              <Text style={styles.statBigVal}>{currentMeasure?.waist ?? '—'}</Text>
+              <Text style={styles.statBigUnit}>cm</Text>
+              <Text style={styles.statBigLbl}>TAILLE</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -309,56 +305,53 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     borderRadius: Radius.xxl,
     overflow: 'hidden',
-    paddingBottom: Spacing.lg,
   },
   genderRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.md,
-    marginBottom: Spacing.sm,
+    marginBottom: 4,
   },
   genderPill: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 9,
     borderRadius: Radius.full,
     backgroundColor: 'rgba(255,255,255,0.07)',
     alignItems: 'center',
     borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.10)',
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   genderPillActive: {
     backgroundColor: '#fff',
     borderColor: '#fff',
   },
-  genderPillTxt:       { fontSize: 14, fontWeight: '600', color: Colors.textSecondary },
-  genderPillTxtActive: { color: Colors.background, fontWeight: '800' },
+  genderPillTxt:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
+  genderPillTxtActive: { color: '#0D1117', fontWeight: '800' },
 
-  avatarWrap: { alignItems: 'center' },
-
-  /* Body stats below avatar */
-  bodyStatsRow: {
+  /* Horizontal row: avatar + stats */
+  avatarBodyRow: {
     flexDirection: 'row',
-    marginHorizontal: Spacing.md,
-    marginTop: -Spacing.md, // pull up to overlap gradient
-  },
-  bodyStat: {
-    flex: 1,
     alignItems: 'center',
-    paddingVertical: Spacing.md,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.07)',
+    paddingRight: Spacing.md,
   },
-  bodyStatCenter: {
-    borderLeftWidth: 0.5,
-    borderRightWidth: 0.5,
-    borderLeftColor: 'rgba(255,255,255,0.07)',
-    borderRightColor: 'rgba(255,255,255,0.07)',
+  statsCol: {
+    flex: 1,
+    paddingLeft: Spacing.md,
+    gap: 0,
   },
-  bodyStatVal:  { fontSize: 28, fontWeight: '900', color: Colors.text, letterSpacing: -1 },
-  bodyStatUnit: { fontSize: 11, color: Colors.textSecondary, fontWeight: '400', marginTop: 1 },
-  bodyStatLbl:  { fontSize: 10, color: Colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 },
+  statItem: {
+    alignItems: 'center',
+    paddingVertical: 14,
+  },
+  statSep: {
+    height: 0.5,
+    backgroundColor: 'rgba(255,255,255,0.10)',
+    marginHorizontal: Spacing.sm,
+  },
+  statBigVal:  { fontSize: 30, fontWeight: '900', color: '#FFFFFF', letterSpacing: -1 },
+  statBigUnit: { fontSize: 11, fontWeight: '400', color: 'rgba(255,255,255,0.5)', marginTop: 1 },
+  statBigLbl:  { fontSize: 9, fontWeight: '700', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: 1.2, marginTop: 3 },
 
   /* Step / stats strip */
   stepWrap: { marginHorizontal: Spacing.md, marginTop: Spacing.md },

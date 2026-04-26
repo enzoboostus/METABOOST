@@ -208,8 +208,8 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
         <Svg viewBox={`0 0 ${VB_W} ${VB_H}`} width={size} height={svgH}>
           <Defs>
             <LGrad id="fade" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0%"   stopColor="#0A0A0A" stopOpacity={0} />
-              <Stop offset="100%" stopColor="#0A0A0A" stopOpacity={1} />
+              <Stop offset="0%"   stopColor="#0D1117" stopOpacity={0} />
+              <Stop offset="100%" stopColor="#0D1117" stopOpacity={1} />
             </LGrad>
           </Defs>
 
