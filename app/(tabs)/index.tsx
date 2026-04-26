@@ -148,7 +148,7 @@ export default function Dashboard() {
           <Avatar
             gender={avatarGender}
             params={params}
-            size={W * 0.72}
+            size={W * 0.48}
           />
         </View>
 
