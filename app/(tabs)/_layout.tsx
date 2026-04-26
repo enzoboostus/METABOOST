@@ -9,8 +9,8 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: '#FF5C39',
-        tabBarInactiveTintColor: '#B8BFC8',
+        tabBarActiveTintColor: '#E2D1B3',
+        tabBarInactiveTintColor: 'rgba(255,255,255,0.30)',
         tabBarLabelStyle: styles.tabLabel,
         tabBarItemStyle: styles.tabItem,
       }}
@@ -57,8 +57,8 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#FFFFFF',
-    borderTopColor: 'rgba(0,0,0,0.08)',
+    backgroundColor: '#0A1128',
+    borderTopColor: 'rgba(255,255,255,0.06)',
     borderTopWidth: 0.5,
     height: Platform.OS === 'ios' ? 84 : 62,
     paddingBottom: Platform.OS === 'ios' ? 24 : 6,

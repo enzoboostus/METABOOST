@@ -101,7 +101,7 @@ export default function Dashboard() {
       {/* ── Header ── */}
       <SafeAreaView edges={['top']} style={styles.headerArea}>
         <LinearGradient
-          colors={['rgba(255,92,57,0.09)', 'rgba(255,92,57,0)']}
+          colors={['rgba(28,37,65,0.95)', 'rgba(10,17,40,0)']}
           style={StyleSheet.absoluteFill}
         />
         <View style={styles.header}>
@@ -243,7 +243,7 @@ export default function Dashboard() {
                 <Text style={styles.levelTxt}>{p.level}</Text>
               </View>
               <TouchableOpacity style={styles.playBtn}>
-                <Play size={14} color={Colors.background} fill={Colors.background} />
+                <Play size={14} color="#333" fill="#333" />
               </TouchableOpacity>
             </View>
             <View>
@@ -251,7 +251,7 @@ export default function Dashboard() {
               <Text style={styles.programTitle}>{p.title}</Text>
               <Text style={styles.programMeta}>{p.meta}</Text>
               <TouchableOpacity style={styles.programCta} activeOpacity={0.85}>
-                <Play size={12} color={Colors.background} fill={Colors.background} />
+                <Play size={12} color="#333" fill="#333" />
                 <Text style={styles.programCtaTxt}>Démarrer</Text>
               </TouchableOpacity>
             </View>
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   headerRight:  { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   iconBtn:      { width: 42, height: 42, borderRadius: 21, backgroundColor: Colors.card, alignItems: 'center', justifyContent: 'center', borderWidth: 0.5, borderColor: Colors.cardBorder },
   avatarCircle: { width: 42, height: 42, borderRadius: 21, backgroundColor: Colors.accent, alignItems: 'center', justifyContent: 'center' },
-  avatarInitial:{ fontSize: 16, fontWeight: '800', color: '#fff' },
+  avatarInitial:{ fontSize: 16, fontWeight: '800', color: '#333' },
 
   /* Avatar card */
   avatarSection: {
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xxl,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255,92,57,0.20)',
+    borderColor: 'rgba(226,209,179,0.22)',
   },
   avatarTopAccent: {
     height: 3,
@@ -345,8 +345,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accent,
     borderColor: Colors.accent,
   },
-  genderPillTxt:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.45)' },
-  genderPillTxtActive: { color: '#fff', fontWeight: '800' },
+  genderPillTxt:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.40)' },
+  genderPillTxtActive: { color: '#333', fontWeight: '800' },
 
   /* Horizontal: avatar left, stats right */
   avatarBodyRow: {
@@ -381,9 +381,9 @@ const styles = StyleSheet.create({
   filtersScroll: { marginTop: Spacing.lg },
   filtersRow:    { paddingHorizontal: Spacing.md, gap: Spacing.sm },
   filterPill:       { paddingHorizontal: 18, paddingVertical: 9, borderRadius: Radius.full, backgroundColor: Colors.card, borderWidth: 0.5, borderColor: Colors.cardBorder },
-  filterPillActive: { backgroundColor: Colors.text, borderColor: Colors.text },
+  filterPillActive: { backgroundColor: Colors.accent, borderColor: Colors.accent },
   filterTxt:        { fontSize: 13, fontWeight: '500', color: Colors.textSecondary },
-  filterTxtActive:  { color: '#fff', fontWeight: '700' },
+  filterTxtActive:  { color: '#333', fontWeight: '700' },
 
   /* Section headers */
   sectionRow:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.md, marginTop: Spacing.xl, marginBottom: Spacing.md },
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
   programTitle:   { fontSize: 40, fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: -1.5, lineHeight: 40 },
   programMeta:    { fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 8 },
   programCta:     { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Colors.accent, borderRadius: Radius.full, paddingHorizontal: 20, paddingVertical: 11, alignSelf: 'flex-start', marginTop: 12 },
-  programCtaTxt:  { fontSize: 13, fontWeight: '800', color: '#fff', letterSpacing: 0.2 },
+  programCtaTxt:  { fontSize: 13, fontWeight: '800', color: '#333', letterSpacing: 0.2 },
 
   /* Recent sessions */
   sessionRow: {

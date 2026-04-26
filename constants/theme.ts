@@ -1,13 +1,13 @@
 export const Colors = {
-  background: '#F7F8FC',
-  card: '#FFFFFF',
-  surface: '#EEF0F7',
-  cardBorder: 'rgba(0,0,0,0.06)',
-  text: '#080D1A',
-  textSecondary: '#6B7285',
-  textTertiary: '#B8BFC8',
-  accent: '#FF5C39',
-  accentLight: 'rgba(255,92,57,0.10)',
+  background: '#0A1128',        // Deep Night Blue
+  card: '#1C2541',              // Dark Slate Blue
+  surface: '#243057',           // slightly lighter card
+  cardBorder: 'rgba(255,255,255,0.08)',
+  text: 'rgba(255,255,255,0.92)',
+  textSecondary: 'rgba(255,255,255,0.50)',
+  textTertiary: 'rgba(255,255,255,0.28)',
+  accent: '#E2D1B3',            // Champagne Métallisé
+  accentLight: 'rgba(226,209,179,0.15)',
   teal: '#00C8D4',
   tealLight: 'rgba(0,200,212,0.12)',
   red: '#FF3B30',
@@ -15,15 +15,15 @@ export const Colors = {
   warning: '#FF9A00',
   avatarDark: '#060E1C',
   // legacy compat
-  primary: '#080D1A',
-  primaryLight: 'rgba(8,13,26,0.6)',
+  primary: 'rgba(255,255,255,0.92)',
+  primaryLight: 'rgba(255,255,255,0.50)',
   cyan: '#00C8D4',
   cyan2: '#00C8D4',
   gold: '#F5C542',
   accentGreen: '#2DC674',
   accentOrange: '#FF9A00',
   error: '#FF3B30',
-  textMuted: '#EEF0F7',
+  textMuted: 'rgba(255,255,255,0.28)',
 };
 
 export const Spacing = {
