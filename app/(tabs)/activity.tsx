@@ -111,7 +111,7 @@ export default function Activity() {
               onPress={handleValidate}
               activeOpacity={0.85}
             >
-              {validated && <CheckCircle size={16} color={Colors.background} fill={Colors.success} strokeWidth={0} />}
+              {validated && <CheckCircle size={16} color="#fff" fill={Colors.success} strokeWidth={0} />}
               <Text style={styles.validateTxt}>
                 {validated ? 'Séance enregistrée' : 'Valider la séance'}
               </Text>
@@ -198,10 +198,10 @@ const styles = StyleSheet.create({
   validateWrap: { marginTop: Spacing.md, position: 'relative', alignItems: 'center' },
   validateBtn: {
     width: '100%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
-    gap: Spacing.sm, backgroundColor: '#fff', borderRadius: Radius.full, paddingVertical: 15,
+    gap: Spacing.sm, backgroundColor: Colors.accent, borderRadius: Radius.full, paddingVertical: 15,
   },
   validateBtnDone: { backgroundColor: Colors.success },
-  validateTxt:     { fontSize: 15, fontWeight: '700', color: Colors.background, letterSpacing: 0.2 },
+  validateTxt:     { fontSize: 15, fontWeight: '700', color: '#333333', letterSpacing: 0.2 },
 
   historyTitle: { fontSize: 11, fontWeight: '800', color: Colors.textSecondary, letterSpacing: 3, textTransform: 'uppercase', marginBottom: Spacing.sm, marginTop: Spacing.sm },
   historyRow: {

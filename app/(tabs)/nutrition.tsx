@@ -62,7 +62,7 @@ export default function Nutrition() {
         <View style={styles.photoRow}>
           <TouchableOpacity style={[styles.photoBtnMain, Shadow.lg]} onPress={() => handlePhoto('camera')} activeOpacity={0.85}>
             <View style={styles.photoBtnIconWrap}>
-              <Camera size={28} color={Colors.background} strokeWidth={2} />
+              <Camera size={28} color="#333333" strokeWidth={2} />
             </View>
             <Text style={styles.photoBtnTitle}>Prendre une photo</Text>
             <Text style={styles.photoBtnSub}>Analyse instantanée</Text>
@@ -137,10 +137,10 @@ const styles = StyleSheet.create({
   title:     { fontSize: 48, fontWeight: '900', color: Colors.text, letterSpacing: -2, textTransform: 'uppercase', marginBottom: Spacing.lg, lineHeight: 48 },
 
   photoRow:     { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.md },
-  photoBtnMain: { flex: 1.5, backgroundColor: '#fff', borderRadius: Radius.xl, padding: Spacing.md, gap: Spacing.sm },
-  photoBtnIconWrap: { width: 52, height: 52, borderRadius: Radius.md, backgroundColor: Colors.background, alignItems: 'center', justifyContent: 'center' },
-  photoBtnTitle: { fontSize: 16, fontWeight: '800', color: Colors.background, letterSpacing: -0.3 },
-  photoBtnSub:   { fontSize: 11, color: 'rgba(0,0,0,0.45)' },
+  photoBtnMain: { flex: 1.5, backgroundColor: Colors.accent, borderRadius: Radius.xl, padding: Spacing.md, gap: Spacing.sm },
+  photoBtnIconWrap: { width: 52, height: 52, borderRadius: Radius.md, backgroundColor: 'rgba(51,51,51,0.12)', alignItems: 'center', justifyContent: 'center' },
+  photoBtnTitle: { fontSize: 16, fontWeight: '800', color: '#333333', letterSpacing: -0.3 },
+  photoBtnSub:   { fontSize: 11, color: 'rgba(51,51,51,0.55)' },
   photoBtnSec:   { flex: 1, backgroundColor: Colors.card, borderRadius: Radius.xl, alignItems: 'center', justifyContent: 'center', gap: 8, borderWidth: 0.5, borderColor: Colors.cardBorder },
   photoBtnSecTxt:{ fontSize: 13, fontWeight: '600', color: Colors.textSecondary },
 

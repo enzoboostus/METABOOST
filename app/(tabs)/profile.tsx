@@ -187,8 +187,8 @@ const styles = StyleSheet.create({
   inputLbl:   { fontSize: 10, fontWeight: '600', color: Colors.textSecondary, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 },
   inputBox:   { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, backgroundColor: Colors.surface, borderRadius: Radius.md, paddingHorizontal: Spacing.sm, borderWidth: 0.5, borderColor: Colors.cardBorder },
   input:      { flex: 1, paddingVertical: 12, color: Colors.text, fontSize: 20, fontWeight: '700' },
-  saveBtn:    { backgroundColor: '#fff', borderRadius: Radius.full, paddingVertical: 14, alignItems: 'center' },
-  saveBtnTxt: { fontSize: 15, fontWeight: '700', color: Colors.background, letterSpacing: 0.2 },
+  saveBtn:    { backgroundColor: Colors.accent, borderRadius: Radius.full, paddingVertical: 14, alignItems: 'center' },
+  saveBtnTxt: { fontSize: 15, fontWeight: '700', color: '#333333', letterSpacing: 0.2 },
 
   historyTitle: { fontSize: 11, fontWeight: '800', color: Colors.textSecondary, letterSpacing: 3, textTransform: 'uppercase', marginBottom: Spacing.sm },
   table:       { backgroundColor: Colors.card, borderRadius: Radius.lg, overflow: 'hidden', borderWidth: 0.5, borderColor: Colors.cardBorder },

@@ -25,7 +25,7 @@ const STEPS = ['welcome', 'name', 'gender', 'body', 'done'] as const;
 type Step = (typeof STEPS)[number];
 
 const BG: any = {
-  backgroundImage: 'radial-gradient(ellipse at 50% 0%, #0D1520 0%, #020202 80%)',
+  backgroundImage: 'radial-gradient(ellipse at 50% 0%, #1C2541 0%, #0A1128 60%, #060E1C 100%)',
 };
 
 export default function Onboarding() {
@@ -94,7 +94,7 @@ export default function Onboarding() {
           {step === 'welcome' && (
             <View style={styles.centered}>
               <LinearGradient
-                colors={[Colors.primary + '33', 'transparent']}
+                colors={['rgba(226,209,179,0.22)', 'transparent']}
                 style={styles.logoBg}
               >
                 <Text style={styles.logoText}>⚡</Text>
@@ -151,7 +151,7 @@ export default function Onboarding() {
                     size={150}
                     minimal
                   />
-                  <Text style={[styles.genderLabel, gender === 'male' && { color: Colors.male }]}>Homme</Text>
+                  <Text style={[styles.genderLabel, gender === 'male' && { color: Colors.accent }]}>Homme</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.genderBtn, gender === 'female' && styles.genderBtnActiveFemale]}
@@ -163,7 +163,7 @@ export default function Onboarding() {
                     size={150}
                     minimal
                   />
-                  <Text style={[styles.genderLabel, gender === 'female' && { color: Colors.female }]}>Femme</Text>
+                  <Text style={[styles.genderLabel, gender === 'female' && { color: Colors.teal }]}>Femme</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     backgroundColor: Colors.cardBorder,
   },
-  stepDotActive: { backgroundColor: Colors.primary },
+  stepDotActive: { backgroundColor: Colors.accent },
 
   content: { flexGrow: 1, padding: Spacing.md, paddingBottom: Spacing.sm },
   centered: { flex: 1, alignItems: 'center', paddingTop: Spacing.lg },
@@ -320,8 +320,8 @@ const styles = StyleSheet.create({
   bigInput: {
     backgroundColor: Colors.card,
     borderRadius: Radius.lg,
-    borderWidth: 1,
-    borderColor: Colors.primary,
+    borderWidth: 1.5,
+    borderColor: Colors.accent,
     padding: Spacing.md,
     fontSize: 24,
     fontWeight: '700',
@@ -341,8 +341,8 @@ const styles = StyleSheet.create({
     padding: Spacing.sm,
     overflow: 'hidden',
   },
-  genderBtnActive: { borderColor: Colors.male, backgroundColor: Colors.male + '11' },
-  genderBtnActiveFemale: { borderColor: Colors.female, backgroundColor: Colors.female + '11' },
+  genderBtnActive: { borderColor: Colors.accent, backgroundColor: 'rgba(226,209,179,0.12)' },
+  genderBtnActiveFemale: { borderColor: Colors.teal, backgroundColor: Colors.tealLight },
   genderLabel: { fontSize: 16, fontWeight: '700', color: Colors.textSecondary, marginTop: Spacing.sm },
 
   measureRow: { flexDirection: 'row', gap: Spacing.sm, width: '100%', marginVertical: Spacing.md },
@@ -371,12 +371,12 @@ const styles = StyleSheet.create({
 
   footer: { padding: Spacing.md, gap: Spacing.sm },
   ctaBtn: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.accent,
     borderRadius: Radius.full,
     paddingVertical: Spacing.md + 2,
     alignItems: 'center',
   },
-  ctaText: { fontSize: 17, fontWeight: '800', color: Colors.text },
+  ctaText: { fontSize: 17, fontWeight: '800', color: '#333333' },
   backBtn: { alignItems: 'center', paddingVertical: Spacing.sm },
   backText: { fontSize: 14, color: Colors.textSecondary },
 });
