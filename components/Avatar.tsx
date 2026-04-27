@@ -17,10 +17,13 @@ const FEMALE_SLIM     = { uri: 'https://i.imgur.com/lcg0eAC_d.webp?maxwidth=760&
 const FEMALE_ATHLETIC = { uri: 'https://i.imgur.com/Ca1ZFYu_d.webp?maxwidth=760&fidelity=grand' };
 const FEMALE_FULL     = { uri: 'https://i.imgur.com/92fJtwz_d.webp?maxwidth=760&fidelity=grand' };
 
-// ── Male images — placeholders (à remplacer dès réception des liens) ──────
-const MALE_SLIM     = require('@/assets/avatars/male_slim.png');
-const MALE_ATHLETIC = require('@/assets/avatars/male_athletic.png');
-const MALE_FULL     = require('@/assets/avatars/male_full.png');
+// ── Male images — mapped by IMC ───────────────────────────────────────────
+// IMC < 18.5  → H1 Mince (très sec)
+// IMC 18.5–30 → H2 Athlétique (musclé, correspond à Thomas 24.5)
+// IMC ≥ 30    → H3 Surpoids
+const MALE_SLIM     = { uri: 'https://i.imgur.com/GoQRmSG_d.webp?maxwidth=760&fidelity=grand' };
+const MALE_ATHLETIC = { uri: 'https://i.imgur.com/5DtnVxi_d.webp?maxwidth=760&fidelity=grand' };
+const MALE_FULL     = { uri: 'https://i.imgur.com/53m4ute_d.webp?maxwidth=760&fidelity=grand' };
 
 function femaleSource(bmi: number) {
   if (bmi < 18.5) return FEMALE_SLIM;
