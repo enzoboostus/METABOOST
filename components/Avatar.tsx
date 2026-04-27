@@ -11,19 +11,19 @@ interface Props {
 
 // ── Female images — mapped by IMC ─────────────────────────────────────────
 // IMC < 18.5  → F1 Mince
-// IMC 18.5–30 → F2 Athlétique (couvre la majorité des utilisateurs)
+// IMC 18.5–30 → F2 Athlétique
 // IMC ≥ 30    → F3 Surpoids
-const FEMALE_SLIM     = { uri: 'https://i.imgur.com/lcg0eAC_d.webp?maxwidth=760&fidelity=grand' };
-const FEMALE_ATHLETIC = { uri: 'https://i.imgur.com/Ca1ZFYu_d.webp?maxwidth=760&fidelity=grand' };
-const FEMALE_FULL     = { uri: 'https://i.imgur.com/92fJtwz_d.webp?maxwidth=760&fidelity=grand' };
+const FEMALE_SLIM     = require('@/assets/avatars/female_slim.webp');
+const FEMALE_ATHLETIC = require('@/assets/avatars/female_athletic.webp');
+const FEMALE_FULL     = require('@/assets/avatars/female_full.webp');
 
 // ── Male images — mapped by IMC ───────────────────────────────────────────
 // IMC < 18.5  → H1 Mince (très sec)
-// IMC 18.5–30 → H2 Athlétique (musclé, correspond à Thomas 24.5)
+// IMC 18.5–30 → H2 Athlétique (Thomas 24.5)
 // IMC ≥ 30    → H3 Surpoids
-const MALE_SLIM     = { uri: 'https://i.imgur.com/GoQRmSG_d.webp?maxwidth=760&fidelity=grand' };
-const MALE_ATHLETIC = { uri: 'https://i.imgur.com/5DtnVxi_d.webp?maxwidth=760&fidelity=grand' };
-const MALE_FULL     = { uri: 'https://i.imgur.com/53m4ute_d.webp?maxwidth=760&fidelity=grand' };
+const MALE_SLIM     = require('@/assets/avatars/male_slim.webp');
+const MALE_ATHLETIC = require('@/assets/avatars/male_athletic.webp');
+const MALE_FULL     = require('@/assets/avatars/male_full.webp');
 
 function femaleSource(bmi: number) {
   if (bmi < 18.5) return FEMALE_SLIM;
