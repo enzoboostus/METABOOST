@@ -32,7 +32,7 @@ function maleSource(bmi: number) {
 
 const ASPECT = 2.6;
 
-// [phase_deg, radius_ratio, dot_size, color]
+// Orbiting particles: [phase_deg, radius_ratio, dot_size, color]
 const ORBIT_PARTICLES: [number, number, number, string][] = [
   [  0, 0.44, 5, 'rgba(185,160,255,0.90)'],
   [ 62, 0.51, 3, 'rgba(255,200,140,0.85)'],
@@ -47,17 +47,21 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
   const srcKey = src.uri;
   const h      = Math.round(size * ASPECT);
 
-  // ── Core idle animations ───────────────────────────────────────────────
+  // Platform dimensions
+  const platAreaH = Math.round(size * 0.26);
+  const platDiscW = Math.round(size * 0.88);
+  const platDiscH = Math.round(size * 0.094);
+  const platRingW = Math.round(size * 0.98);
+  const platRingH = Math.round(size * 0.108);
+  const totalH    = h + platAreaH;
+
+  // ── Animations ────────────────────────────────────────────────────────
   const floatAnim  = useRef(new Animated.Value(0)).current;
   const breathAnim = useRef(new Animated.Value(1)).current;
   const swayAnim   = useRef(new Animated.Value(0)).current;
   const glowAnim   = useRef(new Animated.Value(0)).current;
-
-  // ── Particle orbit ─────────────────────────────────────────────────────
-  const orbitAnim = useRef(new Animated.Value(0)).current;
-
-  // ── Holographic scan line ──────────────────────────────────────────────
-  const scanAnim = useRef(new Animated.Value(0)).current;
+  const orbitAnim  = useRef(new Animated.Value(0)).current;
+  const scanAnim   = useRef(new Animated.Value(0)).current;
 
   // ── Cross-fade on morphology / gender change ───────────────────────────
   const fadeAnim                    = useRef(new Animated.Value(1)).current;
@@ -75,19 +79,16 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
   }, [srcKey]);
 
   useEffect(() => {
-    // Float — slightly more dramatic than before
     Animated.loop(Animated.sequence([
       Animated.timing(floatAnim, { toValue: -14, duration: 2000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
       Animated.timing(floatAnim, { toValue:   0, duration: 2000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
     ])).start();
 
-    // Breathe — more visible chest expansion
     Animated.loop(Animated.sequence([
       Animated.timing(breathAnim, { toValue: 1.030, duration: 1700, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       Animated.timing(breathAnim, { toValue: 1,     duration: 1700, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
     ])).start();
 
-    // Idle sway
     Animated.loop(Animated.sequence([
       Animated.timing(swayAnim, { toValue:  3, duration: 1900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
       Animated.timing(swayAnim, { toValue:  0, duration: 1900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
@@ -95,18 +96,15 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
       Animated.timing(swayAnim, { toValue:  0, duration: 1900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
     ])).start();
 
-    // Glow pulse
     Animated.loop(Animated.sequence([
       Animated.timing(glowAnim, { toValue: 1, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       Animated.timing(glowAnim, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
     ])).start();
 
-    // Particle orbit — full rotation every 9 s
     Animated.loop(
       Animated.timing(orbitAnim, { toValue: 1, duration: 9000, easing: Easing.linear, useNativeDriver: true })
     ).start();
 
-    // Holographic scan: sweep top→bottom, pause, reset
     Animated.loop(Animated.sequence([
       Animated.timing(scanAnim, { toValue: 1, duration: 2600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       Animated.delay(2400),
@@ -114,18 +112,23 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
     ])).start();
   }, []);
 
-  const glowBase      = 0.12 + params.toneLevel * 0.14;
-  const shadowScaleX  = floatAnim.interpolate({ inputRange: [-14, 0], outputRange: [0.50, 1.0] });
-  const shadowOpacity = floatAnim.interpolate({ inputRange: [-14, 0], outputRange: [0.07, 0.28] });
+  const glowBase       = 0.12 + params.toneLevel * 0.14;
+  const platGlowOp     = glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.18, 0.52] });
+  const orbitCX        = size / 2;
+  const orbitCY        = h * 0.37;
 
-  // Orbit center: horizontally centred, vertically at the torso
-  const orbitCX = size / 2;
-  const orbitCY = h * 0.37;
+  // Platform accent-dot positions (4 compass points on disc edge)
+  const rx = platDiscW / 2;
+  const ry = platDiscH / 2;
+  const platDots = ([0, 90, 180, 270] as const).map((deg) => {
+    const rad = (deg * Math.PI) / 180;
+    return { deg, dx: rx * Math.cos(rad), dy: ry * Math.sin(rad) };
+  });
 
   return (
-    <View style={{ width: size, height: h + Math.round(size * 0.07), alignItems: 'center' }}>
+    <View style={{ width: size, height: totalH, alignItems: 'center' }}>
 
-      {/* ── 1. Background glow halo ────────────────────────────────── */}
+      {/* ── 1. Background glow halo ─────────────────────────────────── */}
       {!minimal && (
         <Animated.View
           style={{
@@ -139,17 +142,28 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
         />
       )}
 
-      {/* ── 2. Avatar figure ──────────────────────────────────────── */}
+      {/* ── 2. Avatar figure — masked to remove photo background ────── */}
       <Animated.View
         style={{
           width: size, height: h, opacity: fadeAnim,
           transform: [{ translateY: floatAnim }, { translateX: swayAnim }, { scale: breathAnim }],
         }}
       >
-        <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
+        {/* CSS radial mask fades the grey studio background on web */}
+        <View
+          style={{
+            width: size, height: h,
+            ...({
+              WebkitMaskImage: 'radial-gradient(ellipse 74% 88% at 50% 38%, black 46%, rgba(0,0,0,0.55) 68%, transparent 100%)',
+              maskImage:       'radial-gradient(ellipse 74% 88% at 50% 38%, black 46%, rgba(0,0,0,0.55) 68%, transparent 100%)',
+            } as any),
+          }}
+        >
+          <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
+        </View>
       </Animated.View>
 
-      {/* ── 3. Orbiting energy particles (drawn on top of figure) ─── */}
+      {/* ── 3. Orbiting energy particles ────────────────────────────── */}
       {!minimal && ORBIT_PARTICLES.map(([phase, radiusRatio, dotSize, color], i) => {
         const r = size * radiusRatio * 0.5;
         return (
@@ -158,32 +172,24 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
             style={{
               position: 'absolute',
               width: dotSize, height: dotSize,
-              // Center of this view sits exactly at the orbit center
               left: orbitCX - dotSize / 2,
               top:  orbitCY - dotSize / 2,
               transform: [
-                {
-                  rotate: orbitAnim.interpolate({
-                    inputRange:  [0, 1],
-                    outputRange: [`${phase}deg`, `${phase + 360}deg`],
-                  }),
-                },
+                { rotate: orbitAnim.interpolate({ inputRange: [0, 1], outputRange: [`${phase}deg`, `${phase + 360}deg`] }) },
                 { translateX: r },
               ],
             }}
           >
-            <View
-              style={{
-                width: dotSize, height: dotSize, borderRadius: dotSize / 2,
-                backgroundColor: color,
-                ...({ boxShadow: `0 0 ${dotSize * 2.5}px ${dotSize * 1.2}px ${color}` } as any),
-              }}
-            />
+            <View style={{
+              width: dotSize, height: dotSize, borderRadius: dotSize / 2,
+              backgroundColor: color,
+              ...({ boxShadow: `0 0 ${dotSize * 2.5}px ${dotSize * 1.2}px ${color}` } as any),
+            }} />
           </Animated.View>
         );
       })}
 
-      {/* ── 4. Holographic scan line ──────────────────────────────── */}
+      {/* ── 4. Holographic scan line ─────────────────────────────────── */}
       {!minimal && (
         <Animated.View
           style={{
@@ -195,16 +201,72 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
         />
       )}
 
-      {/* ── 5. Ground shadow ellipse ──────────────────────────────── */}
+      {/* ── 5. Fortnite-style platform disc ─────────────────────────── */}
       {!minimal && (
-        <Animated.View
-          style={{
-            position: 'absolute', bottom: 0, alignSelf: 'center',
-            width: size * 0.52, height: size * 0.052, borderRadius: 9999,
-            backgroundColor: '#0a0a18',
-            opacity: shadowOpacity, transform: [{ scaleX: shadowScaleX }],
-          }}
-        />
+        <View style={{
+          position: 'absolute',
+          bottom: 0,
+          width: size,
+          height: platAreaH,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          {/* Ambient glow blob */}
+          <Animated.View style={{
+            position: 'absolute',
+            width: size,
+            height: platAreaH,
+            borderRadius: platAreaH / 2,
+            backgroundColor: 'rgba(40,80,255,0.22)',
+            opacity: platGlowOp,
+          }} />
+
+          {/* Outer halo ring */}
+          <View style={{
+            position: 'absolute',
+            width: platRingW,
+            height: platRingH,
+            borderRadius: platRingH / 2,
+            borderWidth: 1,
+            borderColor: 'rgba(100,130,210,0.28)',
+          }} />
+
+          {/* Main disc */}
+          <View style={{
+            width: platDiscW,
+            height: platDiscH,
+            borderRadius: platDiscH / 2,
+            backgroundColor: 'rgba(10,20,55,0.96)',
+            borderWidth: 1.8,
+            borderColor: 'rgba(110,145,235,0.60)',
+          }} />
+
+          {/* Inner shine */}
+          <View style={{
+            position: 'absolute',
+            width: Math.round(platDiscW * 0.52),
+            height: Math.round(platDiscH * 0.30),
+            borderRadius: platDiscH / 2,
+            backgroundColor: 'rgba(160,185,255,0.10)',
+            top: platAreaH / 2 - platDiscH * 0.68,
+          }} />
+
+          {/* Accent dots — 4 compass points */}
+          {platDots.map(({ deg, dx, dy }) => (
+            <View
+              key={deg}
+              style={{
+                position: 'absolute',
+                width: 5, height: 4, borderRadius: 2.5,
+                backgroundColor: deg === 0 || deg === 180
+                  ? 'rgba(226,209,179,0.90)'
+                  : 'rgba(160,180,255,0.85)',
+                left: size / 2 + dx - 2.5,
+                top:  platAreaH / 2 + dy - 2,
+              }}
+            />
+          ))}
+        </View>
       )}
     </View>
   );
