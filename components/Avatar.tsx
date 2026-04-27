@@ -9,45 +9,37 @@ interface Props {
   minimal?: boolean;
 }
 
-// ── Body type selection based on BMI ─────────────────────────────────────
+// ── Female images — mapped by IMC ─────────────────────────────────────────
+// IMC < 18.5  → F1 Mince
+// IMC 18.5–30 → F2 Athlétique (couvre la majorité des utilisateurs)
+// IMC ≥ 30    → F3 Surpoids
+const FEMALE_SLIM     = { uri: 'https://i.imgur.com/lcg0eAC_d.webp?maxwidth=760&fidelity=grand' };
+const FEMALE_ATHLETIC = { uri: 'https://i.imgur.com/Ca1ZFYu_d.webp?maxwidth=760&fidelity=grand' };
+const FEMALE_FULL     = { uri: 'https://i.imgur.com/92fJtwz_d.webp?maxwidth=760&fidelity=grand' };
 
-function bodyType(bmi: number): 'slim' | 'athletic' | 'curvy' | 'full' {
-  if (bmi < 21) return 'slim';
-  if (bmi < 25) return 'athletic';
-  if (bmi < 29) return 'curvy';
-  return 'full';
+// ── Male images — placeholders (à remplacer dès réception des liens) ──────
+const MALE_SLIM     = require('@/assets/avatars/male_slim.png');
+const MALE_ATHLETIC = require('@/assets/avatars/male_athletic.png');
+const MALE_FULL     = require('@/assets/avatars/male_full.png');
+
+function femaleSource(bmi: number) {
+  if (bmi < 18.5) return FEMALE_SLIM;
+  if (bmi < 30)   return FEMALE_ATHLETIC;
+  return FEMALE_FULL;
 }
 
-// ── Image assets ─────────────────────────────────────────────────────────
-// Replace placeholder PNGs in assets/avatars/ with real photos:
-//   female_slim.png     → BMI < 21   (silhouette fine/mince)
-//   female_athletic.png → BMI 21-25  (silhouette athlétique)
-//   female_curvy.png    → BMI 25-29  (silhouette ronde-athlétique)
-//   female_full.png     → BMI ≥ 29   (silhouette généreuse)
-//   male_slim.png / male_athletic.png / male_curvy.png / male_full.png
+function maleSource(bmi: number) {
+  if (bmi < 18.5) return MALE_SLIM;
+  if (bmi < 30)   return MALE_ATHLETIC;
+  return MALE_FULL;
+}
 
-const FEMALE = {
-  slim:     require('@/assets/avatars/female_slim.png'),
-  athletic: require('@/assets/avatars/female_athletic.png'),
-  curvy:    require('@/assets/avatars/female_curvy.png'),
-  full:     require('@/assets/avatars/female_full.png'),
-};
-
-const MALE = {
-  slim:     require('@/assets/avatars/male_slim.png'),
-  athletic: require('@/assets/avatars/male_athletic.png'),
-  curvy:    require('@/assets/avatars/male_curvy.png'),
-  full:     require('@/assets/avatars/male_full.png'),
-};
-
-// Height-to-width ratio of the reference photos (portrait)
-const ASPECT = 2.6;
+const ASPECT = 2.6; // portrait ratio height/width
 
 // ── Main component ────────────────────────────────────────────────────────
 
 export default function Avatar({ gender, params, size = 200, minimal = false }: Props) {
-  const bt  = bodyType(params.bmi);
-  const src = gender === 'female' ? FEMALE[bt] : MALE[bt];
+  const src = gender === 'female' ? femaleSource(params.bmi) : maleSource(params.bmi);
   const h   = Math.round(size * ASPECT);
 
   const floatAnim  = useRef(new Animated.Value(0)).current;
@@ -87,25 +79,25 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
     ).start();
   }, []);
 
-  const glowBase = 0.12 + params.toneLevel * 0.16;
+  const glowBase = 0.10 + params.toneLevel * 0.14;
 
   return (
     <View style={{ width: size, height: h, alignItems: 'center' }}>
 
-      {/* Champagne glow halo behind the figure */}
+      {/* Champagne glow halo */}
       {!minimal && (
         <Animated.View
           style={{
             position:        'absolute',
             alignSelf:       'center',
-            top:             h * 0.06,
-            width:           size * 0.65,
-            height:          h * 0.88,
+            top:             h * 0.05,
+            width:           size * 0.68,
+            height:          h * 0.90,
             borderRadius:    9999,
             backgroundColor: '#E2D1B3',
-            opacity:         glowAnim.interpolate({ inputRange: [0, 1], outputRange: [glowBase, glowBase + 0.10] }),
+            opacity:         glowAnim.interpolate({ inputRange: [0, 1], outputRange: [glowBase, glowBase + 0.09] }),
             transform:       [{ translateY: floatAnim }],
-            ...({ boxShadow: `0 0 ${Math.round(size * 0.9)}px ${Math.round(size * 0.5)}px rgba(226,209,179,0.20)` } as any),
+            ...({ boxShadow: `0 0 ${Math.round(size * 1.0)}px ${Math.round(size * 0.5)}px rgba(226,209,179,0.18)` } as any),
           }}
         />
       )}
@@ -113,7 +105,7 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
       {/* Figure — float + breathe + sway */}
       <Animated.View
         style={{
-          width: size,
+          width:  size,
           height: h,
           transform: [
             { translateY: floatAnim },
