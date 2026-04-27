@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Svg, Circle } from 'react-native-svg';
 import { Search, Droplets, Moon } from 'lucide-react-native';
-import Avatar from '@/components/Avatar';
+import CharacterStage from '@/components/CharacterStage';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore } from '@/store/userStore';
 import { useAvatarParams } from '@/hooks/useAvatarParams';
@@ -183,30 +183,31 @@ export default function Dashboard() {
           ))}
         </View>
 
-        <View style={styles.avatarBodyRow}>
-          <Avatar gender={avatarGender} params={params} size={W * 0.36} />
-          <View style={styles.statsCol}>
-            <View style={styles.statItem}>
-              <Text style={styles.statBigVal}>{currentMeasure?.weight ?? '—'}</Text>
-              <Text style={styles.statBigUnit}>kg</Text>
-              <Text style={styles.statBigLbl}>POIDS</Text>
-            </View>
-            <View style={styles.statSep} />
-            <View style={styles.statItem}>
-              <Text style={[styles.statBigVal, { color: bmiColor, fontSize: 28 }]}>
-                {params.bmi.toFixed(1)}
-              </Text>
-              <Text style={[styles.statBigUnit, { color: bmiColor }]}>IMC</Text>
-              <Text style={[styles.statBigLbl, { color: bmiColor }]}>
-                {params.bmi < 18.5 ? 'MAIGREUR' : params.bmi < 25 ? 'NORMAL' : params.bmi < 30 ? 'SURPOIDS' : 'OBÉSITÉ'}
-              </Text>
-            </View>
-            <View style={styles.statSep} />
-            <View style={styles.statItem}>
-              <Text style={styles.statBigVal}>{currentMeasure?.waist ?? '—'}</Text>
-              <Text style={styles.statBigUnit}>cm</Text>
-              <Text style={styles.statBigLbl}>TAILLE</Text>
-            </View>
+        {/* Character stage — Fortnite-style showcase */}
+        <View style={{ alignItems: 'center' }}>
+          <CharacterStage gender={avatarGender} params={params} />
+        </View>
+
+        {/* Stats row below character */}
+        <View style={styles.stageStatsRow}>
+          <View style={styles.stageStat}>
+            <Text style={styles.statBigVal}>{currentMeasure?.weight ?? '—'}</Text>
+            <Text style={styles.statBigUnit}>kg</Text>
+            <Text style={styles.statBigLbl}>POIDS</Text>
+          </View>
+          <View style={[styles.stageStat, styles.stageStatBorder]}>
+            <Text style={[styles.statBigVal, { color: bmiColor, fontSize: 28 }]}>
+              {params.bmi.toFixed(1)}
+            </Text>
+            <Text style={[styles.statBigUnit, { color: bmiColor }]}>IMC</Text>
+            <Text style={[styles.statBigLbl, { color: bmiColor }]}>
+              {params.bmi < 18.5 ? 'MAIGREUR' : params.bmi < 25 ? 'NORMAL' : params.bmi < 30 ? 'SURPOIDS' : 'OBÉSITÉ'}
+            </Text>
+          </View>
+          <View style={styles.stageStat}>
+            <Text style={styles.statBigVal}>{currentMeasure?.waist ?? '—'}</Text>
+            <Text style={styles.statBigUnit}>cm</Text>
+            <Text style={styles.statBigLbl}>TAILLE</Text>
           </View>
         </View>
       </View>
@@ -385,10 +386,9 @@ const styles = StyleSheet.create({
   genderPillTxt:       { fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.40)' },
   genderPillTxtActive: { color: '#333', fontWeight: '800' },
 
-  avatarBodyRow: { flexDirection: 'row', alignItems: 'center', paddingRight: Spacing.md },
-  statsCol:      { flex: 1, paddingLeft: Spacing.md },
-  statItem:      { alignItems: 'center', paddingVertical: 16 },
-  statSep:       { height: 0.5, backgroundColor: 'rgba(255,255,255,0.08)', marginHorizontal: Spacing.sm },
+  stageStatsRow:    { flexDirection: 'row', paddingVertical: 14, paddingHorizontal: Spacing.sm, borderTopWidth: 0.5, borderTopColor: 'rgba(255,255,255,0.08)' },
+  stageStat:        { flex: 1, alignItems: 'center', paddingVertical: 4 },
+  stageStatBorder:  { borderLeftWidth: 0.5, borderRightWidth: 0.5, borderColor: 'rgba(255,255,255,0.08)' },
   statBigVal:    { fontSize: 32, fontWeight: '900', color: '#fff', letterSpacing: -1.2 },
   statBigUnit:   { fontSize: 11, fontWeight: '400', color: 'rgba(255,255,255,0.45)', marginTop: 2 },
   statBigLbl:    { fontSize: 9, fontWeight: '700', color: 'rgba(255,255,255,0.28)', textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 4 },
