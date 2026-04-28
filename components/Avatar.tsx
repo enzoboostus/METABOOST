@@ -237,23 +237,9 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
 
   return (
     <View style={{ width: size, height: totalH, alignItems: 'center' }}>
-      {/* Character photo — female images have more empty space, scale up and clip overflow */}
-      <Animated.View style={{ width: size, height: h, opacity: fadeAnim, zIndex: 2, overflow: 'hidden' }}>
-        {gender === 'female' ? (
-          <Image
-            source={displaySrc}
-            style={{
-              position: 'absolute',
-              width: size * 1.10,
-              height: h * 1.10,
-              left: -(size * 0.05),
-              top: -(h * 0.05),
-            }}
-            resizeMode="contain"
-          />
-        ) : (
-          <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
-        )}
+      {/* Character photo */}
+      <Animated.View style={{ width: size, height: h, opacity: fadeAnim, zIndex: 2 }}>
+        <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
       </Animated.View>
 
       {/* Platform — positioned so character stands on it */}
