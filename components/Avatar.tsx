@@ -10,9 +10,9 @@ interface Props {
   minimal?: boolean;
 }
 
-const FEMALE_SLIM     = { uri: 'https://i.ibb.co/qYHh2v0Y/IMG-5048.png' };
-const FEMALE_ATHLETIC = { uri: 'https://i.ibb.co/6RJy4jfR/IMG-5047.png' };
-const FEMALE_FULL     = { uri: 'https://i.ibb.co/d0pMhx8W/IMG-5046.png' };
+const FEMALE_SLIM     = { uri: 'https://i.ibb.co/0VpncpQm/IMG-5072.png' };
+const FEMALE_ATHLETIC = { uri: 'https://i.ibb.co/gZ1TQDHz/IMG-5073.png' };
+const FEMALE_FULL     = { uri: 'https://i.ibb.co/Qjh86N44/IMG-5074.png' };
 
 const MALE_SLIM     = { uri: 'https://i.ibb.co/SD438mhX/IMG-5045.png' };
 const MALE_ATHLETIC = { uri: 'https://i.ibb.co/SDvdfGB6/IMG-5044.png' };
