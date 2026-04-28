@@ -237,17 +237,17 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
 
   return (
     <View style={{ width: size, height: totalH, alignItems: 'center' }}>
-      {/* Character photo — female images have more empty space in the photo frame, compensate */}
-      <Animated.View style={{ width: size, height: h, opacity: fadeAnim, zIndex: 2 }}>
+      {/* Character photo — female images have more empty space, scale up and clip overflow */}
+      <Animated.View style={{ width: size, height: h, opacity: fadeAnim, zIndex: 2, overflow: 'hidden' }}>
         {gender === 'female' ? (
           <Image
             source={displaySrc}
             style={{
               position: 'absolute',
-              width: size * 1.30,
-              height: h * 1.30,
-              left: -(size * 0.15),
-              bottom: h * 0.07,
+              width: size * 1.20,
+              height: h * 1.20,
+              left: -(size * 0.10),
+              top: -(h * 0.10),
             }}
             resizeMode="contain"
           />
