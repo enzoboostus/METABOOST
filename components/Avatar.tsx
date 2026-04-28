@@ -244,9 +244,9 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
             source={displaySrc}
             style={{
               position: 'absolute',
-              width: size * 1.42,
-              height: h * 1.42,
-              left: -(size * 0.21),
+              width: size * 1.30,
+              height: h * 1.30,
+              left: -(size * 0.15),
               bottom: h * 0.07,
             }}
             resizeMode="contain"
