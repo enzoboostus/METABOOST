@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Animated, Easing, Image, Platform, View } from 'react-native';
 import { AvatarParams } from '@/hooks/useAvatarParams';
 
 interface Props {
@@ -10,12 +9,12 @@ interface Props {
   minimal?: boolean;
 }
 
-// ── Female images — transparent PNG (i.ibb.co, permanent) ────────────────
+// ── Female images (i.ibb.co, permanent) ──────────────────────────────────
 const FEMALE_SLIM     = { uri: 'https://i.ibb.co/qYHh2v0Y/IMG-5048.png' };
 const FEMALE_ATHLETIC = { uri: 'https://i.ibb.co/6RJy4jfR/IMG-5047.png' };
 const FEMALE_FULL     = { uri: 'https://i.ibb.co/d0pMhx8W/IMG-5046.png' };
 
-// ── Male images — transparent PNG (i.ibb.co, permanent) ──────────────────
+// ── Male images (i.ibb.co, permanent) ────────────────────────────────────
 const MALE_SLIM     = { uri: 'https://i.ibb.co/SD438mhX/IMG-5045.png' };
 const MALE_ATHLETIC = { uri: 'https://i.ibb.co/SDvdfGB6/IMG-5044.png' };
 const MALE_FULL     = { uri: 'https://i.ibb.co/VYkF2X0n/IMG-5043.png' };
@@ -43,6 +42,14 @@ const ORBIT_PARTICLES: [number, number, number, string][] = [
   [318, 0.52, 5, 'rgba(255,200,140,0.90)'],
 ];
 
+// Elliptical mask that hides the grey studio background while keeping the figure
+const BG_MASK = Platform.OS === 'web'
+  ? {
+      WebkitMaskImage: 'radial-gradient(ellipse 68% 90% at 50% 44%, black 48%, rgba(0,0,0,0.6) 62%, transparent 84%)',
+      maskImage:       'radial-gradient(ellipse 68% 90% at 50% 44%, black 48%, rgba(0,0,0,0.6) 62%, transparent 84%)',
+    }
+  : {};
+
 export default function Avatar({ gender, params, size = 200, minimal = false }: Props) {
   const src    = gender === 'female' ? femaleSource(params.bmi) : maleSource(params.bmi);
   const srcKey = src.uri;
@@ -57,13 +64,10 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
   const totalH    = h + platAreaH;
 
   // ── Animations ────────────────────────────────────────────────────────
-  const floatAnim  = useRef(new Animated.Value(0)).current;
-  const breathAnim = useRef(new Animated.Value(1)).current;
-  const swayAnim   = useRef(new Animated.Value(0)).current;
-  const glowAnim   = useRef(new Animated.Value(0)).current;
-  const orbitAnim        = useRef(new Animated.Value(0)).current;
-  const scanAnim         = useRef(new Animated.Value(0)).current;
-  const particleOpacity  = useRef(new Animated.Value(0)).current;
+  const glowAnim        = useRef(new Animated.Value(0)).current;
+  const orbitAnim       = useRef(new Animated.Value(0)).current;
+  const scanAnim        = useRef(new Animated.Value(0)).current;
+  const particleOpacity = useRef(new Animated.Value(0)).current;
 
   // ── Cross-fade on morphology / gender change ───────────────────────────
   const fadeAnim                    = useRef(new Animated.Value(1)).current;
@@ -97,37 +101,20 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
 
   useEffect(() => {
     Animated.loop(Animated.sequence([
-      Animated.timing(floatAnim, { toValue: -14, duration: 2000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      Animated.timing(floatAnim, { toValue:   0, duration: 2000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-    ])).start();
-
-    Animated.loop(Animated.sequence([
-      Animated.timing(breathAnim, { toValue: 1.030, duration: 1700, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-      Animated.timing(breathAnim, { toValue: 1,     duration: 1700, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-    ])).start();
-
-    Animated.loop(Animated.sequence([
-      Animated.timing(swayAnim, { toValue:  3, duration: 1900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      Animated.timing(swayAnim, { toValue:  0, duration: 1900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      Animated.timing(swayAnim, { toValue: -3, duration: 1900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-      Animated.timing(swayAnim, { toValue:  0, duration: 1900, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-    ])).start();
-
-    Animated.loop(Animated.sequence([
       Animated.timing(glowAnim, { toValue: 1, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       Animated.timing(glowAnim, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
     ])).start();
 
-    // Orbit keeps spinning in background so particles appear smoothly when triggered
+    // Orbit keeps spinning so particles appear smoothly when triggered
     Animated.loop(
       Animated.timing(orbitAnim, { toValue: 1, duration: 9000, easing: Easing.linear, useNativeDriver: true })
     ).start();
   }, []);
 
-  const glowBase       = 0.12 + params.toneLevel * 0.14;
-  const platGlowOp     = glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.18, 0.52] });
-  const orbitCX        = size / 2;
-  const orbitCY        = h * 0.37;
+  const glowBase   = 0.12 + params.toneLevel * 0.14;
+  const platGlowOp = glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.18, 0.52] });
+  const orbitCX    = size / 2;
+  const orbitCY    = h * 0.37;
 
   // Platform accent-dot positions (4 compass points on disc edge)
   const rx = platDiscW / 2;
@@ -148,38 +135,19 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
             top: h * 0.04, width: size * 0.72, height: h * 0.92,
             borderRadius: 9999, backgroundColor: '#E2D1B3',
             opacity: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [glowBase, glowBase + 0.14] }),
-            transform: [{ translateY: floatAnim }],
             ...({ boxShadow: `0 0 ${Math.round(size * 1.3)}px ${Math.round(size * 0.65)}px rgba(226,209,179,0.30)` } as any),
           }}
         />
       )}
 
-      {/* ── 2. Avatar figure — masked to remove photo background ────── */}
+      {/* ── 2. Avatar figure — static, masked to cut studio background ── */}
       <Animated.View
         style={{
           width: size, height: h, opacity: fadeAnim,
-          transform: [{ translateY: floatAnim }, { translateX: swayAnim }, { scale: breathAnim }],
+          ...(BG_MASK as any),
         }}
       >
         <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
-
-        {/* Blend studio grey background into dark card on all edges */}
-        <LinearGradient colors={['#060E1C', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-          style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: Math.round(size * 0.24) }}
-          pointerEvents="none"
-        />
-        <LinearGradient colors={['transparent', '#060E1C']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: Math.round(size * 0.24) }}
-          pointerEvents="none"
-        />
-        <LinearGradient colors={['#060E1C', 'transparent']}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: Math.round(h * 0.14) }}
-          pointerEvents="none"
-        />
-        <LinearGradient colors={['transparent', '#060E1C']}
-          style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: Math.round(h * 0.10) }}
-          pointerEvents="none"
-        />
       </Animated.View>
 
       {/* ── 3. Orbiting energy particles — visible only on character change ── */}
