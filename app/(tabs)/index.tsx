@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
   avatarInitial: { fontSize: 16, fontWeight: '800', color: '#333' },
 
   /* Avatar card */
-  avatarSection:    { marginHorizontal: Spacing.md, borderRadius: Radius.xxl, overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(226,209,179,0.22)' },
+  avatarSection:    { marginHorizontal: Spacing.md, borderRadius: Radius.xxl, borderWidth: 1, borderColor: 'rgba(226,209,179,0.22)' },
   avatarTopAccent:  { height: 3, backgroundColor: Colors.accent },
   genderRow:        { flexDirection: 'row', gap: Spacing.sm, paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, marginBottom: 4 },
   genderPill:       { flex: 1, paddingVertical: 9, borderRadius: Radius.full, backgroundColor: 'rgba(255,255,255,0.06)', alignItems: 'center', borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.10)' },

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, View } from 'react-native';
-import Svg, { Defs, Ellipse, RadialGradient, Stop, LinearGradient as SvgLinearGradient, Line } from 'react-native-svg';
+import Svg, { Defs, Ellipse, RadialGradient, Stop, LinearGradient as SvgLG } from 'react-native-svg';
 import { AvatarParams } from '@/hooks/useAvatarParams';
 
 interface Props {
@@ -31,145 +31,154 @@ function maleSource(bmi: number) {
 
 const ASPECT = 2.6;
 
-const ORBIT_PARTICLES: [number, number, number, string][] = [
-  [  0, 0.44, 5, 'rgba(185,160,255,0.90)'],
-  [ 62, 0.51, 3, 'rgba(255,200,140,0.85)'],
-  [130, 0.47, 6, 'rgba(185,160,255,0.80)'],
-  [193, 0.50, 3, 'rgba(255,220,160,0.80)'],
-  [255, 0.43, 4, 'rgba(185,160,255,0.75)'],
-  [318, 0.52, 5, 'rgba(255,200,140,0.90)'],
-];
+// Fortnite-style platform with glowing teal ring
+function FortnitePlatform({ width, pulseAnim }: { width: number; pulseAnim: Animated.Value }) {
+  const svgH = Math.round(width * 0.55);
+  const cx   = width / 2;
+  const cy   = svgH * 0.38;
 
-function PremiumPlatform({ width, glowAnim }: { width: number; glowAnim: Animated.Value }) {
-  const svgH   = Math.round(width * 0.38);
-  const cx     = width / 2;
-  const cy     = svgH * 0.52;
-  const rx     = width * 0.46;
-  const ry     = svgH * 0.28;
+  // Main disc dimensions
+  const rx  = width * 0.42;
+  const ry  = svgH * 0.22;
 
-  const glowOpacity = glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.55, 1.0] });
-  const glowScale   = glowAnim.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1.08] });
+  // Ring glow intensity pulsing
+  const ringOpacity = pulseAnim.interpolate({ inputRange: [0, 1], outputRange: [0.75, 1.0] });
+  const glowOpacity = pulseAnim.interpolate({ inputRange: [0, 1], outputRange: [0.40, 0.85] });
+  const glowScale   = pulseAnim.interpolate({ inputRange: [0, 1], outputRange: [0.96, 1.10] });
 
   return (
-    <View style={{ width, height: svgH, alignItems: 'center', justifyContent: 'center' }}>
-      {/* Animated halo glow underneath platform */}
+    <View style={{ width, height: svgH }}>
+      {/* Animated underlight bloom */}
       <Animated.View style={{
         position: 'absolute',
-        width: width * 0.9,
-        height: svgH * 0.7,
+        alignSelf: 'center',
+        top: cy - ry * 0.6,
+        width: width * 1.1,
+        height: svgH * 0.85,
         borderRadius: 9999,
-        backgroundColor: 'transparent',
         opacity: glowOpacity,
         transform: [{ scaleX: glowScale }],
-        ...({ boxShadow: `0 0 ${Math.round(width * 0.4)}px ${Math.round(width * 0.18)}px rgba(100,140,255,0.28)` } as any),
+        ...({ boxShadow: `0 0 ${Math.round(width * 0.6)}px ${Math.round(width * 0.3)}px rgba(0,240,200,0.22)` } as any),
       }} />
 
-      <Svg width={width} height={svgH} style={{ position: 'absolute' }}>
+      <Svg width={width} height={svgH}>
         <Defs>
-          {/* Outer ring gradient */}
-          <RadialGradient id="outerRing" cx="50%" cy="45%" rx="50%" ry="50%">
-            <Stop offset="0%"   stopColor="#8AABFF" stopOpacity="0.0" />
-            <Stop offset="72%"  stopColor="#5578CC" stopOpacity="0.0" />
-            <Stop offset="88%"  stopColor="#6690EE" stopOpacity="0.55" />
-            <Stop offset="100%" stopColor="#3355AA" stopOpacity="0.0" />
+          {/* Disc surface: dark metallic center, lit edges */}
+          <SvgLG id="discFill" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%"   stopColor="#0AFFDF" stopOpacity="0.18" />
+            <Stop offset="40%"  stopColor="#081828" stopOpacity="0.95" />
+            <Stop offset="100%" stopColor="#040F1A" stopOpacity="1.00" />
+          </SvgLG>
+
+          {/* Outer ring glow fill */}
+          <RadialGradient id="outerGlow" cx="50%" cy="45%" rx="50%" ry="50%">
+            <Stop offset="0%"   stopColor="#00FFD0" stopOpacity="0.0" />
+            <Stop offset="65%"  stopColor="#00FFD0" stopOpacity="0.0" />
+            <Stop offset="82%"  stopColor="#00FFD0" stopOpacity="0.28" />
+            <Stop offset="92%"  stopColor="#00E8BC" stopOpacity="0.55" />
+            <Stop offset="100%" stopColor="#00C8A0" stopOpacity="0.0" />
           </RadialGradient>
 
-          {/* Mid ring */}
-          <RadialGradient id="midRing" cx="50%" cy="44%" rx="50%" ry="50%">
-            <Stop offset="0%"   stopColor="#AABFFF" stopOpacity="0.0" />
-            <Stop offset="68%"  stopColor="#6688DD" stopOpacity="0.0" />
-            <Stop offset="82%"  stopColor="#88AAFF" stopOpacity="0.70" />
-            <Stop offset="100%" stopColor="#4466CC" stopOpacity="0.0" />
-          </RadialGradient>
-
-          {/* Platform disc surface gradient — top lighter, bottom darker for 3D depth */}
-          <SvgLinearGradient id="discSurface" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0%"   stopColor="#C8D8FF" stopOpacity="0.95" />
-            <Stop offset="28%"  stopColor="#8AABEE" stopOpacity="0.88" />
-            <Stop offset="62%"  stopColor="#3A5AAA" stopOpacity="0.82" />
-            <Stop offset="100%" stopColor="#0D1E55" stopOpacity="0.90" />
-          </SvgLinearGradient>
-
-          {/* Inner shine streak */}
-          <SvgLinearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0%"   stopColor="#FFFFFF" stopOpacity="0.70" />
-            <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.0" />
-          </SvgLinearGradient>
-
-          {/* Subtle glow fill under disc */}
-          <RadialGradient id="discGlow" cx="50%" cy="30%" rx="50%" ry="50%">
-            <Stop offset="0%"   stopColor="#90B0FF" stopOpacity="0.30" />
-            <Stop offset="100%" stopColor="#1030AA" stopOpacity="0.0" />
-          </RadialGradient>
+          {/* Disc top shine */}
+          <SvgLG id="shine" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%"   stopColor="#AFFFFF" stopOpacity="0.55" />
+            <Stop offset="100%" stopColor="#00FFD0" stopOpacity="0.0" />
+          </SvgLG>
         </Defs>
 
-        {/* Outermost diffuse ring */}
+        {/* Outermost diffuse ring 3 */}
         <Ellipse
           cx={cx} cy={cy}
-          rx={rx * 1.30} ry={ry * 1.30}
-          fill="url(#outerRing)"
-        />
-
-        {/* Second ring */}
-        <Ellipse
-          cx={cx} cy={cy}
-          rx={rx * 1.12} ry={ry * 1.12}
-          fill="url(#midRing)"
-        />
-
-        {/* Thin outer border ring */}
-        <Ellipse
-          cx={cx} cy={cy}
-          rx={rx * 1.04} ry={ry * 1.04}
+          rx={rx * 1.60} ry={ry * 1.60}
           fill="none"
-          stroke="rgba(130,165,255,0.35)"
+          stroke="#00FFD0"
+          strokeWidth="0.5"
+          strokeOpacity="0.12"
+        />
+
+        {/* Outer diffuse ring 2 */}
+        <Ellipse
+          cx={cx} cy={cy}
+          rx={rx * 1.38} ry={ry * 1.38}
+          fill="none"
+          stroke="#00FFD0"
           strokeWidth="0.8"
+          strokeOpacity="0.20"
         />
 
-        {/* Main platform disc — glow fill */}
+        {/* Outer diffuse ring 1 */}
+        <Ellipse
+          cx={cx} cy={cy}
+          rx={rx * 1.16} ry={ry * 1.16}
+          fill="none"
+          stroke="#00FFD0"
+          strokeWidth="1.0"
+          strokeOpacity="0.35"
+        />
+
+        {/* Glow fill behind main disc */}
+        <Ellipse
+          cx={cx} cy={cy}
+          rx={rx * 1.06} ry={ry * 1.06}
+          fill="url(#outerGlow)"
+        />
+
+        {/* Main disc surface */}
         <Ellipse
           cx={cx} cy={cy}
           rx={rx} ry={ry}
-          fill="url(#discGlow)"
+          fill="url(#discFill)"
         />
 
-        {/* Main platform disc — surface */}
+        {/* THE glowing teal edge ring — Fortnite style */}
         <Ellipse
           cx={cx} cy={cy}
           rx={rx} ry={ry}
-          fill="url(#discSurface)"
-          stroke="rgba(160,200,255,0.75)"
-          strokeWidth="1.2"
+          fill="none"
+          stroke="#00FFD0"
+          strokeWidth="2.8"
+          strokeOpacity="0.95"
         />
 
-        {/* Inner shine highlight — top arc of disc */}
+        {/* Inner glow ring just inside the edge */}
         <Ellipse
-          cx={cx} cy={cy - ry * 0.18}
-          rx={rx * 0.56} ry={ry * 0.38}
+          cx={cx} cy={cy}
+          rx={rx * 0.88} ry={ry * 0.88}
+          fill="none"
+          stroke="#00FFD0"
+          strokeWidth="0.7"
+          strokeOpacity="0.30"
+        />
+
+        {/* Top surface shine streak */}
+        <Ellipse
+          cx={cx} cy={cy - ry * 0.30}
+          rx={rx * 0.52} ry={ry * 0.30}
           fill="url(#shine)"
         />
 
-        {/* Thin inner edge line for depth */}
+        {/* Center glow dot */}
         <Ellipse
           cx={cx} cy={cy}
-          rx={rx * 0.84} ry={ry * 0.72}
-          fill="none"
-          stroke="rgba(200,220,255,0.22)"
-          strokeWidth="0.6"
+          rx={rx * 0.14} ry={ry * 0.22}
+          fill="#00FFD0"
+          fillOpacity="0.22"
         />
-
-        {/* Compass energy lines — 4 directions */}
-        <Line x1={cx} y1={cy - ry - 2}  x2={cx} y2={cy - ry - 10} stroke="rgba(180,210,255,0.60)" strokeWidth="1.5" strokeLinecap="round" />
-        <Line x1={cx} y1={cy + ry + 2}  x2={cx} y2={cy + ry + 8}  stroke="rgba(180,210,255,0.40)" strokeWidth="1.0" strokeLinecap="round" />
-        <Line x1={cx - rx - 2} y1={cy}  x2={cx - rx - 8} y2={cy}  stroke="rgba(180,210,255,0.40)" strokeWidth="1.0" strokeLinecap="round" />
-        <Line x1={cx + rx + 2} y1={cy}  x2={cx + rx + 8} y2={cy}  stroke="rgba(180,210,255,0.40)" strokeWidth="1.0" strokeLinecap="round" />
-
-        {/* Corner accent dots */}
-        <Ellipse cx={cx}       cy={cy - ry} rx={3}   ry={2.2} fill="rgba(226,209,179,0.95)" />
-        <Ellipse cx={cx}       cy={cy + ry} rx={2.5} ry={1.8} fill="rgba(180,200,255,0.80)" />
-        <Ellipse cx={cx - rx}  cy={cy}      rx={2.5} ry={2.0} fill="rgba(180,200,255,0.80)" />
-        <Ellipse cx={cx + rx}  cy={cy}      rx={2.5} ry={2.0} fill="rgba(180,200,255,0.80)" />
       </Svg>
+
+      {/* Animated ring glow overlay using boxShadow */}
+      <Animated.View style={{
+        position: 'absolute',
+        alignSelf: 'center',
+        top: cy - ry,
+        width: rx * 2,
+        height: ry * 2,
+        borderRadius: 9999,
+        borderWidth: 2,
+        borderColor: '#00FFD0',
+        opacity: ringOpacity,
+        ...({ boxShadow: `0 0 18px 6px rgba(0,255,200,0.55), inset 0 0 12px 2px rgba(0,255,200,0.20)` } as any),
+      }} />
     </View>
   );
 }
@@ -179,7 +188,7 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
   const srcKey = src.uri;
   const h      = Math.round(size * ASPECT);
 
-  const glowAnim        = useRef(new Animated.Value(0)).current;
+  const pulseAnim       = useRef(new Animated.Value(0)).current;
   const orbitAnim       = useRef(new Animated.Value(0)).current;
   const scanAnim        = useRef(new Animated.Value(0)).current;
   const particleOpacity = useRef(new Animated.Value(0)).current;
@@ -188,8 +197,10 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
   const [displaySrc, setDisplaySrc] = useState<{ uri: string }>(src);
   const prevKeyRef = useRef(srcKey);
 
-  const platH  = Math.round(size * 0.38);
-  const totalH = h + platH * 0.4;
+  const platH  = Math.round(size * 0.55);
+  // overlap: character feet sit on the disc — shift platform up into character bottom
+  const overlap = Math.round(platH * 0.68);
+  const totalH  = h + platH - overlap;
 
   useEffect(() => {
     if (srcKey === prevKeyRef.current) return;
@@ -215,8 +226,8 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
 
   useEffect(() => {
     Animated.loop(Animated.sequence([
-      Animated.timing(glowAnim, { toValue: 1, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-      Animated.timing(glowAnim, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
+      Animated.timing(pulseAnim, { toValue: 1, duration: 1800, easing: Easing.inOut(Easing.sine), useNativeDriver: true }),
+      Animated.timing(pulseAnim, { toValue: 0, duration: 1800, easing: Easing.inOut(Easing.sine), useNativeDriver: true }),
     ])).start();
 
     Animated.loop(
@@ -224,66 +235,28 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
     ).start();
   }, []);
 
-  const glowBase = 0.12 + params.toneLevel * 0.14;
-  const orbitCX  = size / 2;
-  const orbitCY  = h * 0.37;
-
   return (
     <View style={{ width: size, height: totalH, alignItems: 'center' }}>
-
-      {!minimal && (
-        <Animated.View style={{
-          position: 'absolute', alignSelf: 'center',
-          top: h * 0.04, width: size * 0.72, height: h * 0.92,
-          borderRadius: 9999, backgroundColor: '#E2D1B3',
-          opacity: glowAnim.interpolate({ inputRange: [0, 1], outputRange: [glowBase, glowBase + 0.14] }),
-          ...({ boxShadow: `0 0 ${Math.round(size * 1.3)}px ${Math.round(size * 0.65)}px rgba(226,209,179,0.30)` } as any),
-        }} />
-      )}
-
-      <Animated.View style={{ width: size, height: h, opacity: fadeAnim }}>
+      {/* Character photo */}
+      <Animated.View style={{ width: size, height: h, opacity: fadeAnim, zIndex: 2 }}>
         <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
       </Animated.View>
 
+      {/* Platform — positioned so character stands on it */}
       {!minimal && (
-        <Animated.View style={{ opacity: particleOpacity, position: 'absolute', width: size, height: h }}>
-          {ORBIT_PARTICLES.map(([phase, radiusRatio, dotSize, color], i) => {
-            const r = size * radiusRatio * 0.5;
-            return (
-              <Animated.View key={i} style={{
-                position: 'absolute',
-                width: dotSize, height: dotSize,
-                left: orbitCX - dotSize / 2,
-                top:  orbitCY - dotSize / 2,
-                transform: [
-                  { rotate: orbitAnim.interpolate({ inputRange: [0, 1], outputRange: [`${phase}deg`, `${phase + 360}deg`] }) },
-                  { translateX: r },
-                ],
-              }}>
-                <View style={{
-                  width: dotSize, height: dotSize, borderRadius: dotSize / 2,
-                  backgroundColor: color,
-                  ...({ boxShadow: `0 0 ${dotSize * 2.5}px ${dotSize * 1.2}px ${color}` } as any),
-                }} />
-              </Animated.View>
-            );
-          })}
-        </Animated.View>
+        <View style={{ position: 'absolute', bottom: 0, width: size, zIndex: 1 }}>
+          <FortnitePlatform width={size} pulseAnim={pulseAnim} />
+        </View>
       )}
 
+      {/* Scan line on avatar change */}
       {!minimal && (
         <Animated.View style={{
-          position: 'absolute', left: 0, right: 0, height: 1.5,
-          backgroundColor: 'rgba(190,210,255,0.32)',
+          position: 'absolute', left: 0, right: 0, height: 1.5, zIndex: 3,
+          backgroundColor: 'rgba(0,255,200,0.40)',
           transform: [{ translateY: scanAnim.interpolate({ inputRange: [0, 1], outputRange: [0, h] }) }],
-          ...({ boxShadow: '0 0 10px 5px rgba(190,210,255,0.18)' } as any),
+          ...({ boxShadow: '0 0 10px 4px rgba(0,255,200,0.25)' } as any),
         }} />
-      )}
-
-      {!minimal && (
-        <View style={{ position: 'absolute', bottom: 0, width: size }}>
-          <PremiumPlatform width={size} glowAnim={glowAnim} />
-        </View>
       )}
     </View>
   );
