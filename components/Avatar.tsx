@@ -244,10 +244,10 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
             source={displaySrc}
             style={{
               position: 'absolute',
-              width: size * 1.20,
-              height: h * 1.20,
-              left: -(size * 0.10),
-              top: -(h * 0.10),
+              width: size * 1.10,
+              height: h * 1.10,
+              left: -(size * 0.05),
+              top: -(h * 0.05),
             }}
             resizeMode="contain"
           />
