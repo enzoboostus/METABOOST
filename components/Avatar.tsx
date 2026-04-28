@@ -9,10 +9,10 @@ interface Props {
   minimal?: boolean;
 }
 
-// ── Female images ─────────────────────────────────────────────────────────
-const FEMALE_SLIM     = { uri: 'https://i.imgur.com/lcg0eAC.webp' };
-const FEMALE_ATHLETIC = { uri: 'https://i.imgur.com/Ca1ZFYu.webp' };
-const FEMALE_FULL     = { uri: 'https://i.imgur.com/92fJtwz.webp' };
+// ── Female images — transparent PNG from remove.bg ───────────────────────
+const FEMALE_SLIM     = { uri: 'https://o.remove.bg/uploads/d7b67296-ab6f-4a7c-80da-12af6a9f3267/IMG_4977.png' };
+const FEMALE_ATHLETIC = { uri: 'https://o.remove.bg/uploads/7231a2e2-08f3-404e-9037-9b8bf088fbdc/IMG_4978.png' };
+const FEMALE_FULL     = { uri: 'https://o.remove.bg/uploads/ee039700-dc51-4e24-b38d-a1794c49ab8b/IMG_4980.png' };
 
 // ── Male images ───────────────────────────────────────────────────────────
 const MALE_SLIM     = { uri: 'https://i.imgur.com/GoQRmSG.webp' };
@@ -160,18 +160,7 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
           transform: [{ translateY: floatAnim }, { translateX: swayAnim }, { scale: breathAnim }],
         }}
       >
-        {/* CSS radial mask fades the grey studio background on web */}
-        <View
-          style={{
-            width: size, height: h,
-            ...({
-              WebkitMaskImage: 'radial-gradient(ellipse 74% 88% at 50% 38%, black 46%, rgba(0,0,0,0.55) 68%, transparent 100%)',
-              maskImage:       'radial-gradient(ellipse 74% 88% at 50% 38%, black 46%, rgba(0,0,0,0.55) 68%, transparent 100%)',
-            } as any),
-          }}
-        >
-          <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
-        </View>
+        <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
       </Animated.View>
 
       {/* ── 3. Orbiting energy particles — visible only on character change ── */}
