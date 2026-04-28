@@ -237,9 +237,13 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
 
   return (
     <View style={{ width: size, height: totalH, alignItems: 'center' }}>
-      {/* Character photo */}
+      {/* Character photo — female shifted up slightly so feet float above platform ring */}
       <Animated.View style={{ width: size, height: h, opacity: fadeAnim, zIndex: 2 }}>
-        <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
+        <Image
+          source={displaySrc}
+          style={{ width: size, height: h, marginBottom: gender === 'female' ? size * 0.06 : 0 }}
+          resizeMode="contain"
+        />
       </Animated.View>
 
       {/* Platform — positioned so character stands on it */}
