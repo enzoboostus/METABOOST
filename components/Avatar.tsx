@@ -9,15 +9,15 @@ interface Props {
   minimal?: boolean;
 }
 
-// ── Female images ─────────────────────────────────────────────────────────
-const FEMALE_SLIM     = { uri: 'https://i.imgur.com/lcg0eAC.webp' };
-const FEMALE_ATHLETIC = { uri: 'https://i.imgur.com/Ca1ZFYu.webp' };
-const FEMALE_FULL     = { uri: 'https://i.imgur.com/92fJtwz.webp' };
+// ── Female images — transparent PNG (i.ibb.co, permanent) ────────────────
+const FEMALE_SLIM     = { uri: 'https://i.ibb.co/qYHh2v0Y/IMG-5048.png' };
+const FEMALE_ATHLETIC = { uri: 'https://i.ibb.co/6RJy4jfR/IMG-5047.png' };
+const FEMALE_FULL     = { uri: 'https://i.ibb.co/d0pMhx8W/IMG-5046.png' };
 
-// ── Male images ───────────────────────────────────────────────────────────
-const MALE_SLIM     = { uri: 'https://i.imgur.com/GoQRmSG.webp' };
-const MALE_ATHLETIC = { uri: 'https://i.imgur.com/5DtnVxi.webp' };
-const MALE_FULL     = { uri: 'https://i.imgur.com/53m4ute.webp' };
+// ── Male images — transparent PNG (i.ibb.co, permanent) ──────────────────
+const MALE_SLIM     = { uri: 'https://i.ibb.co/SD438mhX/IMG-5045.png' };
+const MALE_ATHLETIC = { uri: 'https://i.ibb.co/SDvdfGB6/IMG-5044.png' };
+const MALE_FULL     = { uri: 'https://i.ibb.co/VYkF2X0n/IMG-5043.png' };
 
 function femaleSource(bmi: number) {
   if (bmi < 18.5) return FEMALE_SLIM;
