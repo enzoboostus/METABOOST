@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, Platform, View } from 'react-native';
+import { Animated, Easing, Image, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AvatarParams } from '@/hooks/useAvatarParams';
 
 interface Props {
@@ -32,7 +33,6 @@ function maleSource(bmi: number) {
 
 const ASPECT = 2.6;
 
-// Orbiting particles: [phase_deg, radius_ratio, dot_size, color]
 const ORBIT_PARTICLES: [number, number, number, string][] = [
   [  0, 0.44, 5, 'rgba(185,160,255,0.90)'],
   [ 62, 0.51, 3, 'rgba(255,200,140,0.85)'],
@@ -42,20 +42,13 @@ const ORBIT_PARTICLES: [number, number, number, string][] = [
   [318, 0.52, 5, 'rgba(255,200,140,0.90)'],
 ];
 
-// Elliptical mask that hides the grey studio background while keeping the figure
-const BG_MASK = Platform.OS === 'web'
-  ? {
-      WebkitMaskImage: 'radial-gradient(ellipse 68% 90% at 50% 44%, black 48%, rgba(0,0,0,0.6) 62%, transparent 84%)',
-      maskImage:       'radial-gradient(ellipse 68% 90% at 50% 44%, black 48%, rgba(0,0,0,0.6) 62%, transparent 84%)',
-    }
-  : {};
+const CARD_BG = '#0A1128';
 
 export default function Avatar({ gender, params, size = 200, minimal = false }: Props) {
   const src    = gender === 'female' ? femaleSource(params.bmi) : maleSource(params.bmi);
   const srcKey = src.uri;
   const h      = Math.round(size * ASPECT);
 
-  // Platform dimensions
   const platAreaH = Math.round(size * 0.26);
   const platDiscW = Math.round(size * 0.88);
   const platDiscH = Math.round(size * 0.094);
@@ -63,13 +56,11 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
   const platRingH = Math.round(size * 0.108);
   const totalH    = h + platAreaH;
 
-  // ── Animations ────────────────────────────────────────────────────────
   const glowAnim        = useRef(new Animated.Value(0)).current;
   const orbitAnim       = useRef(new Animated.Value(0)).current;
   const scanAnim        = useRef(new Animated.Value(0)).current;
   const particleOpacity = useRef(new Animated.Value(0)).current;
 
-  // ── Cross-fade on morphology / gender change ───────────────────────────
   const fadeAnim                    = useRef(new Animated.Value(1)).current;
   const [displaySrc, setDisplaySrc] = useState<{ uri: string }>(src);
   const prevKeyRef                  = useRef(srcKey);
@@ -78,20 +69,17 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
     if (srcKey === prevKeyRef.current) return;
     prevKeyRef.current = srcKey;
 
-    // Cross-fade image
     fadeAnim.setValue(0);
     setDisplaySrc(src);
     Animated.timing(fadeAnim, {
       toValue: 1, duration: 420, easing: Easing.out(Easing.quad), useNativeDriver: true,
     }).start();
 
-    // Scan line — one pass only
     scanAnim.setValue(0);
     Animated.timing(scanAnim, {
       toValue: 1, duration: 2400, easing: Easing.inOut(Easing.quad), useNativeDriver: true,
     }).start();
 
-    // Particles — appear then fade out after 2 s
     Animated.sequence([
       Animated.timing(particleOpacity, { toValue: 1, duration: 300, useNativeDriver: true }),
       Animated.delay(1800),
@@ -105,7 +93,6 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
       Animated.timing(glowAnim, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
     ])).start();
 
-    // Orbit keeps spinning so particles appear smoothly when triggered
     Animated.loop(
       Animated.timing(orbitAnim, { toValue: 1, duration: 9000, easing: Easing.linear, useNativeDriver: true })
     ).start();
@@ -116,13 +103,17 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
   const orbitCX    = size / 2;
   const orbitCY    = h * 0.37;
 
-  // Platform accent-dot positions (4 compass points on disc edge)
   const rx = platDiscW / 2;
   const ry = platDiscH / 2;
   const platDots = ([0, 90, 180, 270] as const).map((deg) => {
     const rad = (deg * Math.PI) / 180;
     return { deg, dx: rx * Math.cos(rad), dy: ry * Math.sin(rad) };
   });
+
+  // Cover more of the grey edges: sides 38%, top 22%, bottom 12%
+  const sideW  = Math.round(size * 0.38);
+  const topH   = Math.round(h * 0.22);
+  const botH   = Math.round(h * 0.12);
 
   return (
     <View style={{ width: size, height: totalH, alignItems: 'center' }}>
@@ -140,17 +131,36 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
         />
       )}
 
-      {/* ── 2. Avatar figure — static, masked to cut studio background ── */}
-      <Animated.View
-        style={{
-          width: size, height: h, opacity: fadeAnim,
-          ...(BG_MASK as any),
-        }}
-      >
+      {/* ── 2. Avatar figure — static, no idle animation ────────────── */}
+      <Animated.View style={{ width: size, height: h, opacity: fadeAnim }}>
         <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
+
+        {/* Aggressive edge fades to blend grey studio bg into card */}
+        <LinearGradient
+          colors={[CARD_BG, 'transparent']}
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+          style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: sideW }}
+          pointerEvents="none"
+        />
+        <LinearGradient
+          colors={['transparent', CARD_BG]}
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: sideW }}
+          pointerEvents="none"
+        />
+        <LinearGradient
+          colors={[CARD_BG, 'transparent']}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: topH }}
+          pointerEvents="none"
+        />
+        <LinearGradient
+          colors={['transparent', CARD_BG]}
+          style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: botH }}
+          pointerEvents="none"
+        />
       </Animated.View>
 
-      {/* ── 3. Orbiting energy particles — visible only on character change ── */}
+      {/* ── 3. Orbiting particles — only on character change ─────────── */}
       {!minimal && (
         <Animated.View style={{ opacity: particleOpacity, position: 'absolute', width: size, height: h }}>
           {ORBIT_PARTICLES.map(([phase, radiusRatio, dotSize, color], i) => {
@@ -180,7 +190,7 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
         </Animated.View>
       )}
 
-      {/* ── 4. Holographic scan line ─────────────────────────────────── */}
+      {/* ── 4. Scan line — only on character change ───────────────────── */}
       {!minimal && (
         <Animated.View
           style={{
@@ -192,66 +202,40 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
         />
       )}
 
-      {/* ── 5. Fortnite-style platform disc ─────────────────────────── */}
+      {/* ── 5. Platform disc ─────────────────────────────────────────── */}
       {!minimal && (
         <View style={{
-          position: 'absolute',
-          bottom: 0,
-          width: size,
-          height: platAreaH,
-          alignItems: 'center',
-          justifyContent: 'center',
+          position: 'absolute', bottom: 0, width: size, height: platAreaH,
+          alignItems: 'center', justifyContent: 'center',
         }}>
-          {/* Ambient glow blob */}
           <Animated.View style={{
-            position: 'absolute',
-            width: size,
-            height: platAreaH,
-            borderRadius: platAreaH / 2,
-            backgroundColor: 'rgba(40,80,255,0.22)',
+            position: 'absolute', width: size, height: platAreaH,
+            borderRadius: platAreaH / 2, backgroundColor: 'rgba(40,80,255,0.22)',
             opacity: platGlowOp,
           }} />
-
-          {/* Outer halo ring */}
           <View style={{
-            position: 'absolute',
-            width: platRingW,
-            height: platRingH,
-            borderRadius: platRingH / 2,
-            borderWidth: 1,
+            position: 'absolute', width: platRingW, height: platRingH,
+            borderRadius: platRingH / 2, borderWidth: 1,
             borderColor: 'rgba(100,130,210,0.28)',
           }} />
-
-          {/* Main disc */}
           <View style={{
-            width: platDiscW,
-            height: platDiscH,
-            borderRadius: platDiscH / 2,
-            backgroundColor: 'rgba(10,20,55,0.96)',
-            borderWidth: 1.8,
+            width: platDiscW, height: platDiscH, borderRadius: platDiscH / 2,
+            backgroundColor: 'rgba(10,20,55,0.96)', borderWidth: 1.8,
             borderColor: 'rgba(110,145,235,0.60)',
           }} />
-
-          {/* Inner shine */}
           <View style={{
             position: 'absolute',
-            width: Math.round(platDiscW * 0.52),
-            height: Math.round(platDiscH * 0.30),
-            borderRadius: platDiscH / 2,
-            backgroundColor: 'rgba(160,185,255,0.10)',
+            width: Math.round(platDiscW * 0.52), height: Math.round(platDiscH * 0.30),
+            borderRadius: platDiscH / 2, backgroundColor: 'rgba(160,185,255,0.10)',
             top: platAreaH / 2 - platDiscH * 0.68,
           }} />
-
-          {/* Accent dots — 4 compass points */}
           {platDots.map(({ deg, dx, dy }) => (
             <View
               key={deg}
               style={{
-                position: 'absolute',
-                width: 5, height: 4, borderRadius: 2.5,
+                position: 'absolute', width: 5, height: 4, borderRadius: 2.5,
                 backgroundColor: deg === 0 || deg === 180
-                  ? 'rgba(226,209,179,0.90)'
-                  : 'rgba(160,180,255,0.85)',
+                  ? 'rgba(226,209,179,0.90)' : 'rgba(160,180,255,0.85)',
                 left: size / 2 + dx - 2.5,
                 top:  platAreaH / 2 + dy - 2,
               }}
