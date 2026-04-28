@@ -237,13 +237,23 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
 
   return (
     <View style={{ width: size, height: totalH, alignItems: 'center' }}>
-      {/* Character photo — female images have more padding so scale them up to match male */}
+      {/* Character photo — female images have more padding so render larger, anchored at bottom */}
       <Animated.View style={{ width: size, height: h, opacity: fadeAnim, zIndex: 2 }}>
-        <Image
-          source={displaySrc}
-          style={{ width: size, height: h, transform: [{ scale: gender === 'female' ? 1.22 : 1.0 }] }}
-          resizeMode="contain"
-        />
+        {gender === 'female' ? (
+          <Image
+            source={displaySrc}
+            style={{
+              position: 'absolute',
+              width: size * 1.22,
+              height: h * 1.22,
+              left: -(size * 0.11),
+              bottom: 0,
+            }}
+            resizeMode="contain"
+          />
+        ) : (
+          <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
+        )}
       </Animated.View>
 
       {/* Platform — positioned so character stands on it */}
