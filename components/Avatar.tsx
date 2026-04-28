@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AvatarParams } from '@/hooks/useAvatarParams';
 
 interface Props {
@@ -161,6 +162,24 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
         }}
       >
         <Image source={displaySrc} style={{ width: size, height: h }} resizeMode="contain" />
+
+        {/* Blend studio grey background into dark card on all edges */}
+        <LinearGradient colors={['#060E1C', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+          style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: Math.round(size * 0.24) }}
+          pointerEvents="none"
+        />
+        <LinearGradient colors={['transparent', '#060E1C']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: Math.round(size * 0.24) }}
+          pointerEvents="none"
+        />
+        <LinearGradient colors={['#060E1C', 'transparent']}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, height: Math.round(h * 0.14) }}
+          pointerEvents="none"
+        />
+        <LinearGradient colors={['transparent', '#060E1C']}
+          style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: Math.round(h * 0.10) }}
+          pointerEvents="none"
+        />
       </Animated.View>
 
       {/* ── 3. Orbiting energy particles — visible only on character change ── */}
