@@ -60,8 +60,9 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
   const breathAnim = useRef(new Animated.Value(1)).current;
   const swayAnim   = useRef(new Animated.Value(0)).current;
   const glowAnim   = useRef(new Animated.Value(0)).current;
-  const orbitAnim  = useRef(new Animated.Value(0)).current;
-  const scanAnim   = useRef(new Animated.Value(0)).current;
+  const orbitAnim        = useRef(new Animated.Value(0)).current;
+  const scanAnim         = useRef(new Animated.Value(0)).current;
+  const particleOpacity  = useRef(new Animated.Value(0)).current;
 
   // ── Cross-fade on morphology / gender change ───────────────────────────
   const fadeAnim                    = useRef(new Animated.Value(1)).current;
@@ -71,11 +72,26 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
   useEffect(() => {
     if (srcKey === prevKeyRef.current) return;
     prevKeyRef.current = srcKey;
+
+    // Cross-fade image
     fadeAnim.setValue(0);
     setDisplaySrc(src);
     Animated.timing(fadeAnim, {
       toValue: 1, duration: 420, easing: Easing.out(Easing.quad), useNativeDriver: true,
     }).start();
+
+    // Scan line — one pass only
+    scanAnim.setValue(0);
+    Animated.timing(scanAnim, {
+      toValue: 1, duration: 2400, easing: Easing.inOut(Easing.quad), useNativeDriver: true,
+    }).start();
+
+    // Particles — appear then fade out after 2 s
+    Animated.sequence([
+      Animated.timing(particleOpacity, { toValue: 1, duration: 300, useNativeDriver: true }),
+      Animated.delay(1800),
+      Animated.timing(particleOpacity, { toValue: 0, duration: 600, useNativeDriver: true }),
+    ]).start();
   }, [srcKey]);
 
   useEffect(() => {
@@ -101,15 +117,10 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
       Animated.timing(glowAnim, { toValue: 0, duration: 1600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
     ])).start();
 
+    // Orbit keeps spinning in background so particles appear smoothly when triggered
     Animated.loop(
       Animated.timing(orbitAnim, { toValue: 1, duration: 9000, easing: Easing.linear, useNativeDriver: true })
     ).start();
-
-    Animated.loop(Animated.sequence([
-      Animated.timing(scanAnim, { toValue: 1, duration: 2600, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
-      Animated.delay(2400),
-      Animated.timing(scanAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
-    ])).start();
   }, []);
 
   const glowBase       = 0.12 + params.toneLevel * 0.14;
@@ -163,31 +174,35 @@ export default function Avatar({ gender, params, size = 200, minimal = false }: 
         </View>
       </Animated.View>
 
-      {/* ── 3. Orbiting energy particles ────────────────────────────── */}
-      {!minimal && ORBIT_PARTICLES.map(([phase, radiusRatio, dotSize, color], i) => {
-        const r = size * radiusRatio * 0.5;
-        return (
-          <Animated.View
-            key={i}
-            style={{
-              position: 'absolute',
-              width: dotSize, height: dotSize,
-              left: orbitCX - dotSize / 2,
-              top:  orbitCY - dotSize / 2,
-              transform: [
-                { rotate: orbitAnim.interpolate({ inputRange: [0, 1], outputRange: [`${phase}deg`, `${phase + 360}deg`] }) },
-                { translateX: r },
-              ],
-            }}
-          >
-            <View style={{
-              width: dotSize, height: dotSize, borderRadius: dotSize / 2,
-              backgroundColor: color,
-              ...({ boxShadow: `0 0 ${dotSize * 2.5}px ${dotSize * 1.2}px ${color}` } as any),
-            }} />
-          </Animated.View>
-        );
-      })}
+      {/* ── 3. Orbiting energy particles — visible only on character change ── */}
+      {!minimal && (
+        <Animated.View style={{ opacity: particleOpacity, position: 'absolute', width: size, height: h }}>
+          {ORBIT_PARTICLES.map(([phase, radiusRatio, dotSize, color], i) => {
+            const r = size * radiusRatio * 0.5;
+            return (
+              <Animated.View
+                key={i}
+                style={{
+                  position: 'absolute',
+                  width: dotSize, height: dotSize,
+                  left: orbitCX - dotSize / 2,
+                  top:  orbitCY - dotSize / 2,
+                  transform: [
+                    { rotate: orbitAnim.interpolate({ inputRange: [0, 1], outputRange: [`${phase}deg`, `${phase + 360}deg`] }) },
+                    { translateX: r },
+                  ],
+                }}
+              >
+                <View style={{
+                  width: dotSize, height: dotSize, borderRadius: dotSize / 2,
+                  backgroundColor: color,
+                  ...({ boxShadow: `0 0 ${dotSize * 2.5}px ${dotSize * 1.2}px ${color}` } as any),
+                }} />
+              </Animated.View>
+            );
+          })}
+        </Animated.View>
+      )}
 
       {/* ── 4. Holographic scan line ─────────────────────────────────── */}
       {!minimal && (
