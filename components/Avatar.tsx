@@ -9,10 +9,10 @@ interface Props {
   minimal?: boolean;
 }
 
-// ── Female images — transparent PNG (catbox.moe, permanent) ──────────────
-const FEMALE_SLIM     = { uri: 'https://files.catbox.moe/y9s9wd.png' };
-const FEMALE_ATHLETIC = { uri: 'https://files.catbox.moe/ee5n74.png' };
-const FEMALE_FULL     = { uri: 'https://files.catbox.moe/3d8je1.png' };
+// ── Female images ─────────────────────────────────────────────────────────
+const FEMALE_SLIM     = { uri: 'https://i.imgur.com/lcg0eAC.webp' };
+const FEMALE_ATHLETIC = { uri: 'https://i.imgur.com/Ca1ZFYu.webp' };
+const FEMALE_FULL     = { uri: 'https://i.imgur.com/92fJtwz.webp' };
 
 // ── Male images ───────────────────────────────────────────────────────────
 const MALE_SLIM     = { uri: 'https://i.imgur.com/GoQRmSG.webp' };
