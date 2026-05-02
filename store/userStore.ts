@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 
 export type Gender = 'male' | 'female';
 export type Feeling = 'top' | 'medium' | 'tired';
+export type Goal = 'weightloss' | 'muscle' | 'maintain' | null;
 
 export interface BodyMeasure {
   date: string;
@@ -33,6 +34,7 @@ export interface UserProfile {
   gender: Gender;
   height: number;
   onboardingDone: boolean;
+  goal: Goal;
 }
 
 // App config loaded from Supabase (God Mode)
@@ -121,6 +123,7 @@ export const useUserStore = create<UserState>()(
         gender: 'male',
         height: 175,
         onboardingDone: false,
+        goal: null,
       },
       measures: [],
       initialMeasure: null,
