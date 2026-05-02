@@ -9,6 +9,7 @@ import { ChevronLeft, Save, Settings, Lock } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { useUserStore } from '@/store/userStore';
 import { Colors, Spacing, Radius, Shadow } from '@/constants/theme';
+import { FlaskConical } from 'lucide-react-native';
 
 const GOD_PIN = '8888';
 
@@ -53,7 +54,7 @@ export default function GodMode() {
   const [loadingData, setLoadingData] = useState(false);
   const [savingConfig, setSavingConfig] = useState(false);
   const [savingPrograms, setSavingPrograms] = useState(false);
-  const { loadConfig } = useUserStore();
+  const { loadConfig, resetOnboarding } = useUserStore();
 
   useEffect(() => {
     if (unlocked) loadData();
@@ -172,6 +173,16 @@ export default function GodMode() {
           </View>
           <View style={{ width: 40 }} />
         </View>
+
+        {/* Dev: test onboarding */}
+        <TouchableOpacity
+          style={styles.testBtn}
+          onPress={() => { resetOnboarding(); router.replace('/onboarding'); }}
+          activeOpacity={0.8}
+        >
+          <FlaskConical size={14} color={Colors.teal} strokeWidth={1.8} />
+          <Text style={styles.testBtnTxt}>Tester l'onboarding (tes données sont conservées)</Text>
+        </TouchableOpacity>
 
         {/* Tabs */}
         <View style={styles.tabBar}>
@@ -384,6 +395,10 @@ const styles = StyleSheet.create({
   backBtn:      { width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.card, alignItems: 'center', justifyContent: 'center' },
   headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   headerTitle:  { fontSize: 16, fontWeight: '900', color: Colors.text, letterSpacing: 2 },
+
+  /* Test button */
+  testBtn:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, marginHorizontal: Spacing.md, marginTop: Spacing.sm, paddingVertical: 10, borderRadius: Radius.full, borderWidth: 0.5, borderColor: Colors.teal + '40', backgroundColor: 'rgba(0,200,212,0.06)' },
+  testBtnTxt: { fontSize: 12, color: Colors.teal, fontWeight: '600' },
 
   /* Tabs */
   tabBar:       { flexDirection: 'row', marginHorizontal: Spacing.md, marginTop: Spacing.sm, backgroundColor: Colors.card, borderRadius: Radius.lg, padding: 3, borderWidth: 0.5, borderColor: Colors.cardBorder },

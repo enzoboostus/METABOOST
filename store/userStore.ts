@@ -113,6 +113,8 @@ interface UserState {
   syncToSupabase: () => Promise<void>;
   loadFromSupabase: () => Promise<void>;
   loadConfig: () => Promise<void>;
+  logout: () => Promise<void>;
+  resetOnboarding: () => void;
 }
 
 export const useUserStore = create<UserState>()(
@@ -317,6 +319,26 @@ export const useUserStore = create<UserState>()(
         }
 
         if (Object.keys(updates).length > 0) set(updates);
+      },
+
+      // Full logout: clear all user data + Supabase auth session
+      logout: async () => {
+        await supabase.auth.signOut();
+        set({
+          profile: { name: '', gender: 'male', height: 175, onboardingDone: false, goal: null },
+          measures: [],
+          initialMeasure: null,
+          sessions: [],
+          meals: [],
+          todaySteps: 0,
+          weekSteps: 0,
+          syncedToSupabase: false,
+        });
+      },
+
+      // Dev/test: reset onboarding flag without clearing data
+      resetOnboarding: () => {
+        set((state) => ({ profile: { ...state.profile, onboardingDone: false } }));
       },
     }),
     {

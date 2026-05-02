@@ -13,8 +13,8 @@ import { useAvatarParams } from '@/hooks/useAvatarParams';
 import { Colors, Spacing, Radius, Shadow } from '@/constants/theme';
 
 export default function Profile() {
-  const { profile, measures, addMeasure, getCurrentMeasure } = useUserStore(useShallow((s) => ({
-    profile: s.profile, measures: s.measures, addMeasure: s.addMeasure, getCurrentMeasure: s.getCurrentMeasure,
+  const { profile, measures, addMeasure, getCurrentMeasure, logout } = useUserStore(useShallow((s) => ({
+    profile: s.profile, measures: s.measures, addMeasure: s.addMeasure, getCurrentMeasure: s.getCurrentMeasure, logout: s.logout,
   })));
   const params         = useAvatarParams();
   const currentMeasure = getCurrentMeasure();
@@ -152,6 +152,17 @@ export default function Profile() {
               </View>
             </>
           )}
+
+          {/* Logout */}
+          <View style={styles.logoutBlock}>
+            <TouchableOpacity
+              style={styles.logoutBtn}
+              onPress={async () => { await logout(); router.replace('/onboarding'); }}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.logoutTxt}>Se déconnecter</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -211,4 +222,8 @@ const styles = StyleSheet.create({
   tableHead:   { backgroundColor: Colors.surface },
   tableHeadTxt:{ flex: 1, fontSize: 9, fontWeight: '700', color: Colors.textSecondary, padding: Spacing.sm, textTransform: 'uppercase', letterSpacing: 1.5 },
   cell:        { flex: 1, fontSize: 13, fontWeight: '400', color: Colors.text, padding: Spacing.sm },
+
+  logoutBlock: { marginTop: Spacing.xl, marginBottom: Spacing.lg },
+  logoutBtn:   { borderRadius: Radius.full, paddingVertical: 14, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,59,48,0.3)', backgroundColor: 'rgba(255,59,48,0.06)' },
+  logoutTxt:   { fontSize: 15, fontWeight: '700', color: Colors.red, letterSpacing: 0.2 },
 });
