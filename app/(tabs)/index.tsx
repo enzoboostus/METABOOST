@@ -185,7 +185,7 @@ export default function Dashboard() {
         </View>
 
         <View style={styles.avatarBodyRow}>
-          <Avatar3D gender={avatarGender} params={params} size={W * 0.36} />
+          <Avatar gender={avatarGender} params={params} size={W * 0.36} />
           <View style={styles.statsCol}>
             <View style={styles.statItem}>
               <Text style={styles.statBigVal}>{currentMeasure?.weight ?? '—'}</Text>
