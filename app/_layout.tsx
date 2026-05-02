@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet, View, Text } from 'react-native';
 import { Colors } from '@/constants/theme';
+import { useUserStore } from '@/store/userStore';
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: string | null }> {
   constructor(props: any) {
@@ -27,15 +28,29 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { err
   }
 }
 
+function AppInit({ children }: { children: React.ReactNode }) {
+  const { loadConfig, loadFromSupabase } = useUserStore();
+
+  useEffect(() => {
+    // Load God Mode config + user data from Supabase on startup
+    loadConfig();
+    loadFromSupabase();
+  }, []);
+
+  return <>{children}</>;
+}
+
 export default function RootLayout() {
   return (
     <ErrorBoundary>
       <GestureHandlerRootView style={styles.root}>
         <StatusBar style="light" backgroundColor={Colors.background} />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }}>
-          <Stack.Screen name="onboarding" />
-          <Stack.Screen name="(tabs)" />
-        </Stack>
+        <AppInit>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }}>
+            <Stack.Screen name="onboarding" />
+            <Stack.Screen name="(tabs)" />
+          </Stack>
+        </AppInit>
       </GestureHandlerRootView>
     </ErrorBoundary>
   );
