@@ -12,6 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Svg, Circle } from 'react-native-svg';
 import { Search, Droplets, Moon } from 'lucide-react-native';
 import Avatar from '@/components/Avatar';
+import Avatar3D from '@/components/Avatar3D';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore } from '@/store/userStore';
 import { useAvatarParams } from '@/hooks/useAvatarParams';
@@ -184,7 +185,7 @@ export default function Dashboard() {
         </View>
 
         <View style={styles.avatarBodyRow}>
-          <Avatar gender={avatarGender} params={params} size={W * 0.36} />
+          <Avatar3D gender={avatarGender} params={params} size={W * 0.36} />
           <View style={styles.statsCol}>
             <View style={styles.statItem}>
               <Text style={styles.statBigVal}>{currentMeasure?.weight ?? '—'}</Text>
