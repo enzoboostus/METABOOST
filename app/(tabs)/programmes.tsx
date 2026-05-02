@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,53 +7,97 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Play } from 'lucide-react-native';
 import { Colors, Spacing, Radius, Shadow } from '@/constants/theme';
+import { supabase } from '@/lib/supabase';
 
 const { width: W } = Dimensions.get('window');
 
 const CATEGORIES = ['Tous', 'Force', 'Cardio', 'Souplesse', 'Gainage'];
 
-const PROGRAMS = [
+const FALLBACK_PROGRAMS = [
   {
     id: 'p1',
     tag: 'Cardio & Renforcement',
-    title: 'INTENSIVE\nSCULPT',
+    title: 'INTENSIVE SCULPT',
     meta: '4 séances / sem · 35 min',
     level: 'Confirmé',
-    image: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?auto=format&fit=crop&w=800&h=1000&q=90',
+    image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800',
+    category: 'Cardio',
+    active: true,
   },
   {
     id: 'p2',
-    tag: 'Gainage & Posture',
-    title: 'PILATES\nCERCLE',
-    meta: '3 séances / sem · 25 min',
-    level: 'Intermédiaire',
-    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&h=1000&q=90',
+    tag: 'Force & Masse',
+    title: 'POWER STRENGTH',
+    meta: '3 séances / sem · 50 min',
+    level: 'Avancé',
+    image_url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800',
+    category: 'Force',
+    active: true,
   },
   {
     id: 'p3',
-    tag: 'Force & Masse',
-    title: 'MAXIMUM\nFORCE',
-    meta: '4 séances / sem · 40 min',
-    level: 'Expert',
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&h=1000&q=90',
+    tag: 'Souplesse & Récup',
+    title: 'FLEX & MOBILITY',
+    meta: '5 séances / sem · 20 min',
+    level: 'Débutant',
+    image_url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800',
+    category: 'Souplesse',
+    active: true,
   },
   {
     id: 'p4',
-    tag: 'Mobilité & Récupération',
-    title: 'YOGA\nFLOW',
-    meta: '5 séances / sem · 20 min',
-    level: 'Débutant',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&h=1000&q=90',
+    tag: 'Gainage & Stabilité',
+    title: 'CORE GAINAGE',
+    meta: '4 séances / sem · 25 min',
+    level: 'Interméd.',
+    image_url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+    category: 'Gainage',
+    active: true,
   },
 ];
 
+interface Program {
+  id: string;
+  tag: string;
+  title: string;
+  meta: string;
+  level: string;
+  image_url: string;
+  category: string;
+  active: boolean;
+}
+
 export default function Programmes() {
   const [activeCategory, setActiveCategory] = useState(0);
+  const [programs, setPrograms] = useState<Program[]>(FALLBACK_PROGRAMS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadPrograms();
+  }, []);
+
+  async function loadPrograms() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('programs')
+      .select('*')
+      .eq('active', true)
+      .order('sort_order');
+    if (!error && data && data.length > 0) {
+      setPrograms(data as Program[]);
+    }
+    setLoading(false);
+  }
+
+  const filtered = activeCategory === 0
+    ? programs
+    : programs.filter(p => p.category === CATEGORIES[activeCategory]);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -81,35 +125,40 @@ export default function Programmes() {
           ))}
         </ScrollView>
 
-        {/* Program cards */}
-        {PROGRAMS.map((p) => (
-          <TouchableOpacity key={p.id} style={[styles.card, Shadow.lg]} activeOpacity={0.9}>
-            <Image source={{ uri: p.image }} style={styles.cardImg} resizeMode="cover" />
-            <LinearGradient
-              colors={['rgba(6,14,28,0)', 'rgba(6,14,28,0.55)', 'rgba(6,14,28,0.92)']}
-              style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
-            />
-            <View style={styles.overlay}>
-              <View style={styles.overlayTop}>
-                <View style={styles.levelPill}>
-                  <Text style={styles.levelTxt}>{p.level}</Text>
+        {loading ? (
+          <View style={styles.loadingWrap}>
+            <ActivityIndicator color={Colors.accent} size="large" />
+          </View>
+        ) : (
+          filtered.map((p) => (
+            <TouchableOpacity key={p.id} style={[styles.card, Shadow.lg]} activeOpacity={0.9}>
+              <Image source={{ uri: p.image_url }} style={styles.cardImg} resizeMode="cover" />
+              <LinearGradient
+                colors={['rgba(6,14,28,0)', 'rgba(6,14,28,0.55)', 'rgba(6,14,28,0.92)']}
+                style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
+              />
+              <View style={styles.overlay}>
+                <View style={styles.overlayTop}>
+                  <View style={styles.levelPill}>
+                    <Text style={styles.levelTxt}>{p.level}</Text>
+                  </View>
+                  <TouchableOpacity style={styles.playBtn}>
+                    <Play size={14} color="#333" fill="#333" />
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.playBtn}>
-                  <Play size={14} color="#333" fill="#333" />
-                </TouchableOpacity>
+                <View>
+                  <Text style={styles.tag}>{p.tag}</Text>
+                  <Text style={styles.programTitle}>{p.title}</Text>
+                  <Text style={styles.meta}>{p.meta}</Text>
+                  <TouchableOpacity style={styles.cta} activeOpacity={0.85}>
+                    <Play size={12} color="#333" fill="#333" />
+                    <Text style={styles.ctaTxt}>Démarrer</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View>
-                <Text style={styles.tag}>{p.tag}</Text>
-                <Text style={styles.programTitle}>{p.title}</Text>
-                <Text style={styles.meta}>{p.meta}</Text>
-                <TouchableOpacity style={styles.cta} activeOpacity={0.85}>
-                  <Play size={12} color="#333" fill="#333" />
-                  <Text style={styles.ctaTxt}>Démarrer</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          ))
+        )}
 
         <View style={{ height: 20 }} />
       </ScrollView>
@@ -131,6 +180,8 @@ const styles = StyleSheet.create({
   filterPillActive: { backgroundColor: Colors.accent, borderColor: Colors.accent },
   filterTxt:        { fontSize: 13, fontWeight: '500', color: Colors.textSecondary },
   filterTxtActive:  { color: '#333', fontWeight: '700' },
+
+  loadingWrap: { paddingVertical: 60, alignItems: 'center' },
 
   card: {
     marginBottom: Spacing.md,

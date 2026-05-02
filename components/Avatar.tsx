@@ -2,31 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Image, View } from 'react-native';
 import Svg, { Defs, Ellipse, RadialGradient, Stop, LinearGradient as SvgLG } from 'react-native-svg';
 import { AvatarParams } from '@/hooks/useAvatarParams';
+import { useUserStore } from '@/store/userStore';
+import { useShallow } from 'zustand/react/shallow';
 
 interface Props {
   gender: 'male' | 'female';
   params: AvatarParams;
   size?: number;
   minimal?: boolean;
-}
-
-const FEMALE_SLIM     = { uri: 'https://i.ibb.co/0VpncpQm/IMG-5072.png' };
-const FEMALE_ATHLETIC = { uri: 'https://i.ibb.co/gZ1TQDHz/IMG-5073.png' };
-const FEMALE_FULL     = { uri: 'https://i.ibb.co/Qjh86N44/IMG-5074.png' };
-
-const MALE_SLIM     = { uri: 'https://i.ibb.co/SD438mhX/IMG-5045.png' };
-const MALE_ATHLETIC = { uri: 'https://i.ibb.co/SDvdfGB6/IMG-5044.png' };
-const MALE_FULL     = { uri: 'https://i.ibb.co/VYkF2X0n/IMG-5043.png' };
-
-function femaleSource(bmi: number) {
-  if (bmi < 18.5) return FEMALE_SLIM;
-  if (bmi < 30)   return FEMALE_ATHLETIC;
-  return FEMALE_FULL;
-}
-function maleSource(bmi: number) {
-  if (bmi < 18.5) return MALE_SLIM;
-  if (bmi < 30)   return MALE_ATHLETIC;
-  return MALE_FULL;
 }
 
 const ASPECT = 2.6;
@@ -184,6 +167,19 @@ function FortnitePlatform({ width, pulseAnim }: { width: number; pulseAnim: Anim
 }
 
 export default function Avatar({ gender, params, size = 200, minimal = false }: Props) {
+  const { config } = useUserStore(useShallow((s) => ({ config: s.config })));
+
+  function femaleSource(bmi: number) {
+    if (bmi < 18.5) return { uri: config.avatar_female_slim };
+    if (bmi < 30)   return { uri: config.avatar_female_athletic };
+    return { uri: config.avatar_female_full };
+  }
+  function maleSource(bmi: number) {
+    if (bmi < 18.5) return { uri: config.avatar_male_slim };
+    if (bmi < 30)   return { uri: config.avatar_male_athletic };
+    return { uri: config.avatar_male_full };
+  }
+
   const src    = gender === 'female' ? femaleSource(params.bmi) : maleSource(params.bmi);
   const srcKey = src.uri;
   const h      = Math.round(size * ASPECT);

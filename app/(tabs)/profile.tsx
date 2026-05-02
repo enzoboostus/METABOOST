@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Scale, Ruler, TrendingDown, TrendingUp, Activity } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, BodyMeasure } from '@/store/userStore';
 import { useAvatarParams } from '@/hooks/useAvatarParams';
@@ -18,9 +19,10 @@ export default function Profile() {
   const params         = useAvatarParams();
   const currentMeasure = getCurrentMeasure();
 
-  const [weight, setWeight] = useState(currentMeasure?.weight?.toString() ?? '');
-  const [waist,  setWaist]  = useState(currentMeasure?.waist?.toString()  ?? '');
-  const [saved,  setSaved]  = useState(false);
+  const [weight,   setWeight]   = useState(currentMeasure?.weight?.toString() ?? '');
+  const [waist,    setWaist]    = useState(currentMeasure?.waist?.toString()  ?? '');
+  const [saved,    setSaved]    = useState(false);
+  const [tapCount, setTapCount] = useState(0);
 
   function handleSave() {
     const w = parseFloat(weight), wa = parseFloat(waist);
@@ -39,7 +41,20 @@ export default function Profile() {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <Text style={styles.pageLabel}>Mes données</Text>
-          <Text style={styles.title}>PROFIL</Text>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => {
+              const next = tapCount + 1;
+              setTapCount(next);
+              if (next >= 5) {
+                setTapCount(0);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                router.push('/god-mode');
+              }
+            }}
+          >
+            <Text style={styles.title}>PROFIL</Text>
+          </TouchableOpacity>
 
           {/* Profile banner */}
           <View style={[styles.profileBanner, Shadow.md]}>

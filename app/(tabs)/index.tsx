@@ -21,30 +21,21 @@ import { Colors, Spacing, Radius, Shadow } from '@/constants/theme';
 
 const { width: W } = Dimensions.get('window');
 
-const MEAL_KCAL: Record<string, number> = {
-  balanced: 550,
-  rich: 800,
-  protein: 640,
-  light: 360,
-  unknown: 480,
-};
-
 const RING_SIZE  = Math.round(W * 0.52);
 const OUTER_R    = RING_SIZE * 0.37;
 const INNER_R    = RING_SIZE * 0.265;
 const OUTER_W    = RING_SIZE * 0.075;
 const INNER_W    = RING_SIZE * 0.065;
 
-function EnergyRing({ burned, consumed }: { burned: number; consumed: number }) {
+function EnergyRing({ burned, consumed, dailyGoal }: { burned: number; consumed: number; dailyGoal: number }) {
   const cx = RING_SIZE / 2;
   const cy = RING_SIZE / 2;
 
   const outerC = 2 * Math.PI * OUTER_R;
   const innerC = 2 * Math.PI * INNER_R;
 
-  const DAILY_GOAL = 2500;
-  const burnedFrac   = Math.min(burned   / DAILY_GOAL, 1);
-  const consumedFrac = Math.min(consumed / DAILY_GOAL, 1);
+  const burnedFrac   = Math.min(burned   / dailyGoal, 1);
+  const consumedFrac = Math.min(consumed / dailyGoal, 1);
   const balance      = burned - consumed;
 
   return (
@@ -93,13 +84,14 @@ export default function Dashboard() {
   const [waterGlasses, setWaterGlasses] = useState(0);
   const [sleepHours,   setSleepHours]   = useState(7);
 
-  const { profile, getCurrentMeasure, sessions, todaySteps, meals } = useUserStore(
+  const { profile, getCurrentMeasure, sessions, todaySteps, meals, config } = useUserStore(
     useShallow((s) => ({
       profile:           s.profile,
       getCurrentMeasure: s.getCurrentMeasure,
       sessions:          s.sessions,
       todaySteps:        s.todaySteps,
       meals:             s.meals,
+      config:            s.config,
     }))
   );
 
@@ -111,18 +103,26 @@ export default function Dashboard() {
 
   const currentMeasure = getCurrentMeasure();
   const params         = useAvatarParams();
-  const stepPct        = Math.min(100, Math.round((todaySteps / 10000) * 100));
+  const stepPct        = Math.min(100, Math.round((todaySteps / config.daily_step_goal) * 100));
 
   const today = new Date().toDateString();
 
   const todaySessions = sessions.filter(s => new Date(s.date).toDateString() === today);
 
-  const burnedCalories = Math.round(todaySteps * 0.04)
-    + todaySessions.reduce((acc, s) => acc + 180 + s.effort * 28, 0);
+  const mealKcal: Record<string, number> = {
+    balanced: config.meal_kcal_balanced,
+    rich:     config.meal_kcal_rich,
+    protein:  config.meal_kcal_protein,
+    light:    config.meal_kcal_light,
+    unknown:  config.meal_kcal_unknown,
+  };
+
+  const burnedCalories = Math.round(todaySteps * config.kcal_per_step)
+    + todaySessions.reduce((acc, s) => acc + config.session_base_kcal + s.effort * config.session_effort_kcal, 0);
 
   const consumedCalories = meals
     .filter(m => new Date(m.date).toDateString() === today)
-    .reduce((acc, m) => acc + (MEAL_KCAL[m.category] ?? 480), 0);
+    .reduce((acc, m) => acc + (mealKcal[m.category] ?? config.meal_kcal_unknown), 0);
 
   const bmiColor =
     params.bmi < 18.5 ? Colors.warning
@@ -285,7 +285,7 @@ export default function Dashboard() {
         <View style={styles.energyCardInner}>
           {/* Ring */}
           <View style={{ width: RING_SIZE, height: RING_SIZE }}>
-            <EnergyRing burned={burnedCalories} consumed={consumedCalories} />
+            <EnergyRing burned={burnedCalories} consumed={consumedCalories} dailyGoal={config.daily_calorie_goal} />
           </View>
 
           {/* Legend */}
@@ -309,7 +309,7 @@ export default function Dashboard() {
             <View style={styles.legendItem}>
               <View style={[styles.legendDot, { backgroundColor: 'rgba(255,255,255,0.20)' }]} />
               <View>
-                <Text style={styles.legendVal}>2 500 kcal</Text>
+                <Text style={styles.legendVal}>{config.daily_calorie_goal.toLocaleString('fr-FR')} kcal</Text>
                 <Text style={styles.legendLbl}>Objectif</Text>
               </View>
             </View>
