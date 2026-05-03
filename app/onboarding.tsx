@@ -135,8 +135,11 @@ export default function Onboarding() {
         )}
 
         <Animated.View style={[{ flex: 1 }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-          <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+            <ScrollView
+              contentContainerStyle={{ minHeight: H }}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
 
               {/* ══════════════ LOGIN ══════════════ */}
               {step === 'login' && (
@@ -199,7 +202,7 @@ export default function Onboarding() {
 
               {/* ══════════════ WELCOME ══════════════ */}
               {step === 'welcome' && (
-                <View style={styles.screenCenter}>
+                <View style={styles.screen}>
                   <View style={styles.welcomeBlock}>
                     <View style={styles.emojiRing}>
                       <Text style={{ fontSize: 34 }}>👋</Text>
@@ -211,7 +214,7 @@ export default function Onboarding() {
                       onChangeText={setUserName}
                       placeholder="Ton prénom"
                       placeholderTextColor="rgba(226,209,179,0.28)"
-                      returnKeyType="next"
+                      returnKeyType="done"
                       autoCapitalize="words"
                       onSubmitEditing={() => Keyboard.dismiss()}
                     />
@@ -229,12 +232,12 @@ export default function Onboarding() {
                         </TouchableOpacity>
                       ))}
                     </View>
-
-                    <TouchableOpacity style={[styles.ctaBtn, { marginTop: 16, width: '100%' }]} onPress={goNext} activeOpacity={0.88}>
-                      <Text style={styles.ctaTxt}>C'est parti !</Text>
-                      <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
-                    </TouchableOpacity>
                   </View>
+
+                  <TouchableOpacity style={styles.ctaBtn} onPress={goNext} activeOpacity={0.88}>
+                    <Text style={styles.ctaTxt}>C'est parti !</Text>
+                    <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
+                  </TouchableOpacity>
                 </View>
               )}
 
@@ -365,7 +368,6 @@ export default function Onboarding() {
               )}
 
             </ScrollView>
-          </KeyboardAvoidingView>
         </Animated.View>
       </SafeAreaView>
     </View>
@@ -399,15 +401,11 @@ const styles = StyleSheet.create({
   },
 
   screen: {
-    flex: 1, paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.xl, paddingBottom: Spacing.lg,
+    minHeight: H,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xl,
+    paddingBottom: 120,
     justifyContent: 'space-between',
-  },
-
-  screenCenter: {
-    flex: 1, paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.lg, paddingBottom: Spacing.lg,
-    justifyContent: 'center',
   },
 
   // ── Login ────────────────────────────────────────
@@ -462,7 +460,7 @@ const styles = StyleSheet.create({
   legalU: { color: 'rgba(226,209,179,0.55)', textDecorationLine: 'underline' },
 
   // ── Welcome ──────────────────────────────────────
-  welcomeBlock: { alignItems: 'center', gap: 14, paddingTop: 0 },
+  welcomeBlock: { alignItems: 'center', gap: 14 },
   emojiRing: {
     width: 68, height: 68, borderRadius: 34,
     backgroundColor: 'rgba(255,255,255,0.05)',
