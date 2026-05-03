@@ -341,25 +341,24 @@ export default function Onboarding() {
                     </Text>
                   </View>
 
-                  <View style={styles.measuresList}>
+                  <View style={styles.measuresGrid}>
                     {[
                       { label: 'Poids', unit: 'kg', value: weight, set: setWeight, placeholder: '75' },
                       { label: 'Taille', unit: 'cm', value: height, set: setHeight, placeholder: '175' },
-                      { label: 'Tour de taille', unit: 'cm', value: waist, set: setWaist, placeholder: '80' },
+                      { label: 'Tour', unit: 'cm', value: waist, set: setWaist, placeholder: '80' },
                     ].map(({ label, unit, value, set, placeholder }) => (
-                      <View key={label} style={styles.measureRow}>
-                        <Text style={styles.measureLbl}>{label}</Text>
-                        <View style={styles.measureRight}>
-                          <TextInput
-                            style={styles.measureInput}
-                            value={value}
-                            onChangeText={set}
-                            keyboardType="decimal-pad"
-                            placeholder={placeholder}
-                            placeholderTextColor={Colors.textTertiary}
-                          />
-                          <Text style={styles.measureUnit}>{unit}</Text>
-                        </View>
+                      <View key={label} style={styles.measureCard}>
+                        <Text style={styles.measureCardLbl}>{label}</Text>
+                        <TextInput
+                          style={styles.measureCardInput}
+                          value={value}
+                          onChangeText={set}
+                          keyboardType="decimal-pad"
+                          placeholder={placeholder}
+                          placeholderTextColor={Colors.textTertiary}
+                          textAlign="center"
+                        />
+                        <Text style={styles.measureCardUnit}>{unit}</Text>
                       </View>
                     ))}
                   </View>
@@ -585,30 +584,36 @@ const styles = StyleSheet.create({
   },
 
   // ── Measures ──────────────────────────────────────
-  measuresList: { gap: Spacing.sm },
-  measureRow: {
-    flexDirection: 'row',
+  measuresGrid: { flexDirection: 'row', gap: Spacing.sm },
+  measureCard: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.xs,
     borderRadius: Radius.xl,
     borderWidth: 0.5,
-    borderColor: 'rgba(255,255,255,0.08)',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    gap: 4,
     ...(Platform.OS === 'web' ? { backdropFilter: 'blur(10px)' } as any : {}),
   },
-  measureLbl:       { flex: 1, fontSize: 15, fontWeight: '500', color: Colors.text },
-  measureRight:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  measureInput: {
-    fontSize: 26,
+  measureCardLbl: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+  },
+  measureCardInput: {
+    fontSize: 34,
     fontWeight: '900',
     color: Colors.accent,
-    textAlign: 'right',
-    width: 88,
+    textAlign: 'center',
+    width: '100%',
+    paddingVertical: Spacing.sm,
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
   },
-  measureUnit: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400', width: 24 },
+  measureCardUnit: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
 
   scanBtn: {
     flexDirection: 'row',
