@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
   Dimensions, Animated, Platform, Alert, ScrollView,
-  KeyboardAvoidingView,
+  KeyboardAvoidingView, Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -211,8 +211,9 @@ export default function Onboarding() {
                       onChangeText={setUserName}
                       placeholder="Ton prénom"
                       placeholderTextColor="rgba(226,209,179,0.28)"
-                      returnKeyType="done"
+                      returnKeyType="next"
                       autoCapitalize="words"
+                      onSubmitEditing={() => Keyboard.dismiss()}
                     />
                     <Text style={styles.welcomeSub}>Prêt(e) à transformer ton corps ? 🔥</Text>
                     <View style={styles.genderRow}>
@@ -229,7 +230,7 @@ export default function Onboarding() {
                       ))}
                     </View>
 
-                    <TouchableOpacity style={[styles.ctaBtn, { marginTop: 28, width: '100%' }]} onPress={goNext} activeOpacity={0.88}>
+                    <TouchableOpacity style={[styles.ctaBtn, { marginTop: 16, width: '100%' }]} onPress={goNext} activeOpacity={0.88}>
                       <Text style={styles.ctaTxt}>C'est parti !</Text>
                       <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
                     </TouchableOpacity>
@@ -405,7 +406,7 @@ const styles = StyleSheet.create({
 
   screenCenter: {
     flex: 1, paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.xl, paddingBottom: Spacing.lg,
+    paddingTop: Spacing.lg, paddingBottom: Spacing.lg,
     justifyContent: 'center',
   },
 
@@ -461,23 +462,23 @@ const styles = StyleSheet.create({
   legalU: { color: 'rgba(226,209,179,0.55)', textDecorationLine: 'underline' },
 
   // ── Welcome ──────────────────────────────────────
-  welcomeBlock: { alignItems: 'center', gap: 18, paddingTop: H * 0.05 },
+  welcomeBlock: { alignItems: 'center', gap: 14, paddingTop: 0 },
   emojiRing: {
-    width: 82, height: 82, borderRadius: 41,
+    width: 68, height: 68, borderRadius: 34,
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)',
     alignItems: 'center', justifyContent: 'center',
   },
-  welcomeHi: { fontSize: 17, color: Colors.textSecondary, fontWeight: '300' },
+  welcomeHi: { fontSize: 16, color: Colors.textSecondary, fontWeight: '300' },
   nameInput: {
-    fontSize: 44, fontWeight: '900', color: Colors.accent,
+    fontSize: 40, fontWeight: '900', color: Colors.accent,
     textAlign: 'center', letterSpacing: -1,
     borderBottomWidth: 2, borderBottomColor: 'rgba(226,209,179,0.28)',
-    paddingBottom: 10, width: '100%',
+    paddingBottom: 8, width: '100%',
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
   },
-  welcomeSub: { fontSize: 17, color: Colors.text, textAlign: 'center' },
-  genderRow:  { flexDirection: 'row', gap: 10, width: '100%', marginTop: 4 },
+  welcomeSub: { fontSize: 16, color: Colors.text, textAlign: 'center' },
+  genderRow:  { flexDirection: 'row', gap: 10, width: '100%' },
   genderPill: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     paddingVertical: 14, borderRadius: Radius.full,
