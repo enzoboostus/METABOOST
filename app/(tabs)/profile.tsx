@@ -65,6 +65,13 @@ export default function Profile() {
               <Text style={styles.profileName}>{profile.name || 'Athlète'}</Text>
               <Text style={styles.profileSub}>{profile.gender === 'male' ? 'Homme' : 'Femme'} · {profile.height} cm</Text>
             </View>
+            <TouchableOpacity
+              style={styles.logoutIconBtn}
+              onPress={async () => { await logout(); router.replace('/onboarding'); }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.logoutIconTxt}>⏻</Text>
+            </TouchableOpacity>
           </View>
 
           {/* BMI */}
@@ -223,7 +230,9 @@ const styles = StyleSheet.create({
   tableHeadTxt:{ flex: 1, fontSize: 9, fontWeight: '700', color: Colors.textSecondary, padding: Spacing.sm, textTransform: 'uppercase', letterSpacing: 1.5 },
   cell:        { flex: 1, fontSize: 13, fontWeight: '400', color: Colors.text, padding: Spacing.sm },
 
-  logoutBlock: { marginTop: Spacing.xl, marginBottom: Spacing.lg },
-  logoutBtn:   { borderRadius: Radius.full, paddingVertical: 14, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,59,48,0.3)', backgroundColor: 'rgba(255,59,48,0.06)' },
-  logoutTxt:   { fontSize: 15, fontWeight: '700', color: Colors.red, letterSpacing: 0.2 },
+  logoutBlock:   { marginTop: Spacing.xl, marginBottom: Spacing.lg },
+  logoutBtn:     { borderRadius: Radius.full, paddingVertical: 14, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,59,48,0.3)', backgroundColor: 'rgba(255,59,48,0.06)' },
+  logoutTxt:     { fontSize: 15, fontWeight: '700', color: Colors.red, letterSpacing: 0.2 },
+  logoutIconBtn: { width: 38, height: 38, borderRadius: 19, borderWidth: 1, borderColor: 'rgba(255,59,48,0.35)', backgroundColor: 'rgba(255,59,48,0.08)', alignItems: 'center', justifyContent: 'center' },
+  logoutIconTxt: { fontSize: 16, color: Colors.red },
 });
