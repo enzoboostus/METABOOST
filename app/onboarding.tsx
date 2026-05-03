@@ -186,15 +186,13 @@ export default function Onboarding() {
                   {/* Mentions légales RGPD */}
                   <Text style={styles.legal}>
                     En continuant, tu acceptes nos{' '}
-                    <Text style={styles.legalU}>Conditions d'utilisation</Text>
+                    <Text style={styles.legalU} onPress={() => router.push('/legal/cgu')}>Conditions d'utilisation</Text>
                     {' '}et notre{' '}
-                    <Text style={styles.legalU}>Politique de confidentialité</Text>
-                    {' '}(RGPD). Tu consens également au traitement de tes données de santé (mesures corporelles) au sens de l'art. 9 du RGPD, sous le contrôle de la{' '}
-                    <Text style={styles.legalU}>CNIL</Text>
-                    {'. '}
-                    <Text style={styles.legalU}>Mentions légales</Text>
+                    <Text style={styles.legalU} onPress={() => router.push('/legal/privacy')}>Politique de confidentialité</Text>
+                    {' '}(RGPD). Tu consens au traitement de tes données de santé (mesures corporelles) au sens de l'art. 9 du RGPD, sous le contrôle de la CNIL.{' '}
+                    <Text style={styles.legalU} onPress={() => router.push('/legal/mentions')}>Mentions légales</Text>
                     {' · '}
-                    <Text style={styles.legalU}>Cookies</Text>.
+                    <Text style={styles.legalU} onPress={() => router.push('/legal/cookies')}>Cookies</Text>.
                   </Text>
                 </View>
               )}

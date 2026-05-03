@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  TextInput, KeyboardAvoidingView, Platform,
+  TextInput, KeyboardAvoidingView, Platform, Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Scale, Ruler, TrendingDown, TrendingUp, Activity } from 'lucide-react-native';
@@ -153,6 +153,20 @@ export default function Profile() {
             </>
           )}
 
+          {/* Legal links */}
+          <View style={styles.legalRow}>
+            {[
+              { label: 'Mentions légales',      path: '/legal/mentions' },
+              { label: 'CGU',                    path: '/legal/cgu'     },
+              { label: 'Confidentialité',        path: '/legal/privacy' },
+              { label: 'Cookies',                path: '/legal/cookies' },
+            ].map((l) => (
+              <TouchableOpacity key={l.path} onPress={() => router.push(l.path as any)} activeOpacity={0.7}>
+                <Text style={styles.legalLink}>{l.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           {/* Logout */}
           <View style={styles.logoutBlock}>
             <TouchableOpacity
@@ -223,7 +237,9 @@ const styles = StyleSheet.create({
   tableHeadTxt:{ flex: 1, fontSize: 9, fontWeight: '700', color: Colors.textSecondary, padding: Spacing.sm, textTransform: 'uppercase', letterSpacing: 1.5 },
   cell:        { flex: 1, fontSize: 13, fontWeight: '400', color: Colors.text, padding: Spacing.sm },
 
-  logoutBlock:   { marginTop: Spacing.xl, marginBottom: Spacing.lg },
+  legalRow:      { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, justifyContent: 'center', marginTop: Spacing.xl, marginBottom: Spacing.md },
+  legalLink:     { fontSize: 11, color: Colors.textTertiary, textDecorationLine: 'underline' },
+  logoutBlock:   { marginBottom: Spacing.lg },
   logoutBtn:     { borderRadius: Radius.full, paddingVertical: 14, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,59,48,0.3)', backgroundColor: 'rgba(255,59,48,0.06)' },
   logoutTxt:     { fontSize: 15, fontWeight: '700', color: Colors.red, letterSpacing: 0.2 },
 });

@@ -50,6 +50,7 @@ export default function RootLayout() {
             <Stack.Screen name="onboarding" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="god-mode" />
+            <Stack.Screen name="legal" />
           </Stack>
         </AppInit>
       </GestureHandlerRootView>
