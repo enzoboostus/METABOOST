@@ -7,7 +7,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Flame, TrendingUp, Shield, ChevronRight, ScanLine, Zap, Target, BarChart3 } from 'lucide-react-native';
+import { Flame, TrendingUp, Shield, ChevronRight, ScanLine } from 'lucide-react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, Gender, Goal } from '@/store/userStore';
 import { supabase } from '@/lib/supabase';
@@ -19,12 +19,6 @@ const { width: W, height: H } = Dimensions.get('window');
 type Step = 'login' | 'welcome' | 'goal' | 'measures';
 const STEPS: Step[] = ['login', 'welcome', 'goal', 'measures'];
 const PROGRESS: Record<Step, number> = { login: 0, welcome: 0.33, goal: 0.66, measures: 1 };
-
-const FEATURES = [
-  { icon: <Zap size={15} color={Colors.accent} strokeWidth={2} />,      text: 'Suivi morphologique en temps réel' },
-  { icon: <Target size={15} color={Colors.accent} strokeWidth={2} />,   text: 'Programmes adaptés à ton objectif' },
-  { icon: <BarChart3 size={15} color={Colors.accent} strokeWidth={2} />, text: 'Ta progression, semaine après semaine' },
-];
 
 interface GoalDef { key: Goal; label: string; sub: string; color: string; icon: React.ReactNode }
 const GOALS: GoalDef[] = [
@@ -148,20 +142,24 @@ export default function Onboarding() {
               {step === 'login' && (
                 <View style={styles.screen}>
 
+                  {/* Hero */}
                   <View style={styles.loginHero}>
                     <View style={styles.logoBadge}>
                       <Text style={styles.logoEmoji}>⚡</Text>
                     </View>
                     <Text style={styles.logoName}>METABOOST</Text>
-                    <Text style={styles.logoTagline}>Ta transformation,{'\n'}commence maintenant.</Text>
+                    <View style={styles.taglineBlock}>
+                      <Text style={styles.tagline1}>Transforme ton corps.</Text>
+                      <Text style={styles.tagline2}>Suis tes progrès.</Text>
+                      <Text style={styles.tagline3}>Atteins tes objectifs.</Text>
+                    </View>
                   </View>
 
-                  {/* Feature list */}
-                  <View style={styles.featureBox}>
-                    {FEATURES.map((f, i) => (
-                      <View key={i} style={[styles.featureRow, i < FEATURES.length - 1 && styles.featureRowBorder]}>
-                        <View style={styles.featureIconBg}>{f.icon}</View>
-                        <Text style={styles.featureTxt}>{f.text}</Text>
+                  {/* Pills */}
+                  <View style={styles.pillsRow}>
+                    {['📊 Morphologie', '💪 Entraînement', '📈 Nutrition'].map((p) => (
+                      <View key={p} style={styles.pill}>
+                        <Text style={styles.pillTxt}>{p}</Text>
                       </View>
                     ))}
                   </View>
@@ -185,18 +183,25 @@ export default function Onboarding() {
                     </TouchableOpacity>
                   </View>
 
+                  {/* Mentions légales RGPD */}
                   <Text style={styles.legal}>
                     En continuant, tu acceptes nos{' '}
                     <Text style={styles.legalU}>Conditions d'utilisation</Text>
                     {' '}et notre{' '}
-                    <Text style={styles.legalU}>Politique de confidentialité</Text>.
+                    <Text style={styles.legalU}>Politique de confidentialité</Text>
+                    {' '}(RGPD). Tu consens également au traitement de tes données de santé (mesures corporelles) au sens de l'art. 9 du RGPD, sous le contrôle de la{' '}
+                    <Text style={styles.legalU}>CNIL</Text>
+                    {'. '}
+                    <Text style={styles.legalU}>Mentions légales</Text>
+                    {' · '}
+                    <Text style={styles.legalU}>Cookies</Text>.
                   </Text>
                 </View>
               )}
 
               {/* ══════════════ WELCOME ══════════════ */}
               {step === 'welcome' && (
-                <View style={styles.screen}>
+                <View style={styles.screenCenter}>
                   <View style={styles.welcomeBlock}>
                     <View style={styles.emojiRing}>
                       <Text style={{ fontSize: 34 }}>👋</Text>
@@ -208,7 +213,6 @@ export default function Onboarding() {
                       onChangeText={setUserName}
                       placeholder="Ton prénom"
                       placeholderTextColor="rgba(226,209,179,0.28)"
-                      autoFocus={!userName}
                       returnKeyType="done"
                       autoCapitalize="words"
                     />
@@ -226,12 +230,12 @@ export default function Onboarding() {
                         </TouchableOpacity>
                       ))}
                     </View>
-                  </View>
 
-                  <TouchableOpacity style={styles.ctaBtn} onPress={goNext} activeOpacity={0.88}>
-                    <Text style={styles.ctaTxt}>C'est parti !</Text>
-                    <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
-                  </TouchableOpacity>
+                    <TouchableOpacity style={[styles.ctaBtn, { marginTop: 28, width: '100%' }]} onPress={goNext} activeOpacity={0.88}>
+                      <Text style={styles.ctaTxt}>C'est parti !</Text>
+                      <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               )}
 
@@ -401,33 +405,36 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  // ── Login ────────────────────────────────────────
-  loginHero: { alignItems: 'center', paddingTop: H * 0.04, gap: 14 },
-  logoBadge: {
-    width: 90, height: 90, borderRadius: 45,
-    backgroundColor: 'rgba(226,209,179,0.09)',
-    borderWidth: 1, borderColor: 'rgba(226,209,179,0.2)',
-    alignItems: 'center', justifyContent: 'center',
-    ...(Platform.OS === 'web' ? { boxShadow: '0 0 64px rgba(226,209,179,0.18)' } as any : {}),
+  screenCenter: {
+    flex: 1, paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xl, paddingBottom: Spacing.lg,
+    justifyContent: 'center',
   },
-  logoEmoji:  { fontSize: 44 },
-  logoName:   { fontSize: 30, fontWeight: '900', color: Colors.text, letterSpacing: 8, textTransform: 'uppercase' },
-  logoTagline:{ fontSize: 16, color: Colors.textSecondary, textAlign: 'center', lineHeight: 26, fontWeight: '300' },
 
-  featureBox: {
-    borderRadius: Radius.xl, borderWidth: 1,
-    borderColor: 'rgba(226,209,179,0.1)',
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    overflow: 'hidden',
-  },
-  featureRow: { flexDirection: 'row', alignItems: 'center', gap: 14, padding: 14 },
-  featureRowBorder: { borderBottomWidth: 0.5, borderBottomColor: 'rgba(255,255,255,0.06)' },
-  featureIconBg: {
-    width: 34, height: 34, borderRadius: 10,
-    backgroundColor: 'rgba(226,209,179,0.1)',
+  // ── Login ────────────────────────────────────────
+  loginHero: { alignItems: 'center', paddingTop: H * 0.03, gap: 16 },
+  logoBadge: {
+    width: 96, height: 96, borderRadius: 48,
+    backgroundColor: 'rgba(226,209,179,0.09)',
+    borderWidth: 1, borderColor: 'rgba(226,209,179,0.22)',
     alignItems: 'center', justifyContent: 'center',
+    ...(Platform.OS === 'web' ? { boxShadow: '0 0 72px rgba(226,209,179,0.2)' } as any : {}),
   },
-  featureTxt: { flex: 1, fontSize: 14, color: Colors.text, fontWeight: '400', lineHeight: 20 },
+  logoEmoji: { fontSize: 46 },
+  logoName:  { fontSize: 32, fontWeight: '900', color: Colors.text, letterSpacing: 8, textTransform: 'uppercase' },
+  taglineBlock: { alignItems: 'center', gap: 4, marginTop: 4 },
+  tagline1: { fontSize: 18, fontWeight: '700', color: Colors.text,          letterSpacing: 0.1 },
+  tagline2: { fontSize: 16, fontWeight: '400', color: Colors.textSecondary, letterSpacing: 0.1 },
+  tagline3: { fontSize: 14, fontWeight: '300', color: Colors.accent,        letterSpacing: 0.1, opacity: 0.8 },
+
+  pillsRow: { flexDirection: 'row', gap: 8, justifyContent: 'center', flexWrap: 'wrap' },
+  pill: {
+    paddingHorizontal: 14, paddingVertical: 8,
+    borderRadius: Radius.full,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 0.5, borderColor: 'rgba(255,255,255,0.12)',
+  },
+  pillTxt: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
 
   authBlock: { gap: 12 },
   googleBtn: {
@@ -452,8 +459,8 @@ const styles = StyleSheet.create({
   },
   ghostTxt: { fontSize: 15, fontWeight: '500', color: Colors.textSecondary },
 
-  legal:  { fontSize: 10, color: Colors.textTertiary, textAlign: 'center', lineHeight: 16 },
-  legalU: { color: 'rgba(226,209,179,0.5)', textDecorationLine: 'underline' },
+  legal:  { fontSize: 9.5, color: Colors.textTertiary, textAlign: 'center', lineHeight: 15, paddingHorizontal: 4 },
+  legalU: { color: 'rgba(226,209,179,0.55)', textDecorationLine: 'underline' },
 
   // ── Welcome ──────────────────────────────────────
   welcomeBlock: { alignItems: 'center', gap: 18, paddingTop: H * 0.05 },
