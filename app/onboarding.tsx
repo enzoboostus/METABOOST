@@ -172,7 +172,7 @@ export default function Onboarding() {
         )}
 
         <Animated.View
-          style={[{ flex: 1 }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
+          style={[{ flex: 1, width: '100%', overflow: 'hidden' }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
         >
           <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -433,7 +433,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.lg,
     justifyContent: 'space-between',
-    minHeight: H - 120,
   },
 
   // ── Login ──────────────────────────────────────────
@@ -599,17 +598,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.04)',
     ...(Platform.OS === 'web' ? { backdropFilter: 'blur(10px)' } as any : {}),
   },
-  measureLbl:       { fontSize: 15, fontWeight: '500', color: Colors.text },
-  measureRight:     { flexDirection: 'row', alignItems: 'baseline', gap: 6 },
+  measureLbl:       { flex: 1, fontSize: 15, fontWeight: '500', color: Colors.text },
+  measureRight:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
   measureInput: {
     fontSize: 26,
     fontWeight: '900',
     color: Colors.accent,
     textAlign: 'right',
-    minWidth: 72,
+    width: 88,
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
   },
-  measureUnit: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400' },
+  measureUnit: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400', width: 24 },
 
   scanBtn: {
     flexDirection: 'row',
