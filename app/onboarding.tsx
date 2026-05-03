@@ -67,6 +67,8 @@ export default function Onboarding() {
   const [height, setHeight]   = useState('175');
   const [weight, setWeight]   = useState('');
   const [waist, setWaist]     = useState('');
+  const [thigh, setThigh]     = useState('');
+  const [arm, setArm]         = useState('');
 
   const fadeAnim     = useRef(new Animated.Value(1)).current;
   const slideAnim    = useRef(new Animated.Value(0)).current;
@@ -139,8 +141,10 @@ export default function Onboarding() {
     const h  = parseFloat(height) || 175;
     const w  = parseFloat(weight) || 75;
     const wa = parseFloat(waist)  || 80;
+    const th = parseFloat(thigh)  || undefined;
+    const ar = parseFloat(arm)    || undefined;
     setProfile({ name: userName.trim() || 'Athlète', gender, height: h, goal });
-    const measure = { date: new Date().toISOString(), weight: w, waist: wa };
+    const measure = { date: new Date().toISOString(), weight: w, waist: wa, thigh: th, arm: ar };
     addMeasure(measure);
     setInitialMeasure(measure);
     completeOnboarding();
@@ -341,11 +345,12 @@ export default function Onboarding() {
                     </Text>
                   </View>
 
+                  {/* Row 1: poids, taille, ventre */}
                   <View style={styles.measuresGrid}>
                     {[
-                      { label: 'Poids', unit: 'kg', value: weight, set: setWeight, placeholder: '75' },
-                      { label: 'Taille', unit: 'cm', value: height, set: setHeight, placeholder: '175' },
-                      { label: 'Tour', unit: 'cm', value: waist, set: setWaist, placeholder: '80' },
+                      { label: 'Poids',  unit: 'kg', value: weight, set: setWeight, placeholder: '75',  required: true },
+                      { label: 'Taille', unit: 'cm', value: height, set: setHeight, placeholder: '175', required: true },
+                      { label: 'Ventre', unit: 'cm', value: waist,  set: setWaist,  placeholder: '80',  required: true },
                     ].map(({ label, unit, value, set, placeholder }) => (
                       <View key={label} style={styles.measureCard}>
                         <Text style={styles.measureCardLbl}>{label}</Text>
@@ -361,6 +366,33 @@ export default function Onboarding() {
                         <Text style={styles.measureCardUnit}>{unit}</Text>
                       </View>
                     ))}
+                  </View>
+
+                  {/* Row 2: cuisse, bras (optionnel) */}
+                  <View style={[styles.measuresGrid, { marginTop: Spacing.sm }]}>
+                    {[
+                      { label: 'Cuisse', unit: 'cm', value: thigh, set: setThigh, placeholder: '55' },
+                      { label: 'Bras',   unit: 'cm', value: arm,   set: setArm,   placeholder: '32' },
+                    ].map(({ label, unit, value, set, placeholder }) => (
+                      <View key={label} style={[styles.measureCard, styles.measureCardOpt]}>
+                        <Text style={styles.measureCardLbl}>{label}</Text>
+                        <TextInput
+                          style={styles.measureCardInput}
+                          value={value}
+                          onChangeText={set}
+                          keyboardType="decimal-pad"
+                          placeholder={placeholder}
+                          placeholderTextColor={Colors.textTertiary}
+                          textAlign="center"
+                        />
+                        <Text style={styles.measureCardUnit}>{unit}</Text>
+                      </View>
+                    ))}
+                    <View style={[styles.measureCard, styles.measureCardOpt, { backgroundColor: 'transparent', borderColor: 'transparent' }]}>
+                      <Text style={{ fontSize: 10, color: Colors.textTertiary, textAlign: 'center', lineHeight: 16 }}>
+                        Optionnel{'\n'}(modifiable{'\n'}plus tard)
+                      </Text>
+                    </View>
                   </View>
 
                   {/* Scanner (Beta) */}
@@ -614,6 +646,11 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
   },
   measureCardUnit: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
+  measureCardOpt: {
+    borderColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    opacity: 0.75,
+  },
 
   scanBtn: {
     flexDirection: 'row',

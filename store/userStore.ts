@@ -11,6 +11,8 @@ export interface BodyMeasure {
   date: string;
   weight: number;
   waist: number;
+  thigh?: number;
+  arm?: number;
 }
 
 export interface Session {
