@@ -106,6 +106,8 @@ export default function Dashboard() {
   const stepPct        = Math.min(100, Math.round((todaySteps / config.daily_step_goal) * 100));
 
   const today = new Date().toDateString();
+  const hour  = new Date().getHours();
+  const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
 
   const todaySessions = sessions.filter(s => new Date(s.date).toDateString() === today);
 
@@ -144,8 +146,8 @@ export default function Dashboard() {
         />
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Bonjour,</Text>
-            <Text style={styles.name}>{profile.name || 'Athlète'}</Text>
+            <Text style={styles.greeting}>{greeting},</Text>
+            <Text style={styles.name}>{profile.name || 'Athlète'} 👋</Text>
           </View>
           <View style={styles.headerRight}>
             <TouchableOpacity style={styles.iconBtn}>
