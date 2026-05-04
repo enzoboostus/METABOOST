@@ -190,7 +190,7 @@ export default function Onboarding() {
           {/* ══════════════ WELCOME ══════════════ */}
           {step === 'welcome' && (
             <View style={styles.screen}>
-              <View style={styles.screenContent}>
+              <View style={[styles.screenContent, Platform.OS === 'web' && { paddingBottom: 80 }]}>
                 <View style={styles.welcomeBlock}>
                   <View style={styles.emojiRing}>
                     <Text style={{ fontSize: 34 }}>👋</Text>
@@ -223,10 +223,12 @@ export default function Onboarding() {
                   </View>
                 </View>
               </View>
-              <TouchableOpacity style={styles.ctaBtn} onPress={goNext} activeOpacity={0.88}>
-                <Text style={styles.ctaTxt}>C'est parti !</Text>
-                <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
-              </TouchableOpacity>
+              <View style={Platform.OS === 'web' ? styles.ctaFixed : null}>
+                <TouchableOpacity style={styles.ctaBtn} onPress={goNext} activeOpacity={0.88}>
+                  <Text style={styles.ctaTxt}>C'est parti !</Text>
+                  <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
+                </TouchableOpacity>
+              </View>
             </View>
           )}
 
@@ -270,10 +272,12 @@ export default function Onboarding() {
                   })}
                 </View>
               </View>
-              <TouchableOpacity style={[styles.ctaBtn, !goal && styles.ctaOff]} onPress={goal ? goNext : undefined} activeOpacity={0.88}>
-                <Text style={styles.ctaTxt}>Continuer</Text>
-                <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
-              </TouchableOpacity>
+              <View style={Platform.OS === 'web' ? styles.ctaFixed : null}>
+                <TouchableOpacity style={[styles.ctaBtn, !goal && styles.ctaOff]} onPress={goal ? goNext : undefined} activeOpacity={0.88}>
+                  <Text style={styles.ctaTxt}>Continuer</Text>
+                  <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
+                </TouchableOpacity>
+              </View>
             </View>
           )}
 
@@ -341,7 +345,7 @@ export default function Onboarding() {
                   <View style={styles.beta}><Text style={styles.betaTxt}>BÊTA</Text></View>
                 </TouchableOpacity>
               </View>
-              <View style={{ gap: Spacing.sm }}>
+              <View style={[Platform.OS === 'web' ? styles.ctaFixed : null, { gap: Spacing.sm }]}>
                 <TouchableOpacity style={styles.ctaBtn} onPress={finish} activeOpacity={0.88}>
                   <Text style={styles.ctaTxt}>Démarrer MetaBoost 🚀</Text>
                 </TouchableOpacity>
@@ -554,4 +558,12 @@ const styles = StyleSheet.create({
   ctaTxt:  { fontSize: 17, fontWeight: '800', color: '#2a2a2a', letterSpacing: 0.2 },
   skipBtn: { alignItems: 'center', paddingVertical: Spacing.sm },
   skipTxt: { fontSize: 13, color: Colors.textTertiary },
+
+  ctaFixed: Platform.OS === 'web' ? {
+    position: 'fixed' as any,
+    bottom: 'calc(20px + env(safe-area-inset-bottom))' as any,
+    left: '5%' as any,
+    width: '90%' as any,
+    zIndex: 50,
+  } : {},
 });
