@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!--
+      Fix 1 – iOS Safari auto-zoom prevention:
+      maximum-scale=1 and user-scalable=0 stop Safari from zooming
+      when an input receives focus.
+    -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
+    />
+
+    <title>MetaBoost</title>
+
+    <style id="expo-reset">
+      /* Base reset recommended by react-native-web */
+      html,
+      body {
+        height: 100%;
+        /* Fix 3 – neutralise any residual horizontal scroll */
+        overflow-x: hidden;
+      }
+      body {
+        overflow: hidden;
+      }
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+
+      /*
+        Fix 2 – iOS Safari auto-zoom prevention (CSS layer):
+        Safari zooms the viewport when a focused input has font-size < 16 px.
+        Forcing 16 px on all text inputs prevents the zoom entirely.
+      */
+      input,
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
