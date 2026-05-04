@@ -23,6 +23,11 @@
     <title>MetaBoost</title>
 
     <style id="expo-reset">
+      /* Peindre le néant : si Safari soulève l'app, il affiche du noir */
+      html { background-color: #000000 !important; }
+      body { background-color: #000000 !important; }
+      #root { background-color: #000000 !important; }
+
       html,
       body {
         overscroll-behavior-y: none !important;
@@ -30,7 +35,6 @@
         width: 100%;
         height: -webkit-fill-available;
         height: 100%;
-        background-color: #000000 !important;
         overflow-x: hidden;
       }
       body {
@@ -47,7 +51,6 @@
         height: -webkit-fill-available;
         overflow: hidden;
         flex: 1;
-        background-color: #000000;
       }
       /* Fix anti-zoom iOS — CONSTANTE IMMUABLE, ne pas toucher */
       input,
@@ -72,6 +75,18 @@
         'touchmove',
         function (e) {
           if (e.target.tagName !== 'INPUT') e.preventDefault();
+        },
+        { passive: false }
+      );
+    </script>
+
+    <!-- Empêche Safari de scroller vers l'input au focus -->
+    <script>
+      window.addEventListener(
+        'focusin',
+        function (e) {
+          e.preventDefault();
+          window.scrollTo(0, 0);
         },
         { passive: false }
       );

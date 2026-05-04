@@ -403,6 +403,9 @@ export default function Onboarding() {
                 </View>
               )}
 
+              {/* Extension noire invisible : couvre le vide si Safari soulève l'app */}
+              <View style={{ height: 500, backgroundColor: '#000000', marginBottom: -500 }} />
+
             </ScrollView>
         </Animated.View>
       </SafeAreaView>
