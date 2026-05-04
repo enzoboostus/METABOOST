@@ -3,92 +3,32 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-    <!--
-      Viewport — CONSTANTE IMMUABLE.
-      maximum-scale=1 + user-scalable=0 = anti-zoom iOS.
-      interactive-widget=resizes-content = pas de saut horizontal clavier.
-      viewport-fit=cover = safe areas couvertes.
-    -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, interactive-widget=resizes-content, viewport-fit=cover"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
     />
-
-    <!-- StatusBar iOS -->
-    <meta name="theme-color" content="#000000" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
     <title>MetaBoost</title>
-
     <style id="expo-reset">
       html,
       body {
         height: 100%;
-        overscroll-behavior-y: none;
       }
       body {
         overflow: hidden;
-        position: fixed;
-        width: 100%;
-        -webkit-overflow-scrolling: auto;
       }
-      /*
-        Consigne 2 : verrouillage aux quatre coins — l'app ne peut plus glisser.
-        Pas de background forcé ici : le design de l'app s'affiche normalement.
-      */
       #root {
         display: flex;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        overflow: hidden;
+        height: 100%;
         flex: 1;
       }
-      /* Anti-zoom iOS — CONSTANTE IMMUABLE, ne pas toucher */
+      /* Empêche Safari de zoomer sur le focus d'un input */
       input,
       select,
       textarea {
         font-size: 16px;
       }
     </style>
-
-    <!-- Reset scroll au blur -->
-    <script>
-      document.addEventListener('focusout', function () {
-        window.scrollTo(0, 0);
-        if (document.documentElement) document.documentElement.scrollTop = 0;
-        if (document.body) document.body.scrollTop = 0;
-      });
-    </script>
-
-    <!-- Blocage rubber-band vertical -->
-    <script>
-      document.body.addEventListener(
-        'touchmove',
-        function (e) {
-          if (e.target.tagName !== 'INPUT') e.preventDefault();
-        },
-        { passive: false }
-      );
-    </script>
-
-    <!-- Empêche Safari de scroller vers l'input au focus -->
-    <script>
-      window.addEventListener(
-        'focusin',
-        function (e) {
-          e.preventDefault();
-          window.scrollTo(0, 0);
-        },
-        { passive: false }
-      );
-    </script>
   </head>
-
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
