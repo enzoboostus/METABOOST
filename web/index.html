@@ -10,32 +10,44 @@
     <title>MetaBoost</title>
     <style id="expo-reset">
       html {
-        /* Fix 2 — fond sombre sur html : couvre toute fuite de background */
+        /* Fix 4 — background-attachment:fixed force la couleur à rester ancrée
+           même lors d'un scroll ou d'un décalage Safari, aucun blanc ne filtre */
         background-color: #060E1C;
-        /* Fix 1 — svh = Small Viewport Height : stable même clavier ouvert */
-        height: 100%;
+        background-attachment: fixed;
+        /* Fix 1 — double déclaration : iOS 15 prend 100vh, iOS 16+ prend 100svh */
+        height: 100vh;
         height: 100svh;
       }
+
       body {
         background-color: #060E1C;
+        background-attachment: fixed;
+        /* Fix 2 — tue l'effet élastique (bounce) qui expose le fond blanc */
+        overscroll-behavior: none;
         overflow: hidden;
-        /* Fix 1 — min-height svh sur le wrapper global */
-        min-height: 100%;
+        /* Fix 1 — fallback vh puis svh */
+        min-height: 100vh;
         min-height: 100svh;
-        height: 100%;
+        height: 100vh;
         height: 100svh;
-        /* Fix 3 — safe-area top pour éviter le chevauchement avec la barre iOS */
+        /* Safe-area top */
         padding-top: env(safe-area-inset-top);
         box-sizing: border-box;
       }
+
+      /* Fix 1 — .main-wrapper pattern appliqué sur #root */
       #root {
         display: flex;
-        /* Fix 1 — flex-grow remplace height fixe, le bouton CTA reste dans le flux */
-        flex: 1;
-        min-height: 100%;
-        min-height: 100svh;
         flex-direction: column;
+        flex: 1;
+        /* Fix 1 — double déclaration vh / svh */
+        min-height: 100vh;
+        min-height: 100svh;
+        /* Fix 3 — safe-area bottom : le bouton CTA respecte l'indicateur home */
+        padding-bottom: env(safe-area-inset-bottom);
+        box-sizing: border-box;
       }
+
       /* Anti-zoom Safari — ne pas toucher */
       input,
       select,
