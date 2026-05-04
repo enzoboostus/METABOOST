@@ -146,7 +146,7 @@ export default function Onboarding() {
                 <View style={styles.screen}>
 
                   {/* Hero */}
-                  <View style={styles.loginHero}>
+                  <View style={[styles.loginHero, { marginTop: H * 0.04 }]}>
                     <View style={styles.logoBadge}>
                       <Text style={styles.logoEmoji}>⚡</Text>
                     </View>
@@ -166,6 +166,8 @@ export default function Onboarding() {
                       </View>
                     ))}
                   </View>
+
+                  <View style={{ height: H * 0.04 }} />
 
                   {/* Auth buttons */}
                   <View style={styles.authBlock}>
@@ -401,11 +403,10 @@ const styles = StyleSheet.create({
   },
 
   screen: {
-    minHeight: H,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xl,
-    paddingBottom: 120,
-    justifyContent: 'space-between',
+    paddingBottom: Spacing.xl,
+    gap: Spacing.lg,
   },
 
   // ── Login ────────────────────────────────────────
@@ -493,7 +494,7 @@ const styles = StyleSheet.create({
   screenTitle: { fontSize: 27, fontWeight: '900', color: Colors.text, letterSpacing: -0.4 },
   screenSub:   { fontSize: 14, color: Colors.textSecondary, lineHeight: 21 },
 
-  goalList: { gap: 10, flex: 1, justifyContent: 'center' },
+  goalList: { gap: 10 },
   goalCard: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
     padding: Spacing.md, borderRadius: Radius.xl, overflow: 'hidden',
