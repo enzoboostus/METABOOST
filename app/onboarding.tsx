@@ -143,16 +143,17 @@ export default function Onboarding() {
       <View style={styles.glowA} />
       <View style={styles.glowB} />
 
-      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }} edges={['top', 'bottom']}>
         {step !== 'login' && (
           <View style={styles.progressTrack}>
             <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
           </View>
         )}
 
-        <Animated.View style={[{ flex: 1 }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+        <Animated.View style={[{ flex: 1, backgroundColor: '#000000' }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <ScrollView
-              contentContainerStyle={{ flexGrow: 1 }}
+              style={{ flex: 1, backgroundColor: '#000000' }}
+              contentContainerStyle={{ flexGrow: 1, backgroundColor: '#000000' }}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
             >
@@ -412,7 +413,7 @@ export default function Onboarding() {
 
 const styles = StyleSheet.create({
   lockWrapper: { flex: 1, overflow: 'hidden', width: '100%', backgroundColor: '#000000' },
-  root: { flex: 1, backgroundColor: '#060E1C' },
+  root: { flex: 1, backgroundColor: '#000000' },
 
   glowA: {
     position: 'absolute', top: -80, alignSelf: 'center',

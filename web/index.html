@@ -18,18 +18,25 @@
     <title>MetaBoost</title>
 
     <style id="expo-reset">
-      html,
-      body {
-        height: 100%;
+      html {
+        height: 100% !important;
         overflow-x: hidden;
         overscroll-behavior: none;
-        /* Fond noir derrière tout overscroll / safe-area */
+        overscroll-behavior-y: none;
         background-color: #000000 !important;
       }
       body {
+        height: 100% !important;
         overflow: hidden;
+        overflow-x: hidden;
         position: fixed;
         width: 100%;
+        /* Fond de secours noir — visible si un pixel dépasse du layout */
+        background-color: #000000 !important;
+        /* Tue l'effet élastique (rubber-banding) iOS */
+        overscroll-behavior: none;
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: auto;
       }
       #root {
         display: flex;
