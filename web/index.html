@@ -3,14 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-    <!--
-      Fix viewport: maximum-scale=1 + user-scalable=0 bloquent le zoom natif Safari
-      lors du focus sur un champ de saisie.
-    -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, interactive-widget=resizes-content"
     />
 
     <title>MetaBoost</title>
@@ -19,38 +14,44 @@
       html,
       body {
         height: 100%;
-        /* Fix 3 — neutralise tout résidu de scroll horizontal */
         overflow-x: hidden;
-        /* Empêche le rubber-band scroll d'iOS qui décale la page */
         overscroll-behavior: none;
       }
       body {
         overflow: hidden;
-        /*
-          Fix clé iOS Safari : position:fixed empêche le navigateur de
-          redimensionner le viewport quand le clavier virtuel apparaît.
-          React Native Web gère son propre scroll via ScrollView.
-        */
         position: fixed;
         width: 100%;
       }
+      /* Fix 3 — root verrouillé à l'écran exact, aucun pixel de débordement */
       #root {
         display: flex;
-        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
         flex: 1;
       }
-      /*
-        Fix 2 — Empêche Safari de zoomer sur le focus d'un input.
-        Sans !important : les styles inline de React Native (fontSize:40, etc.)
-        l'emportent correctement sur cette règle de base.
-        Cette règle ne couvre que les inputs sans fontSize explicite.
-      */
       input,
       select,
       textarea {
         font-size: 16px;
       }
     </style>
+
+    <!-- Fix 2 — Remise à zéro du scroll au blur de tout input -->
+    <script>
+      document.addEventListener('focusout', function () {
+        window.scrollTo(0, 0);
+        if (document.documentElement) {
+          document.documentElement.scrollTop = 0;
+        }
+        if (document.body) {
+          document.body.scrollTop = 0;
+        }
+      });
+    </script>
   </head>
 
   <body>

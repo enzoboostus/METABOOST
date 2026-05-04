@@ -236,6 +236,7 @@ export default function Onboarding() {
                         autoCapitalize="words"
                         autoCorrect={false}
                         onSubmitEditing={() => Keyboard.dismiss()}
+                        onBlur={() => { if (Platform.OS === 'web' && typeof window !== 'undefined') window.scrollTo(0, 0); }}
                       />
                       <Text style={styles.welcomeSub}>Prêt(e) à transformer ton corps ? 🔥</Text>
                       <View style={styles.genderRow}>
@@ -333,10 +334,13 @@ export default function Onboarding() {
                             style={styles.mInput}
                             value={vals[k]}
                             onChangeText={sets[k]}
-                            keyboardType="decimal-pad"
+                            keyboardType="numeric"
+                            inputMode="numeric"
                             placeholder={ph}
                             placeholderTextColor="rgba(226,209,179,0.22)"
                             textAlign="center"
+                            autoCorrect={false}
+                            onBlur={() => { if (Platform.OS === 'web' && typeof window !== 'undefined') window.scrollTo(0, 0); }}
                           />
                           <Text style={styles.mUnit}>{unit}</Text>
                         </View>
@@ -360,10 +364,13 @@ export default function Onboarding() {
                             style={styles.mInput}
                             value={vals[k]}
                             onChangeText={sets[k]}
-                            keyboardType="decimal-pad"
+                            keyboardType="numeric"
+                            inputMode="numeric"
                             placeholder={ph}
                             placeholderTextColor="rgba(255,255,255,0.14)"
                             textAlign="center"
+                            autoCorrect={false}
+                            onBlur={() => { if (Platform.OS === 'web' && typeof window !== 'undefined') window.scrollTo(0, 0); }}
                           />
                           <Text style={styles.mUnit}>{unit}</Text>
                         </View>
