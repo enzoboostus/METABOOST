@@ -4,10 +4,15 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!-- Viewport — NE PAS MODIFIER : contient les fixes anti-zoom iOS -->
+    <!--
+      Viewport — CONSTANTE IMMUABLE.
+      Ne pas modifier : maximum-scale=1 + user-scalable=0 = anti-zoom iOS.
+      interactive-widget=resizes-content = pas de saut horizontal clavier.
+      viewport-fit=cover = fond noir derrière encoche et barre home.
+    -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, interactive-widget=resizes-content"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, interactive-widget=resizes-content, viewport-fit=cover"
     />
 
     <!-- StatusBar iOS immersive noir -->
@@ -18,24 +23,18 @@
     <title>MetaBoost</title>
 
     <style id="expo-reset">
-      html {
-        height: 100% !important;
-        overflow-x: hidden;
-        overscroll-behavior: none;
-        overscroll-behavior-y: none;
-        background-color: #000000 !important;
-      }
+      html,
       body {
-        height: 100% !important;
-        overflow: hidden;
-        overflow-x: hidden;
+        overscroll-behavior-y: none !important;
         position: fixed;
         width: 100%;
-        /* Fond de secours noir — visible si un pixel dépasse du layout */
+        height: -webkit-fill-available;
+        height: 100%;
         background-color: #000000 !important;
-        /* Tue l'effet élastique (rubber-banding) iOS */
-        overscroll-behavior: none;
-        overscroll-behavior-y: none;
+        overflow-x: hidden;
+      }
+      body {
+        overflow: hidden;
         -webkit-overflow-scrolling: auto;
       }
       #root {
@@ -45,11 +44,12 @@
         left: 0;
         width: 100vw;
         height: 100vh;
+        height: -webkit-fill-available;
         overflow: hidden;
         flex: 1;
         background-color: #000000;
       }
-      /* Fix anti-zoom iOS — ne pas toucher */
+      /* Fix anti-zoom iOS — CONSTANTE IMMUABLE, ne pas toucher */
       input,
       select,
       textarea {
@@ -61,13 +61,20 @@
     <script>
       document.addEventListener('focusout', function () {
         window.scrollTo(0, 0);
-        if (document.documentElement) {
-          document.documentElement.scrollTop = 0;
-        }
-        if (document.body) {
-          document.body.scrollTop = 0;
-        }
+        if (document.documentElement) document.documentElement.scrollTop = 0;
+        if (document.body) document.body.scrollTop = 0;
       });
+    </script>
+
+    <!-- Verrouillage total overscroll vertical iOS (rubber-band) -->
+    <script>
+      document.body.addEventListener(
+        'touchmove',
+        function (e) {
+          if (e.target.tagName !== 'INPUT') e.preventDefault();
+        },
+        { passive: false }
+      );
     </script>
   </head>
 
