@@ -143,17 +143,17 @@ export default function Onboarding() {
       <View style={styles.glowA} />
       <View style={styles.glowB} />
 
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }} edges={['top', 'bottom']}>
+      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
         {step !== 'login' && (
           <View style={styles.progressTrack}>
             <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
           </View>
         )}
 
-        <Animated.View style={[{ flex: 1, backgroundColor: '#000000' }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+        <Animated.View style={[{ flex: 1 }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <ScrollView
-              style={{ flex: 1, backgroundColor: '#000000' }}
-              contentContainerStyle={{ flexGrow: 1, backgroundColor: '#000000' }}
+              style={{ flex: 1 }}
+              contentContainerStyle={{ flexGrow: 1 }}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
             >
@@ -403,9 +403,6 @@ export default function Onboarding() {
                 </View>
               )}
 
-              {/* Extension noire invisible : couvre le vide si Safari soulève l'app */}
-              <View style={{ height: 500, backgroundColor: '#000000', marginBottom: -500 }} />
-
             </ScrollView>
         </Animated.View>
       </SafeAreaView>
@@ -415,8 +412,8 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
-  lockWrapper: { flex: 1, overflow: 'hidden', width: '100%', backgroundColor: '#000000' },
-  root: { flex: 1, backgroundColor: '#000000' },
+  lockWrapper: { flex: 1, overflow: 'hidden', width: '100%' },
+  root: { flex: 1, backgroundColor: '#060E1C' },
 
   glowA: {
     position: 'absolute', top: -80, alignSelf: 'center',
