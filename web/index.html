@@ -5,9 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!--
-      Fix 1 – iOS Safari auto-zoom prevention:
-      maximum-scale=1 and user-scalable=0 stop Safari from zooming
-      when an input receives focus.
+      Fix viewport: maximum-scale=1 + user-scalable=0 bloquent le zoom natif Safari
+      lors du focus sur un champ de saisie.
     -->
     <meta
       name="viewport"
@@ -17,31 +16,39 @@
     <title>MetaBoost</title>
 
     <style id="expo-reset">
-      /* Base reset recommended by react-native-web */
       html,
       body {
         height: 100%;
-        /* Fix 3 – neutralise any residual horizontal scroll */
+        /* Fix 3 — neutralise tout résidu de scroll horizontal */
         overflow-x: hidden;
+        /* Empêche le rubber-band scroll d'iOS qui décale la page */
+        overscroll-behavior: none;
       }
       body {
         overflow: hidden;
+        /*
+          Fix clé iOS Safari : position:fixed empêche le navigateur de
+          redimensionner le viewport quand le clavier virtuel apparaît.
+          React Native Web gère son propre scroll via ScrollView.
+        */
+        position: fixed;
+        width: 100%;
       }
       #root {
         display: flex;
         height: 100%;
         flex: 1;
       }
-
       /*
-        Fix 2 – iOS Safari auto-zoom prevention (CSS layer):
-        Safari zooms the viewport when a focused input has font-size < 16 px.
-        Forcing 16 px on all text inputs prevents the zoom entirely.
+        Fix 2 — Empêche Safari de zoomer sur le focus d'un input.
+        Sans !important : les styles inline de React Native (fontSize:40, etc.)
+        l'emportent correctement sur cette règle de base.
+        Cette règle ne couvre que les inputs sans fontSize explicite.
       */
       input,
       select,
       textarea {
-        font-size: 16px !important;
+        font-size: 16px;
       }
     </style>
   </head>

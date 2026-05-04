@@ -69,6 +69,21 @@ export default function Onboarding() {
     });
   }, []);
 
+  // Fix 4 — Verrouillage forcé du DOM sur iOS Safari via JS inline
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+    const html = document.documentElement;
+    const body = document.body;
+    html.style.overflowX = 'hidden';
+    html.style.overscrollBehavior = 'none';
+    body.style.overflow = 'hidden';
+    body.style.overflowX = 'hidden';
+    body.style.position = 'fixed';
+    body.style.width = '100%';
+    body.style.height = '100%';
+    body.style.overscrollBehavior = 'none';
+  }, []);
+
   function transitionTo(next: Step, animate = true) {
     if (!animate) { setStep(next); return; }
     Animated.parallel([
@@ -122,6 +137,7 @@ export default function Onboarding() {
   });
 
   return (
+    <View style={styles.lockWrapper}>
     <View style={styles.root}>
       <LinearGradient colors={['#0B1628', '#060E1C', '#03080F']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
       <View style={styles.glowA} />
@@ -218,6 +234,7 @@ export default function Onboarding() {
                         placeholderTextColor="rgba(226,209,179,0.28)"
                         returnKeyType="done"
                         autoCapitalize="words"
+                        autoCorrect={false}
                         onSubmitEditing={() => Keyboard.dismiss()}
                       />
                       <Text style={styles.welcomeSub}>Prêt(e) à transformer ton corps ? 🔥</Text>
@@ -382,10 +399,12 @@ export default function Onboarding() {
         </Animated.View>
       </SafeAreaView>
     </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  lockWrapper: { flex: 1, overflow: 'hidden', width: '100%' },
   root: { flex: 1, backgroundColor: '#060E1C' },
 
   glowA: {
