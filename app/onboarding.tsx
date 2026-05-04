@@ -14,7 +14,7 @@ import { supabase } from '@/lib/supabase';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import * as Haptics from 'expo-haptics';
 
-const { width: W, height: H } = Dimensions.get('window');
+const { width: W } = Dimensions.get('window');
 
 type Step = 'login' | 'welcome' | 'goal' | 'measures';
 const STEPS: Step[] = ['login', 'welcome', 'goal', 'measures'];
@@ -136,17 +136,17 @@ export default function Onboarding() {
 
         <Animated.View style={[{ flex: 1 }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <ScrollView
-              contentContainerStyle={{ minHeight: H }}
+              contentContainerStyle={{ flexGrow: 1 }}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
             >
 
               {/* ══════════════ LOGIN ══════════════ */}
               {step === 'login' && (
-                <View style={styles.screen}>
+                <View style={styles.loginScreen}>
 
                   {/* Hero */}
-                  <View style={[styles.loginHero, { marginTop: H * 0.04 }]}>
+                  <View style={styles.loginHero}>
                     <View style={styles.logoBadge}>
                       <Text style={styles.logoEmoji}>⚡</Text>
                     </View>
@@ -166,8 +166,6 @@ export default function Onboarding() {
                       </View>
                     ))}
                   </View>
-
-                  <View style={{ height: H * 0.04 }} />
 
                   {/* Auth buttons */}
                   <View style={styles.authBlock}>
@@ -205,37 +203,41 @@ export default function Onboarding() {
               {/* ══════════════ WELCOME ══════════════ */}
               {step === 'welcome' && (
                 <View style={styles.screen}>
-                  <View style={styles.welcomeBlock}>
-                    <View style={styles.emojiRing}>
-                      <Text style={{ fontSize: 34 }}>👋</Text>
-                    </View>
-                    <Text style={styles.welcomeHi}>Ravi de te rencontrer,</Text>
-                    <TextInput
-                      style={styles.nameInput}
-                      value={userName}
-                      onChangeText={setUserName}
-                      placeholder="Ton prénom"
-                      placeholderTextColor="rgba(226,209,179,0.28)"
-                      returnKeyType="done"
-                      autoCapitalize="words"
-                      onSubmitEditing={() => Keyboard.dismiss()}
-                    />
-                    <Text style={styles.welcomeSub}>Prêt(e) à transformer ton corps ? 🔥</Text>
-                    <View style={styles.genderRow}>
-                      {([{ key: 'male' as Gender, sym: '♂', lbl: 'Homme' }, { key: 'female' as Gender, sym: '♀', lbl: 'Femme' }]).map((g) => (
-                        <TouchableOpacity
-                          key={g.key}
-                          style={[styles.genderPill, gender === g.key && styles.genderOn]}
-                          onPress={() => { setGender(g.key); Haptics.selectionAsync?.(); }}
-                          activeOpacity={0.8}
-                        >
-                          <Text style={[styles.genderSym, gender === g.key && { color: '#2a2a2a' }]}>{g.sym}</Text>
-                          <Text style={[styles.genderLbl, gender === g.key && styles.genderLblOn]}>{g.lbl}</Text>
-                        </TouchableOpacity>
-                      ))}
+                  {/* Content centered vertically */}
+                  <View style={styles.screenContent}>
+                    <View style={styles.welcomeBlock}>
+                      <View style={styles.emojiRing}>
+                        <Text style={{ fontSize: 34 }}>👋</Text>
+                      </View>
+                      <Text style={styles.welcomeHi}>Ravi de te rencontrer,</Text>
+                      <TextInput
+                        style={styles.nameInput}
+                        value={userName}
+                        onChangeText={setUserName}
+                        placeholder="Ton prénom"
+                        placeholderTextColor="rgba(226,209,179,0.28)"
+                        returnKeyType="done"
+                        autoCapitalize="words"
+                        onSubmitEditing={() => Keyboard.dismiss()}
+                      />
+                      <Text style={styles.welcomeSub}>Prêt(e) à transformer ton corps ? 🔥</Text>
+                      <View style={styles.genderRow}>
+                        {([{ key: 'male' as Gender, sym: '♂', lbl: 'Homme' }, { key: 'female' as Gender, sym: '♀', lbl: 'Femme' }]).map((g) => (
+                          <TouchableOpacity
+                            key={g.key}
+                            style={[styles.genderPill, gender === g.key && styles.genderOn]}
+                            onPress={() => { setGender(g.key); Haptics.selectionAsync?.(); }}
+                            activeOpacity={0.8}
+                          >
+                            <Text style={[styles.genderSym, gender === g.key && { color: '#2a2a2a' }]}>{g.sym}</Text>
+                            <Text style={[styles.genderLbl, gender === g.key && styles.genderLblOn]}>{g.lbl}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
                     </View>
                   </View>
 
+                  {/* CTA pinned at bottom */}
                   <TouchableOpacity style={styles.ctaBtn} onPress={goNext} activeOpacity={0.88}>
                     <Text style={styles.ctaTxt}>C'est parti !</Text>
                     <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
@@ -246,43 +248,47 @@ export default function Onboarding() {
               {/* ══════════════ GOAL ══════════════ */}
               {step === 'goal' && (
                 <View style={styles.screen}>
-                  <View style={styles.screenHead}>
-                    <Text style={styles.screenTitle}>Ton objectif principal ?</Text>
-                    <Text style={styles.screenSub}>Choisis ce qui te correspond — tu pourras changer plus tard.</Text>
+                  {/* Content centered vertically */}
+                  <View style={styles.screenContent}>
+                    <View style={styles.screenHead}>
+                      <Text style={styles.screenTitle}>Ton objectif principal ?</Text>
+                      <Text style={styles.screenSub}>Choisis ce qui te correspond — tu pourras changer plus tard.</Text>
+                    </View>
+
+                    <View style={styles.goalList}>
+                      {GOALS.map((g) => {
+                        const on = goal === g.key;
+                        return (
+                          <TouchableOpacity
+                            key={String(g.key)}
+                            style={[styles.goalCard, on && { borderColor: g.color + '55', borderWidth: 1.5 }]}
+                            onPress={() => { setGoal(g.key); Haptics.selectionAsync?.(); }}
+                            activeOpacity={0.85}
+                          >
+                            {on && (
+                              <LinearGradient
+                                colors={[g.color + '16', 'transparent']}
+                                start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+                                style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
+                              />
+                            )}
+                            <View style={[styles.goalIconBox, on && { borderColor: g.color + '45', backgroundColor: g.color + '12' }]}>
+                              {g.icon}
+                            </View>
+                            <View style={{ flex: 1 }}>
+                              <Text style={[styles.goalLabel, on && { color: Colors.text }]}>{g.label}</Text>
+                              <Text style={styles.goalSub}>{g.sub}</Text>
+                            </View>
+                            <View style={[styles.goalCheck, on && { backgroundColor: g.color, borderColor: g.color }]}>
+                              {on && <Text style={{ color: '#fff', fontSize: 11, fontWeight: '900' }}>✓</Text>}
+                            </View>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
                   </View>
 
-                  <View style={styles.goalList}>
-                    {GOALS.map((g) => {
-                      const on = goal === g.key;
-                      return (
-                        <TouchableOpacity
-                          key={String(g.key)}
-                          style={[styles.goalCard, on && { borderColor: g.color + '55', borderWidth: 1.5 }]}
-                          onPress={() => { setGoal(g.key); Haptics.selectionAsync?.(); }}
-                          activeOpacity={0.85}
-                        >
-                          {on && (
-                            <LinearGradient
-                              colors={[g.color + '16', 'transparent']}
-                              start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                              style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
-                            />
-                          )}
-                          <View style={[styles.goalIconBox, on && { borderColor: g.color + '45', backgroundColor: g.color + '12' }]}>
-                            {g.icon}
-                          </View>
-                          <View style={{ flex: 1 }}>
-                            <Text style={[styles.goalLabel, on && { color: Colors.text }]}>{g.label}</Text>
-                            <Text style={styles.goalSub}>{g.sub}</Text>
-                          </View>
-                          <View style={[styles.goalCheck, on && { backgroundColor: g.color, borderColor: g.color }]}>
-                            {on && <Text style={{ color: '#fff', fontSize: 11, fontWeight: '900' }}>✓</Text>}
-                          </View>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-
+                  {/* CTA pinned at bottom */}
                   <TouchableOpacity style={[styles.ctaBtn, !goal && styles.ctaOff]} onPress={goal ? goNext : undefined} activeOpacity={0.88}>
                     <Text style={styles.ctaTxt}>Continuer</Text>
                     <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
@@ -293,71 +299,74 @@ export default function Onboarding() {
               {/* ══════════════ MEASURES ══════════════ */}
               {step === 'measures' && (
                 <View style={styles.screen}>
-                  <View style={styles.screenHead}>
-                    <Text style={styles.screenTitle}>Tes mesures de départ</Text>
-                    <Text style={styles.screenSub}>Ces données calibrent ton profil. Tu pourras les modifier à tout moment dans ton espace.</Text>
+                  {/* Content group */}
+                  <View style={styles.screenContent}>
+                    <View style={styles.screenHead}>
+                      <Text style={styles.screenTitle}>Tes mesures de départ</Text>
+                      <Text style={styles.screenSub}>Ces données calibrent ton profil. Tu pourras les modifier à tout moment dans ton espace.</Text>
+                    </View>
+
+                    {/* Row 1 — requis */}
+                    <View style={styles.mGrid}>
+                      {ROW1.map(({ key: k, label, desc, unit, ph }) => (
+                        <View key={k} style={styles.mCard}>
+                          <Text style={styles.mLabel}>{label}</Text>
+                          <Text style={styles.mDesc}>{desc}</Text>
+                          <TextInput
+                            style={styles.mInput}
+                            value={vals[k]}
+                            onChangeText={sets[k]}
+                            keyboardType="decimal-pad"
+                            placeholder={ph}
+                            placeholderTextColor="rgba(226,209,179,0.22)"
+                            textAlign="center"
+                          />
+                          <Text style={styles.mUnit}>{unit}</Text>
+                        </View>
+                      ))}
+                    </View>
+
+                    {/* Séparateur optionnel */}
+                    <View style={styles.optSep}>
+                      <View style={styles.optLine} />
+                      <Text style={styles.optTxt}>Optionnel</Text>
+                      <View style={styles.optLine} />
+                    </View>
+
+                    {/* Row 2 — optionnel */}
+                    <View style={[styles.mGrid, { opacity: 0.78 }]}>
+                      {ROW2.map(({ key: k, label, desc, unit, ph }) => (
+                        <View key={k} style={[styles.mCard, styles.mCardOpt]}>
+                          <Text style={styles.mLabel}>{label}</Text>
+                          <Text style={styles.mDesc}>{desc}</Text>
+                          <TextInput
+                            style={styles.mInput}
+                            value={vals[k]}
+                            onChangeText={sets[k]}
+                            keyboardType="decimal-pad"
+                            placeholder={ph}
+                            placeholderTextColor="rgba(255,255,255,0.14)"
+                            textAlign="center"
+                          />
+                          <Text style={styles.mUnit}>{unit}</Text>
+                        </View>
+                      ))}
+                      <View style={styles.mFiller} />
+                    </View>
+
+                    {/* Scanner BÊTA */}
+                    <TouchableOpacity
+                      style={styles.scanBtn}
+                      onPress={() => Alert.alert('Bientôt disponible', 'Scanner ton ticket de balance — disponible très prochainement ✨')}
+                      activeOpacity={0.8}
+                    >
+                      <ScanLine size={16} color={Colors.teal} strokeWidth={1.8} />
+                      <Text style={styles.scanTxt}>Scanner mon ticket de balance</Text>
+                      <View style={styles.beta}><Text style={styles.betaTxt}>BÊTA</Text></View>
+                    </TouchableOpacity>
                   </View>
 
-                  {/* Row 1 — requis */}
-                  <View style={styles.mGrid}>
-                    {ROW1.map(({ key: k, label, desc, unit, ph }) => (
-                      <View key={k} style={styles.mCard}>
-                        <Text style={styles.mLabel}>{label}</Text>
-                        <Text style={styles.mDesc}>{desc}</Text>
-                        <TextInput
-                          style={styles.mInput}
-                          value={vals[k]}
-                          onChangeText={sets[k]}
-                          keyboardType="decimal-pad"
-                          placeholder={ph}
-                          placeholderTextColor="rgba(226,209,179,0.22)"
-                          textAlign="center"
-                        />
-                        <Text style={styles.mUnit}>{unit}</Text>
-                      </View>
-                    ))}
-                  </View>
-
-                  {/* Séparateur optionnel */}
-                  <View style={styles.optSep}>
-                    <View style={styles.optLine} />
-                    <Text style={styles.optTxt}>Optionnel</Text>
-                    <View style={styles.optLine} />
-                  </View>
-
-                  {/* Row 2 — optionnel */}
-                  <View style={[styles.mGrid, { opacity: 0.78 }]}>
-                    {ROW2.map(({ key: k, label, desc, unit, ph }) => (
-                      <View key={k} style={[styles.mCard, styles.mCardOpt]}>
-                        <Text style={styles.mLabel}>{label}</Text>
-                        <Text style={styles.mDesc}>{desc}</Text>
-                        <TextInput
-                          style={styles.mInput}
-                          value={vals[k]}
-                          onChangeText={sets[k]}
-                          keyboardType="decimal-pad"
-                          placeholder={ph}
-                          placeholderTextColor="rgba(255,255,255,0.14)"
-                          textAlign="center"
-                        />
-                        <Text style={styles.mUnit}>{unit}</Text>
-                      </View>
-                    ))}
-                    <View style={styles.mFiller} />
-                  </View>
-
-                  {/* Scanner BÊTA */}
-                  <TouchableOpacity
-                    style={styles.scanBtn}
-                    onPress={() => Alert.alert('Bientôt disponible', 'Scanner ton ticket de balance — disponible très prochainement ✨')}
-                    activeOpacity={0.8}
-                  >
-                    <ScanLine size={16} color={Colors.teal} strokeWidth={1.8} />
-                    <Text style={styles.scanTxt}>Scanner mon ticket de balance</Text>
-                    <View style={styles.beta}><Text style={styles.betaTxt}>BÊTA</Text></View>
-                  </TouchableOpacity>
-
-                  {/* CTA */}
+                  {/* CTA pinned at bottom */}
                   <View style={{ gap: Spacing.sm }}>
                     <TouchableOpacity style={styles.ctaBtn} onPress={finish} activeOpacity={0.88}>
                       <Text style={styles.ctaTxt}>Démarrer MetaBoost 🚀</Text>
@@ -402,15 +411,35 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'web' ? { boxShadow: '0 0 10px rgba(226,209,179,0.65)' } as any : {}),
   },
 
+  // Shared screen: flex:1 so content fills viewport, space-between pins CTA at bottom
   screen: {
+    flex: 1,
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.xl,
+    justifyContent: 'space-between',
     gap: Spacing.lg,
   },
 
+  // Login screen: centered content, no bottom CTA
+  loginScreen: {
+    flex: 1,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.xl,
+    justifyContent: 'center',
+    gap: Spacing.lg,
+  },
+
+  // Content wrapper that centers vertically and fills available space
+  screenContent: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: Spacing.md,
+  },
+
   // ── Login ────────────────────────────────────────
-  loginHero: { alignItems: 'center', paddingTop: H * 0.03, gap: 16 },
+  loginHero: { alignItems: 'center', gap: 16 },
   logoBadge: {
     width: 96, height: 96, borderRadius: 48,
     backgroundColor: 'rgba(226,209,179,0.09)',
@@ -490,7 +519,7 @@ const styles = StyleSheet.create({
   genderLblOn: { color: '#2a2a2a', fontWeight: '800' },
 
   // ── Goal ─────────────────────────────────────────
-  screenHead:  { gap: 6, marginBottom: Spacing.sm },
+  screenHead:  { gap: 6 },
   screenTitle: { fontSize: 27, fontWeight: '900', color: Colors.text, letterSpacing: -0.4 },
   screenSub:   { fontSize: 14, color: Colors.textSecondary, lineHeight: 21 },
 
@@ -538,14 +567,14 @@ const styles = StyleSheet.create({
   },
   mUnit: { fontSize: 10, color: Colors.textSecondary, fontWeight: '500' },
 
-  optSep: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 12 },
+  optSep: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   optLine:{ flex: 1, height: 0.5, backgroundColor: 'rgba(255,255,255,0.08)' },
   optTxt: { fontSize: 10, color: Colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1 },
 
   scanBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingVertical: 13, paddingHorizontal: Spacing.md,
-    borderRadius: Radius.full, marginBottom: 10,
+    borderRadius: Radius.full,
     borderWidth: 1, borderColor: Colors.teal + '38',
     backgroundColor: 'rgba(0,200,212,0.05)',
   },
