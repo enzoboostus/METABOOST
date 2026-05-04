@@ -411,7 +411,7 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
-  lockWrapper: { flex: 1, overflow: 'hidden', width: '100%' },
+  lockWrapper: { flex: 1, overflow: 'hidden', width: '100%', backgroundColor: '#000000' },
   root: { flex: 1, backgroundColor: '#060E1C' },
 
   glowA: {

@@ -3,10 +3,17 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Viewport — NE PAS MODIFIER : contient les fixes anti-zoom iOS -->
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, interactive-widget=resizes-content"
     />
+
+    <!-- StatusBar iOS immersive noir -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <title>MetaBoost</title>
 
@@ -16,13 +23,14 @@
         height: 100%;
         overflow-x: hidden;
         overscroll-behavior: none;
+        /* Fond noir derrière tout overscroll / safe-area */
+        background-color: #000000 !important;
       }
       body {
         overflow: hidden;
         position: fixed;
         width: 100%;
       }
-      /* Fix 3 — root verrouillé à l'écran exact, aucun pixel de débordement */
       #root {
         display: flex;
         position: fixed;
@@ -32,7 +40,9 @@
         height: 100vh;
         overflow: hidden;
         flex: 1;
+        background-color: #000000;
       }
+      /* Fix anti-zoom iOS — ne pas toucher */
       input,
       select,
       textarea {
@@ -40,7 +50,7 @@
       }
     </style>
 
-    <!-- Fix 2 — Remise à zéro du scroll au blur de tout input -->
+    <!-- Remise à zéro du scroll au blur — ne pas toucher -->
     <script>
       document.addEventListener('focusout', function () {
         window.scrollTo(0, 0);
