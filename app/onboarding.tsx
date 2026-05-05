@@ -561,7 +561,7 @@ const styles = StyleSheet.create({
 
   ctaFixed: Platform.OS === 'web' ? {
     position: 'fixed' as any,
-    bottom: 'calc(20px + env(safe-area-inset-bottom))' as any,
+    bottom: 'calc(20px + var(--kb-offset, 0px) + env(safe-area-inset-bottom))' as any,
     left: '5%' as any,
     width: '90%' as any,
     zIndex: 50,

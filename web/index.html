@@ -30,13 +30,12 @@
         display: flex;
         flex-direction: column;
         flex: 1;
-        /* Fix 3 — hauteur réelle injectée par JS, fallback svh puis vh */
         height: var(--app-height, 100svh);
         min-height: var(--app-height, 100svh);
         padding-bottom: env(safe-area-inset-bottom);
         box-sizing: border-box;
       }
-      /* Fix 2 — div fantôme : background ancré indépendant du scroll/clavier */
+      /* div fantôme : background ancré indépendant du scroll/clavier */
       .bg-fixed-layer {
         position: fixed;
         top: 0;
@@ -47,16 +46,16 @@
         z-index: -1;
         pointer-events: none;
       }
-      /* Fix 1 — bouton CTA vissé au bas avec safe-area (utilisé via className) */
+      /* bouton CTA vissé au-dessus du clavier */
       .button-container {
         position: fixed;
-        bottom: calc(20px + env(safe-area-inset-bottom));
+        bottom: calc(20px + var(--kb-offset, 0px) + env(safe-area-inset-bottom));
         left: 50%;
         transform: translateX(-50%);
         width: 90%;
         z-index: 50;
       }
-      /* Anti-zoom Safari — ne pas toucher */
+      /* Anti-zoom Safari */
       input,
       select,
       textarea {
@@ -64,23 +63,24 @@
       }
     </style>
 
-    <!-- Fix 3 — Calcule la "vraie" hauteur disponible et l'injecte en var CSS -->
+    <!-- Hauteur visible réelle + offset clavier injectés en vars CSS -->
     <script>
-      var appHeight = function () {
-        document.documentElement.style.setProperty(
-          '--app-height',
-          window.innerHeight + 'px'
-        );
+      var updateLayout = function () {
+        var vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        var kbOffset = window.innerHeight - vvHeight;
+        document.documentElement.style.setProperty('--app-height', vvHeight + 'px');
+        document.documentElement.style.setProperty('--kb-offset', kbOffset + 'px');
       };
-      window.addEventListener('resize', appHeight);
-      appHeight();
+      window.addEventListener('resize', updateLayout);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', updateLayout);
+      }
+      updateLayout();
     </script>
   </head>
 
   <body>
-    <!-- Fix 2 — div fantôme : fond sombre permanent derrière tout le layout -->
     <div class="bg-fixed-layer"></div>
-
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
