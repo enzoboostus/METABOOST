@@ -8,46 +8,54 @@
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
     />
     <title>MetaBoost</title>
+
     <style id="expo-reset">
       html {
-        /* Fix 4 — background-attachment:fixed force la couleur à rester ancrée
-           même lors d'un scroll ou d'un décalage Safari, aucun blanc ne filtre */
         background-color: #060E1C;
-        background-attachment: fixed;
-        /* Fix 1 — double déclaration : iOS 15 prend 100vh, iOS 16+ prend 100svh */
         height: 100vh;
         height: 100svh;
       }
-
       body {
         background-color: #060E1C;
-        background-attachment: fixed;
-        /* Fix 2 — tue l'effet élastique (bounce) qui expose le fond blanc */
         overscroll-behavior: none;
         overflow: hidden;
-        /* Fix 1 — fallback vh puis svh */
         min-height: 100vh;
         min-height: 100svh;
         height: 100vh;
         height: 100svh;
-        /* Safe-area top */
         padding-top: env(safe-area-inset-top);
         box-sizing: border-box;
       }
-
-      /* Fix 1 — .main-wrapper pattern appliqué sur #root */
       #root {
         display: flex;
         flex-direction: column;
         flex: 1;
-        /* Fix 1 — double déclaration vh / svh */
-        min-height: 100vh;
-        min-height: 100svh;
-        /* Fix 3 — safe-area bottom : le bouton CTA respecte l'indicateur home */
+        /* Fix 3 — hauteur réelle injectée par JS, fallback svh puis vh */
+        height: var(--app-height, 100svh);
+        min-height: var(--app-height, 100svh);
         padding-bottom: env(safe-area-inset-bottom);
         box-sizing: border-box;
       }
-
+      /* Fix 2 — div fantôme : background ancré indépendant du scroll/clavier */
+      .bg-fixed-layer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #060E1C;
+        z-index: -1;
+        pointer-events: none;
+      }
+      /* Fix 1 — bouton CTA vissé au bas avec safe-area (utilisé via className) */
+      .button-container {
+        position: fixed;
+        bottom: calc(20px + env(safe-area-inset-bottom));
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        z-index: 50;
+      }
       /* Anti-zoom Safari — ne pas toucher */
       input,
       select,
@@ -55,8 +63,24 @@
         font-size: 16px;
       }
     </style>
+
+    <!-- Fix 3 — Calcule la "vraie" hauteur disponible et l'injecte en var CSS -->
+    <script>
+      var appHeight = function () {
+        document.documentElement.style.setProperty(
+          '--app-height',
+          window.innerHeight + 'px'
+        );
+      };
+      window.addEventListener('resize', appHeight);
+      appHeight();
+    </script>
   </head>
+
   <body>
+    <!-- Fix 2 — div fantôme : fond sombre permanent derrière tout le layout -->
+    <div class="bg-fixed-layer"></div>
+
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
