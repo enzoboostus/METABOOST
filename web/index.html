@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, interactive-widget=resizes-content"
     />
     <title>MetaBoost</title>
 
@@ -27,15 +27,17 @@
         box-sizing: border-box;
       }
       #root {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: var(--app-height, 100svh);
+        overflow: hidden;
         display: flex;
         flex-direction: column;
-        flex: 1;
-        height: var(--app-height, 100svh);
-        min-height: var(--app-height, 100svh);
         padding-bottom: env(safe-area-inset-bottom);
         box-sizing: border-box;
       }
-      /* div fantôme : background ancré indépendant du scroll/clavier */
       .bg-fixed-layer {
         position: fixed;
         top: 0;
@@ -46,7 +48,6 @@
         z-index: -1;
         pointer-events: none;
       }
-      /* bouton CTA vissé au-dessus du clavier */
       .button-container {
         position: fixed;
         bottom: calc(20px + var(--kb-offset, 0px) + env(safe-area-inset-bottom));
@@ -55,7 +56,6 @@
         width: 90%;
         z-index: 50;
       }
-      /* Anti-zoom Safari */
       input,
       select,
       textarea {
@@ -63,7 +63,6 @@
       }
     </style>
 
-    <!-- Hauteur visible réelle + offset clavier injectés en vars CSS -->
     <script>
       var updateLayout = function () {
         var vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
@@ -76,6 +75,11 @@
         window.visualViewport.addEventListener('resize', updateLayout);
       }
       updateLayout();
+
+      // Force scroll reset on input blur
+      document.addEventListener('focusout', function () {
+        window.scrollTo(0, 0);
+      });
     </script>
   </head>
 
