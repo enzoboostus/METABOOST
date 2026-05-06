@@ -10,40 +10,38 @@
     <title>MetaBoost</title>
 
     <style id="expo-reset">
-      html {
+      html, body {
         background-color: #060E1C;
-        height: 100vh;
-        height: 100svh;
-      }
-      body {
-        background-color: #060E1C;
-        overscroll-behavior: none;
+        width: 100%;
+        height: 100%;
         overflow: hidden;
-        min-height: 100vh;
-        min-height: 100svh;
-        height: 100vh;
-        height: 100svh;
+        overscroll-behavior: none;
+        margin: 0;
+        padding: 0;
+      }
+      html {
         padding-top: env(safe-area-inset-top);
-        box-sizing: border-box;
       }
       #root {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100vw;
-        height: var(--app-height, 100svh);
+        right: 0;
+        bottom: 0;
+        background-color: #060E1C;
         overflow: hidden;
         display: flex;
         flex-direction: column;
+        padding-top: env(safe-area-inset-top);
         padding-bottom: env(safe-area-inset-bottom);
         box-sizing: border-box;
       }
       .bg-fixed-layer {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
+        top: -100px;
+        left: -100px;
+        right: -100px;
+        bottom: -100px;
         background-color: #060E1C;
         z-index: -1;
         pointer-events: none;
@@ -56,30 +54,33 @@
         width: 90%;
         z-index: 50;
       }
-      input,
-      select,
-      textarea {
+      input, select, textarea {
         font-size: 16px;
       }
     </style>
 
     <script>
-      var updateLayout = function () {
-        var vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-        var kbOffset = window.innerHeight - vvHeight;
-        document.documentElement.style.setProperty('--app-height', vvHeight + 'px');
-        document.documentElement.style.setProperty('--kb-offset', kbOffset + 'px');
-      };
-      window.addEventListener('resize', updateLayout);
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', updateLayout);
-      }
-      updateLayout();
+      // Verrouille tout scroll de la page (empêche iOS de décaler le layout)
+      document.addEventListener('scroll', function () {
+        window.scrollTo(0, 0);
+      }, { passive: false });
 
-      // Force scroll reset on input blur
+      // Remet l'écran en place au blur
       document.addEventListener('focusout', function () {
         window.scrollTo(0, 0);
       });
+
+      // Calcule offset clavier via visualViewport
+      var updateLayout = function () {
+        var vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        var kbOffset = window.innerHeight - vvHeight;
+        document.documentElement.style.setProperty('--kb-offset', kbOffset + 'px');
+      };
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', updateLayout);
+      }
+      window.addEventListener('resize', updateLayout);
+      updateLayout();
     </script>
   </head>
 
