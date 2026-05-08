@@ -60,24 +60,30 @@
     </style>
 
     <script>
-      // Verrouille tout scroll de la page (empêche iOS de décaler le layout)
+      var updateLayout = function () {
+        var vv = window.visualViewport;
+        var vvHeight = vv ? vv.height : window.innerHeight;
+        var vvOffsetTop = vv ? vv.offsetTop : 0;
+        var kbOffset = Math.max(0, window.innerHeight - vvHeight - vvOffsetTop);
+        document.documentElement.style.setProperty('--kb-offset', kbOffset + 'px');
+        // Shrink #root to match visible area — eliminates empty space below content
+        var root = document.getElementById('root');
+        if (root) root.style.bottom = kbOffset + 'px';
+      };
+
       document.addEventListener('scroll', function () {
         window.scrollTo(0, 0);
+        updateLayout();
       }, { passive: false });
 
-      // Remet l'écran en place au blur
       document.addEventListener('focusout', function () {
         window.scrollTo(0, 0);
+        updateLayout();
       });
 
-      // Calcule offset clavier via visualViewport
-      var updateLayout = function () {
-        var vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-        var kbOffset = window.innerHeight - vvHeight;
-        document.documentElement.style.setProperty('--kb-offset', kbOffset + 'px');
-      };
       if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', updateLayout);
+        window.visualViewport.addEventListener('scroll', updateLayout);
       }
       window.addEventListener('resize', updateLayout);
       updateLayout();
