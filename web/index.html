@@ -27,7 +27,8 @@
         top: 0;
         left: 0;
         right: 0;
-        bottom: 0;
+        /* 100dvh = dynamic viewport height: se réduit automatiquement quand le clavier s'ouvre */
+        height: 100dvh;
         background-color: #060E1C;
         overflow: hidden;
         display: flex;
@@ -35,6 +36,10 @@
         padding-top: env(safe-area-inset-top);
         padding-bottom: env(safe-area-inset-bottom);
         box-sizing: border-box;
+      }
+      /* Force dark background sur tous les wrappers React Native */
+      #root > div {
+        background-color: #060E1C;
       }
       .bg-fixed-layer {
         position: fixed;
@@ -57,31 +62,40 @@
       input, select, textarea {
         font-size: 16px;
       }
-      #root > div {
-        background-color: #060E1C;
-      }
     </style>
 
     <script>
       var updateLayout = function () {
         var vv = window.visualViewport;
-        var vvHeight = vv ? vv.height : window.innerHeight;
-        var vvOffsetTop = vv ? vv.offsetTop : 0;
-        var kbOffset = Math.max(0, window.innerHeight - vvHeight - vvOffsetTop);
+        if (!vv) return;
+
+        var kbOffset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
         document.documentElement.style.setProperty('--kb-offset', kbOffset + 'px');
-        // Only shrink root for real keyboard (>150px), not Safari bottom toolbar (~50px)
-        var root = document.getElementById('root');
-        if (root) root.style.bottom = (kbOffset > 150 ? kbOffset : 0) + 'px';
+
+        // Fallback pour iOS < 15.4 qui ne supporte pas dvh
+        try {
+          if (!CSS.supports('height', '1dvh')) {
+            var root = document.getElementById('root');
+            if (root) root.style.height = vv.height + 'px';
+          }
+        } catch (e) {
+          var root = document.getElementById('root');
+          if (root) root.style.height = vv.height + 'px';
+        }
       };
 
-      document.addEventListener('scroll', function () {
+      // Bloque tout scroll parasite iOS
+      document.addEventListener('scroll', function (e) {
         window.scrollTo(0, 0);
         updateLayout();
       }, { passive: false });
 
+      // Délai pour laisser le clavier se fermer complètement avant de recalculer
       document.addEventListener('focusout', function () {
-        window.scrollTo(0, 0);
-        updateLayout();
+        setTimeout(function () {
+          window.scrollTo(0, 0);
+          updateLayout();
+        }, 100);
       });
 
       if (window.visualViewport) {
