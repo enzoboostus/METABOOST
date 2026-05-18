@@ -46,6 +46,9 @@ export default function Onboarding() {
   const [waist,  setWaist]      = useState('');
   const [thigh,  setThigh]      = useState('');
   const [arm,    setArm]        = useState('');
+  const [email,  setEmail]      = useState('');
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
 
   const vals: Record<string, string>              = { weight, height, waist, thigh, arm };
   const sets: Record<string, (v: string) => void> = { weight: setWeight, height: setHeight, waist: setWaist, thigh: setThigh, arm: setArm };
@@ -91,13 +94,16 @@ export default function Onboarding() {
     else finish();
   }
 
-  async function handleGoogleLogin() {
-    if (Platform.OS !== 'web') return;
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
+  async function handleEmailLogin() {
+    if (!email.trim()) return;
+    setEmailLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: { emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
     });
-    if (error) Alert.alert('Google non configuré', 'Active Google dans Supabase Auth pour utiliser cette option.');
+    setEmailLoading(false);
+    if (error) Alert.alert('Erreur', error.message);
+    else setEmailSent(true);
   }
 
   function finish() {
@@ -159,19 +165,38 @@ export default function Onboarding() {
               </View>
 
               <View style={styles.authBlock}>
-                <TouchableOpacity style={styles.googleBtn} onPress={handleGoogleLogin} activeOpacity={0.9}>
-                  <View style={styles.gIcon}><Text style={styles.gLetter}>G</Text></View>
-                  <Text style={styles.googleTxt}>Continuer avec Google</Text>
-                </TouchableOpacity>
-                <View style={styles.divider}>
-                  <View style={styles.divLine} />
-                  <Text style={styles.divTxt}>ou</Text>
-                  <View style={styles.divLine} />
-                </View>
-                <TouchableOpacity style={styles.ghostBtn} onPress={() => transitionTo('welcome')} activeOpacity={0.8}>
-                  <Text style={styles.ghostTxt}>Commencer sans compte</Text>
-                  <ChevronRight size={15} color={Colors.textSecondary} strokeWidth={2} />
-                </TouchableOpacity>
+                {emailSent ? (
+                  <View style={styles.emailSentBox}>
+                    <Text style={styles.emailSentTxt}>📧 Vérifie ta boîte mail !</Text>
+                    <Text style={styles.emailSentSub}>Un lien de connexion a été envoyé à {email.trim()}</Text>
+                  </View>
+                ) : (
+                  <>
+                    <TextInput
+                      style={styles.emailInput}
+                      value={email}
+                      onChangeText={setEmail}
+                      placeholder="Ton adresse email"
+                      placeholderTextColor="rgba(226,209,179,0.35)"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      inputMode="email"
+                    />
+                    <TouchableOpacity style={[styles.googleBtn, emailLoading && { opacity: 0.6 }]} onPress={handleEmailLogin} activeOpacity={0.9} disabled={emailLoading}>
+                      <Text style={styles.googleTxt}>{emailLoading ? 'Envoi...' : 'Continuer avec email'}</Text>
+                    </TouchableOpacity>
+                    <View style={styles.divider}>
+                      <View style={styles.divLine} />
+                      <Text style={styles.divTxt}>ou</Text>
+                      <View style={styles.divLine} />
+                    </View>
+                    <TouchableOpacity style={styles.ghostBtn} onPress={() => transitionTo('welcome')} activeOpacity={0.8}>
+                      <Text style={styles.ghostTxt}>Commencer sans compte</Text>
+                      <ChevronRight size={15} color={Colors.textSecondary} strokeWidth={2} />
+                    </TouchableOpacity>
+                  </>
+                )}
               </View>
 
               <Text style={styles.legal}>
@@ -434,6 +459,16 @@ const styles = StyleSheet.create({
   pillTxt: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
 
   authBlock: { gap: 12 },
+  emailInput: {
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.13)',
+    borderRadius: Radius.full,
+    paddingVertical: 16, paddingHorizontal: Spacing.lg,
+    fontSize: 16, color: Colors.text,
+  },
+  emailSentBox: { alignItems: 'center', gap: 8, paddingVertical: 20 },
+  emailSentTxt: { fontSize: 20, color: Colors.text, fontWeight: '700' },
+  emailSentSub: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center' },
   googleBtn: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: '#fff', borderRadius: Radius.full,
