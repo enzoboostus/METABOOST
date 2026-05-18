@@ -43,7 +43,7 @@ function AppInit({ children }: { children: React.ReactNode }) {
 export default function RootLayout() {
   return (
     <ErrorBoundary>
-      <GestureHandlerRootView style={styles.root}>
+      <GestureHandlerRootView style={[styles.root, { backgroundColor: Colors.background }]}>
         <StatusBar style="light" backgroundColor={Colors.background} />
         <AppInit>
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }}>
