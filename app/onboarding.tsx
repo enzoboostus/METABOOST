@@ -127,12 +127,12 @@ export default function Onboarding() {
   });
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, Platform.OS === 'web' && styles.rootWeb]}>
       <LinearGradient colors={['#0B1628', '#060E1C', '#03080F']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
       <View style={styles.glowA} />
       <View style={styles.glowB} />
 
-      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+      <SafeAreaView style={{ flex: 1 }} edges={Platform.OS === 'web' ? ['top'] : ['top', 'bottom']}>
         {step !== 'login' && (
           <View style={styles.progressTrack}>
             <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
@@ -389,6 +389,13 @@ export default function Onboarding() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#060E1C' },
+  rootWeb: {
+    position: 'absolute' as any,
+    top: 0, left: 0,
+    width: '100%' as any,
+    height: '100%' as any,
+    overflow: 'hidden' as any,
+  },
 
   glowA: {
     position: 'absolute', top: -80, alignSelf: 'center',
