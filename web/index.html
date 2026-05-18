@@ -9,6 +9,8 @@
     />
     <meta name="theme-color" content="#010613">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="METABOOST">
     <title>MetaBoost</title>
 
     <style id="expo-reset">
@@ -71,6 +73,9 @@
 
       input, select, textarea {
         font-size: 16px;
+      }
+      body {
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) !important;
       }
     </style>
 
