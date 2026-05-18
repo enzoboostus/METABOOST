@@ -393,8 +393,10 @@ const styles = StyleSheet.create({
     position: 'absolute' as any,
     top: 0, left: 0,
     width: '100%' as any,
-    height: '100%' as any,
+    height: '100dvh' as any,
     overflow: 'hidden' as any,
+    flex: 1,
+    paddingBottom: 0,
   },
 
   glowA: {
