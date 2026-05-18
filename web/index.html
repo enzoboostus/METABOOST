@@ -66,9 +66,9 @@
         var vvOffsetTop = vv ? vv.offsetTop : 0;
         var kbOffset = Math.max(0, window.innerHeight - vvHeight - vvOffsetTop);
         document.documentElement.style.setProperty('--kb-offset', kbOffset + 'px');
-        // Shrink #root to match visible area — eliminates empty space below content
+        // Only shrink root for real keyboard (>150px), not Safari bottom toolbar (~50px)
         var root = document.getElementById('root');
-        if (root) root.style.bottom = kbOffset + 'px';
+        if (root) root.style.bottom = (kbOffset > 150 ? kbOffset : 0) + 'px';
       };
 
       document.addEventListener('scroll', function () {
