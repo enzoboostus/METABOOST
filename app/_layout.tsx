@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet, View, Text } from 'react-native';
 import { Colors } from '@/constants/theme';
+import InstallBanner from '@/components/InstallBanner';
 import { useUserStore } from '@/store/userStore';
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: string | null }> {
@@ -53,6 +54,7 @@ export default function RootLayout() {
             <Stack.Screen name="legal" />
           </Stack>
         </AppInit>
+        <InstallBanner />
       </GestureHandlerRootView>
     </ErrorBoundary>
   );
