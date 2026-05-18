@@ -10,47 +10,54 @@
     <title>MetaBoost</title>
 
     <style id="expo-reset">
-      html, body {
-        background-color: #060E1C;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        overscroll-behavior: none;
-        margin: 0;
-        padding: 0;
+      /* Verrouillage total du viewport — aucun scroll élastique, aucun rubber-banding */
+      html, body, #root {
+        height: 100dvh !important;
+        width: 100vw !important;
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: #060E1C !important;
       }
+
       html {
-        padding-top: env(safe-area-inset-top);
+        padding-top: env(safe-area-inset-top) !important;
       }
+
       #root {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        /* 100dvh = dynamic viewport height: se réduit automatiquement quand le clavier s'ouvre */
-        height: 100dvh;
-        background-color: #060E1C;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
-        box-sizing: border-box;
+        display: flex !important;
+        flex-direction: column !important;
+        padding-top: env(safe-area-inset-top) !important;
+        padding-bottom: env(safe-area-inset-bottom) !important;
+        box-sizing: border-box !important;
+        right: 0 !important;
       }
-      /* Force dark background sur tous les wrappers React Native */
-      #root > div {
+
+      /* Force la propagation de hauteur dans tous les wrappers React Native Web */
+      #root > div,
+      #root > div > div,
+      #root > div > div > div {
+        height: 100% !important;
+        overflow: hidden !important;
         background-color: #060E1C;
       }
+
+      /* Couche de fond de secours — couvre tout espace hors #root */
       .bg-fixed-layer {
-        position: fixed;
-        top: -100px;
-        left: -100px;
-        right: -100px;
-        bottom: -100px;
+        position: fixed !important;
+        top: -200px;
+        left: -200px;
+        right: -200px;
+        bottom: -200px;
         background-color: #060E1C;
         z-index: -1;
         pointer-events: none;
       }
+
       .button-container {
         position: fixed;
         bottom: calc(20px + var(--kb-offset, 0px) + env(safe-area-inset-bottom));
@@ -59,6 +66,7 @@
         width: 90%;
         z-index: 50;
       }
+
       input, select, textarea {
         font-size: 16px;
       }
@@ -72,25 +80,30 @@
         var kbOffset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
         document.documentElement.style.setProperty('--kb-offset', kbOffset + 'px');
 
-        // Fallback pour iOS < 15.4 qui ne supporte pas dvh
+        // Fallback JS pour iOS < 15.4 (pas de support dvh natif)
         try {
           if (!CSS.supports('height', '1dvh')) {
             var root = document.getElementById('root');
-            if (root) root.style.height = vv.height + 'px';
+            if (root) root.style.setProperty('height', vv.height + 'px', 'important');
           }
         } catch (e) {
           var root = document.getElementById('root');
-          if (root) root.style.height = vv.height + 'px';
+          if (root) root.style.setProperty('height', vv.height + 'px', 'important');
         }
       };
 
-      // Bloque tout scroll parasite iOS
+      // Verrouille le scroll et force la mise à jour du layout
       document.addEventListener('scroll', function (e) {
+        e.preventDefault();
         window.scrollTo(0, 0);
         updateLayout();
       }, { passive: false });
 
-      // Délai pour laisser le clavier se fermer complètement avant de recalculer
+      document.addEventListener('touchmove', function (e) {
+        if (e.touches.length === 1) e.preventDefault();
+      }, { passive: false });
+
+      // Délai de 100ms après fermeture du clavier pour recalculer correctement
       document.addEventListener('focusout', function () {
         setTimeout(function () {
           window.scrollTo(0, 0);
