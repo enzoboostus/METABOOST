@@ -10,24 +10,6 @@
     <meta name="apple-mobile-web-app-title" content="METABOOST">
     <title>MetaBoost</title>
 
-    <style type="text/css">
-      /* Force absolue sur la hiérarchie du navigateur */
-      html,
-      html body,
-      html body #root,
-      html body [data-reactroot] {
-        background-color: #010613 !important;
-        background: #010613 !important;
-        min-height: 100dvh !important;
-        max-height: 100dvh !important;
-      }
-
-      /* Supprime la couleur de fond par défaut que Safari applique aux zones élastiques */
-      :root {
-        color-scheme: dark !important;
-      }
-    </style>
-
     <style id="expo-reset">
       html, body, #root {
         height: 100dvh !important;
@@ -148,6 +130,24 @@
       window.addEventListener('resize', updateLayout);
       updateLayout();
     </script>
+
+    <style type="text/css">
+      html,
+      body,
+      #root,
+      [data-reactroot] {
+        background-color: #010613 !important;
+        background: #010613 !important;
+        min-height: 100dvh !important;
+        max-height: 100dvh !important;
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+      }
+
+      :root {
+        color-scheme: dark !important;
+      }
+    </style>
   </head>
 
   <body>
