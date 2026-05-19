@@ -3,23 +3,32 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover, interactive-widget=resizes-content"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
     <meta name="theme-color" content="#010613">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="METABOOST">
     <title>MetaBoost</title>
 
-    <style id="expo-reset">
-      /* Verrouillage total du viewport — aucun scroll élastique, aucun rubber-banding */
-      html, body, #root, [data-reactroot] {
+    <style type="text/css">
+      /* Force absolue sur la hiérarchie du navigateur */
+      html,
+      html body,
+      html body #root,
+      html body [data-reactroot] {
         background-color: #010613 !important;
         background: #010613 !important;
+        min-height: 100dvh !important;
+        max-height: 100dvh !important;
       }
 
+      /* Supprime la couleur de fond par défaut que Safari applique aux zones élastiques */
+      :root {
+        color-scheme: dark !important;
+      }
+    </style>
+
+    <style id="expo-reset">
       html, body, #root {
         height: 100dvh !important;
         width: 100vw !important;
