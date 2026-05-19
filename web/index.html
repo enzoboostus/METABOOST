@@ -15,6 +15,11 @@
 
     <style id="expo-reset">
       /* Verrouillage total du viewport — aucun scroll élastique, aucun rubber-banding */
+      html, body, #root, [data-reactroot] {
+        background-color: #010613 !important;
+        background: #010613 !important;
+      }
+
       html, body, #root {
         height: 100dvh !important;
         width: 100vw !important;
@@ -26,6 +31,14 @@
         margin: 0 !important;
         padding: 0 !important;
         background-color: #010613 !important;
+      }
+
+      @supports (padding: env(safe-area-inset-bottom)) {
+        html, body {
+          padding-top: env(safe-area-inset-top) !important;
+          padding-bottom: env(safe-area-inset-bottom) !important;
+          box-sizing: border-box !important;
+        }
       }
 
       html {
