@@ -66,12 +66,17 @@ function MorphoBar({ label, pct, color }: { label: string; pct: number; color: s
   );
 }
 
-function MetricCard({ label, value, unit }: { label: string; value: string; unit: string }) {
+function RapportCard({ emoji, title, desc }: { emoji: string; title: string; desc: string }) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', paddingVertical: 12, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)', gap: 2 }}>
-      <Text style={{ fontSize: 20, fontWeight: '900', color: Colors.teal, letterSpacing: -0.5 }}>{value}</Text>
-      <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>{unit}</Text>
-      <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)', textAlign: 'center' }}>{label}</Text>
+    <View style={styles.s3RapportCard}>
+      <View style={styles.s3RapportCardInner}>
+        <Text style={{ fontSize: 20 }}>{emoji}</Text>
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text style={styles.s3RapportTitle}>{title}</Text>
+          <Text style={styles.s3RapportDesc}>{desc}</Text>
+        </View>
+      </View>
+      <ChevronRight size={14} color="rgba(255,255,255,0.2)" strokeWidth={2} />
     </View>
   );
 }
@@ -82,8 +87,13 @@ function LogisticsStep({ icon, label, time, highlight }: { icon: string; label: 
       <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: highlight ? '#050A12' : '#F3F4F6', alignItems: 'center', justifyContent: 'center', borderWidth: highlight ? 0 : 1, borderColor: '#E5E7EB' }}>
         <Text style={{ fontSize: 20 }}>{icon}</Text>
       </View>
-      <Text style={{ fontSize: 10, fontWeight: '700', color: highlight ? '#050A12' : '#9CA3AF', textAlign: 'center' }}>{label}</Text>
+      <Text style={{ fontSize: 10, fontWeight: highlight ? '800' : '600', color: highlight ? '#050A12' : '#9CA3AF', textAlign: 'center' }}>{label}</Text>
       <Text style={{ fontSize: 10, fontWeight: '600', color: highlight ? '#374151' : '#D1D5DB' }}>{time}</Text>
+      {highlight && (
+        <View style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6, backgroundColor: '#DCFCE7', borderWidth: 1, borderColor: '#BBF7D0' }}>
+          <Text style={{ fontSize: 8, fontWeight: '800', color: '#15803D', letterSpacing: 0.5 }}>LIVE</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -234,7 +244,7 @@ export default function Onboarding() {
                 <View style={styles.s1Hero}>
                   <Text style={styles.s1Title}>METABOOST</Text>
                   <Text style={styles.s1Tagline}>SPORT, HAUTE NUTRITION{'\n'}& SANTÉ CONNECTÉE</Text>
-                  <Text style={styles.s1Sub}>Écosystème expert  •  Suivi métabolique & APA</Text>
+                  <Text style={styles.s1Sub}>Écosystème expert  •  Suivi métabolique, Performance & APA</Text>
                 </View>
 
                 <View style={styles.s1Auth}>
@@ -279,19 +289,19 @@ export default function Onboarding() {
                 </View>
 
                 <View style={styles.s1ScrollHint}>
-                  <Text style={styles.s1ScrollTxt}>DÉCOUVRIR</Text>
+                  <Text style={styles.s1ScrollTxt}>DÉCOUVRIR L'ÉCOSYSTÈME</Text>
                   <ChevronDown size={13} color="rgba(255,255,255,0.22)" strokeWidth={2} />
                 </View>
               </View>
 
-              {/* ── SLIDE 2 : Avatar 3D & Nutrition — Fond Blanc ── */}
+              {/* ── SLIDE 2 : IA Nutritionnelle & Avatar 3D — Fond Blanc ── */}
               <View style={styles.slide2}>
                 <View style={styles.s2Tag}>
                   <Text style={styles.s2TagTxt}>IA NUTRITIONNELLE</Text>
                 </View>
                 <Text style={styles.s2Title}>VOTRE ÉVOLUTION EN 3D{'\n'}& NUTRITION COMPLÈTE</Text>
                 <Text style={styles.s2Desc}>
-                  Scannez vos repas par IA, gérez vos calories en fonction de vos objectifs et observez la transformation en temps réel de votre avatar morphologique dynamique. L'IA supprime toute votre charge mentale.
+                  Scannez vos repas par IA, gérez vos calories selon vos objectifs (prise de masse, perte de gras, maintien sain) et observez la transformation en temps réel de votre avatar morphologique dynamique. L'IA supprime toute charge mentale.
                 </Text>
 
                 <View style={styles.s2Card}>
@@ -301,14 +311,15 @@ export default function Onboarding() {
                     <MacroBlock label="Glucides" value="220g" color="#F59E0B" />
                     <MacroBlock label="Lipides" value="58g" color="#EF4444" />
                   </View>
-                  <View style={{ gap: 10, marginTop: 4 }}>
+                  <View style={styles.s2Divider} />
+                  <View style={{ gap: 12 }}>
                     <MorphoBar label="Masse musculaire" pct={73} color="#050A12" />
-                    <MorphoBar label="Hydratation" pct={61} color="#3B82F6" />
-                    <MorphoBar label="Objectif calories" pct={84} color="#2DC674" />
+                    <MorphoBar label="Hydratation — Objectif litres / jour" pct={61} color="#3B82F6" />
+                    <MorphoBar label="Qualité du Sommeil / Récupération" pct={84} color="#8B5CF6" />
                   </View>
                 </View>
 
-                <View style={styles.s2B2BRow}>
+                <View style={styles.s2PillsRow}>
                   {['Prise de masse', 'Perte de poids', 'Maintien sain'].map((tag) => (
                     <View key={tag} style={styles.s2Pill}>
                       <Text style={styles.s2PillTxt}>{tag}</Text>
@@ -317,7 +328,7 @@ export default function Onboarding() {
                 </View>
               </View>
 
-              {/* ── SLIDE 3 : Précision Clinique — Fond Sombre ── */}
+              {/* ── SLIDE 3 : Moteur EnzoBoost & Reporting Caméléon — Fond Sombre ── */}
               <View style={styles.slide3}>
                 <LinearGradient
                   colors={['#0B132B', '#060E1C', '#0B132B']}
@@ -327,14 +338,15 @@ export default function Onboarding() {
 
                 <View style={styles.s3Tag}>
                   <Activity size={11} color={Colors.teal} strokeWidth={2} />
-                  <Text style={styles.s3TagTxt}>BIOMÉTRIE CLINIQUE</Text>
+                  <Text style={styles.s3TagTxt}>MOTEUR ENZOBOOST</Text>
                 </View>
-                <Text style={styles.s3Title}>SUIVI BIOMÉTRIQUE{'\n'}& PASSEPORT SANTÉ</Text>
+                <Text style={styles.s3Title}>PRÉCISION CLINIQUE{'\n'}& PASSEPORT SANTÉ</Text>
                 <Text style={styles.s3Desc}>
-                  Des programmes sur-mesure adaptés à tous : athlètes de haut niveau, seniors, ou public en situation de handicap. Génération en un clic de rapports d'effort cliniques pour votre médecin ou vos demandes de subventions.
+                  Bâtie sur la méthode algorithmique EnzoBoost — IA Core répliquant vos protocoles de musculation, haltérophilie, course et natation même en votre absence. Synchronisation chirurgicale avec Apple Santé, Google Fit et ceintures cardio (VFC).
                 </Text>
 
                 <View style={styles.s3Dashboard}>
+                  {/* ECG */}
                   <View style={styles.s3EcgBox}>
                     <Text style={styles.s3EcgLabel}>FC EN DIRECT</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 2, paddingTop: 4 }}>
@@ -345,20 +357,36 @@ export default function Onboarding() {
                         );
                       })}
                     </View>
-                    <Text style={styles.s3Bpm}>68 <Text style={styles.s3BpmUnit}>bpm</Text></Text>
+                    <Text style={styles.s3Bpm}>68 <Text style={styles.s3BpmUnit}>bpm  •  VFC 52ms</Text></Text>
                   </View>
 
-                  <View style={{ flexDirection: 'row', gap: 8 }}>
-                    <MetricCard label="Variabilité" value="52" unit="ms VFC" />
-                    <MetricCard label="VO₂ max" value="48" unit="ml/kg/min" />
-                    <MetricCard label="Charge" value="85" unit="% effort" />
+                  {/* Rapports Caméléon */}
+                  <View style={styles.s3RapportHeader}>
+                    <Text style={styles.s3RapportHeaderTxt}>MOTEUR CAMÉLÉON — 3 RAPPORTS EN 1 CLIC</Text>
+                  </View>
+                  <View style={styles.s3RapportCards}>
+                    <RapportCard
+                      emoji="👤"
+                      title="Rapport Client"
+                      desc="Visuel & Évolution Avatar 3D morphologique"
+                    />
+                    <RapportCard
+                      emoji="📊"
+                      title="Rapport Performance"
+                      desc="Courbes de charges & Macros sur la période"
+                    />
+                    <RapportCard
+                      emoji="🏥"
+                      title="Rapport Médical"
+                      desc="Tolérance à l'effort, VFC — validé ARS, médecins, kinés & subventions d'État"
+                    />
                   </View>
                 </View>
 
-                <View style={styles.s3ProgramsRow}>
-                  {['Musculation', 'Haltérophilie', 'Course', 'Natation'].map((p) => (
-                    <View key={p} style={styles.s3ProgramBadge}>
-                      <Text style={styles.s3ProgramTxt}>{p}</Text>
+                <View style={styles.s3BadgesRow}>
+                  {['Athlètes Élite', 'Seniors / Sarcopénie', 'Post-Opératoire / ALD', 'PMR & Handicap'].map((p) => (
+                    <View key={p} style={styles.s3Badge}>
+                      <Text style={styles.s3BadgeTxt}>{p}</Text>
                     </View>
                   ))}
                 </View>
@@ -371,7 +399,7 @@ export default function Onboarding() {
                 </View>
                 <Text style={styles.s4Title}>ZÉRO ÉPARPILLEMENT.{'\n'}LOGISTIQUE CENTRALISÉE.</Text>
                 <Text style={styles.s4Desc}>
-                  Oubliez les groupes WhatsApp. Tout votre planning est centralisé. Suivez vos séances sur nos 10 bornes tactiles et recevez vos alertes de prise en charge en temps réel.
+                  Éradication totale des groupes WhatsApp. L'application intègre un module logistique complet pour les structures disposant d'un service de ramassage — navette adaptée / mini-bus style ambulance pour seniors, personnes isolées ou PMR.
                 </Text>
 
                 <View style={styles.s4Card}>
@@ -379,16 +407,20 @@ export default function Onboarding() {
                   <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
                     <LogisticsStep icon="🏠" label="Domicile" time="08h30" />
                     <View style={styles.s4Connector} />
-                    <LogisticsStep icon="🚐" label="Navette" time="08h45" highlight />
+                    <LogisticsStep icon="🚍" label="Navette METABOOST" time="08h45" highlight />
                     <View style={styles.s4Connector} />
-                    <LogisticsStep icon="🏋️" label="Séance" time="09h00" />
+                    <LogisticsStep icon="🏋️" label="10 Bornes Tactiles" time="09h00" />
                     <View style={styles.s4Connector} />
-                    <LogisticsStep icon="📱" label="Suivi" time="Live" />
+                    <LogisticsStep icon="📱" label="Suivi Clinique" time="Live" />
                   </View>
                 </View>
 
+                <Text style={styles.s4AdminNote}>
+                  ⚙️  Feuille de route du chauffeur générée automatiquement via le God Mode Admin.
+                </Text>
+
                 <View style={styles.s4Badges}>
-                  {['10 bornes tactiles en salle', 'Navette adaptée domicile', 'Alertes temps réel'].map((b) => (
+                  {['10 bornes tactiles en salle', 'Navette adaptée domicile', 'Alertes push temps réel'].map((b) => (
                     <View key={b} style={styles.s4Badge}>
                       <Text style={styles.s4BadgeTxt}>✓  {b}</Text>
                     </View>
@@ -396,7 +428,7 @@ export default function Onboarding() {
                 </View>
               </View>
 
-              {/* ── SLIDE 5 : B2B & Réassurance Élite — Fond Sombre ── */}
+              {/* ── SLIDE 5 : Infrastructure Professionnels & Capture Finale ── */}
               <View style={styles.slide5}>
                 <LinearGradient
                   colors={['#050A12', '#0A0F1E', '#050A12']}
@@ -407,19 +439,23 @@ export default function Onboarding() {
                 <View style={styles.s5B2BCard}>
                   <View style={styles.s5B2BIconRow}>
                     <Users size={18} color={Colors.accent} strokeWidth={1.8} />
-                    <Text style={styles.s5B2BChip}>MARQUE BLANCHE</Text>
+                    <Text style={styles.s5B2BChip}>PROFESSIONNELS & ÉTABLISSEMENTS</Text>
                   </View>
                   <Text style={styles.s5B2BTitle}>
-                    Coach indépendant, gérant de salle, EHPAD ou structure de santé ?
+                    L'INFRASTRUCTURE POUR LES PROFESSIONNELS
                   </Text>
                   <Text style={styles.s5B2BDesc}>
-                    Utilisez l'infrastructure METABOOST (IA, Scanner, Navette) en marque blanche pour piloter et automatiser votre propre établissement.
+                    Coach indépendant, gérant de salle, EHPAD ou structure de santé ? Utilisez la puissance de METABOOST en option{' '}
+                    <Text style={{ color: Colors.accent, fontWeight: '700' }}>"Clé en main"</Text>
+                    {' '}(Méthode EnzoBoost intégrée) ou en{' '}
+                    <Text style={{ color: Colors.accent, fontWeight: '700' }}>"Outil Blanc"</Text>
+                    {' '}(intégrez vos propres protocoles en profitant de notre scanner IA, Avatar 3D et module transport).
                   </Text>
                 </View>
 
                 <View style={styles.s5TrustBlock}>
                   <TrustBadge text="Données Chiffrées RGPD" />
-                  <TrustBadge text="Synchronisation Apple Health / Google Fit" />
+                  <TrustBadge text="Synchronisation IoT Native" />
                   <TrustBadge text="Protocoles Certifiés Sport-Santé" />
                 </View>
 
@@ -674,7 +710,6 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
 
-  // ── Background glows (non-login steps) ────────────────────────────────────
   glowA: {
     position: 'absolute', top: -80, alignSelf: 'center',
     width: W * 0.88, height: 300, borderRadius: 999,
@@ -688,7 +723,6 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'web' ? { filter: 'blur(80px)' } as any : {}),
   },
 
-  // ── Progress bar ──────────────────────────────────────────────────────────
   progressTrack: {
     height: 2, backgroundColor: 'rgba(255,255,255,0.07)',
     marginHorizontal: Spacing.lg, borderRadius: Radius.full,
@@ -700,7 +734,7 @@ const styles = StyleSheet.create({
   },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 1 — Entrée Immersive Premium
+  // SLIDE 1
   // ══════════════════════════════════════════════════════════════════════════
   slide1: {
     minHeight: H,
@@ -760,26 +794,24 @@ const styles = StyleSheet.create({
   },
   s1CTATxt: { fontSize: 14, fontWeight: '800', color: '#050A12', letterSpacing: 2 },
   s1Ghost: {
-    height: 54,
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.22)',
+    height: 54, borderRadius: Radius.full,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.22)',
   },
   s1GhostTxt: { fontSize: 14, fontWeight: '500', color: 'rgba(255,255,255,0.55)' },
-
   s1ScrollHint: { alignItems: 'center', gap: 4 },
-  s1ScrollTxt: { fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: 3, textTransform: 'uppercase' },
+  s1ScrollTxt: { fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: 2.5, textTransform: 'uppercase' },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 2 — 3D Avatar & Nutrition — Fond Blanc
+  // SLIDE 2 — Fond Blanc  (marginTop: -1 pour coller au slide sombre)
   // ══════════════════════════════════════════════════════════════════════════
   slide2: {
     minHeight: H,
+    marginTop: -1,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 24,
-    paddingVertical: 56,
+    paddingTop: 57,
+    paddingBottom: 56,
     gap: 24,
     justifyContent: 'center',
   },
@@ -794,12 +826,16 @@ const styles = StyleSheet.create({
   s2Title: { fontSize: 28, fontWeight: '900', color: '#050A12', letterSpacing: -0.8, lineHeight: 34 },
   s2Desc: { fontSize: 14, color: '#4B5563', lineHeight: 22 },
   s2Card: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
     borderRadius: 20, padding: 20, gap: 14,
-    borderWidth: 1, borderColor: '#E5E7EB',
+    borderWidth: 1, borderColor: '#F3F4F6',
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0 4px 28px rgba(0,0,0,0.07)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.07, shadowRadius: 28, elevation: 3 }),
   },
   s2CardTitle: { fontSize: 10, fontWeight: '800', color: '#9CA3AF', letterSpacing: 2, textTransform: 'uppercase' },
-  s2B2BRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  s2Divider: { height: 1, backgroundColor: '#F3F4F6' },
+  s2PillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   s2Pill: {
     paddingHorizontal: 14, paddingVertical: 7,
     borderRadius: Radius.full,
@@ -808,13 +844,13 @@ const styles = StyleSheet.create({
   s2PillTxt: { fontSize: 12, fontWeight: '700', color: '#FFFFFF', letterSpacing: 0.3 },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 3 — Précision Clinique — Fond Sombre
+  // SLIDE 3 — Précision Clinique / Moteur EnzoBoost
   // ══════════════════════════════════════════════════════════════════════════
   slide3: {
     minHeight: H,
     paddingHorizontal: 24,
     paddingVertical: 56,
-    gap: 24,
+    gap: 22,
     justifyContent: 'center',
     overflow: 'hidden',
   },
@@ -828,37 +864,53 @@ const styles = StyleSheet.create({
   },
   s3TagTxt: { fontSize: 10, fontWeight: '800', color: Colors.teal, letterSpacing: 1.8 },
   s3Title: { fontSize: 28, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.8, lineHeight: 34 },
-  s3Desc: { fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 22 },
+  s3Desc: { fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 21 },
   s3Dashboard: {
     backgroundColor: 'rgba(255,255,255,0.03)',
-    borderRadius: 20, padding: 18, gap: 14,
+    borderRadius: 20, padding: 16, gap: 12,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
   },
   s3EcgBox: {
     backgroundColor: 'rgba(0,200,212,0.06)',
-    borderRadius: 12, padding: 14, gap: 0,
+    borderRadius: 12, padding: 12, gap: 0,
   },
   s3EcgLabel: { fontSize: 9, fontWeight: '800', color: Colors.teal, letterSpacing: 2, textTransform: 'uppercase' },
-  s3Bpm: { fontSize: 22, fontWeight: '900', color: '#FFFFFF', marginTop: 6, letterSpacing: -0.5 },
-  s3BpmUnit: { fontSize: 12, fontWeight: '400', color: 'rgba(255,255,255,0.4)' },
-  s3ProgramsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  s3ProgramBadge: {
-    paddingHorizontal: 14, paddingVertical: 7,
+  s3Bpm: { fontSize: 20, fontWeight: '900', color: '#FFFFFF', marginTop: 5, letterSpacing: -0.5 },
+  s3BpmUnit: { fontSize: 11, fontWeight: '400', color: 'rgba(255,255,255,0.35)' },
+
+  s3RapportHeader: { paddingHorizontal: 2 },
+  s3RapportHeaderTxt: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.28)', letterSpacing: 1.5, textTransform: 'uppercase' },
+  s3RapportCards: { gap: 6 },
+  s3RapportCard: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 14, padding: 12,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+  },
+  s3RapportCardInner: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  s3RapportTitle: { fontSize: 13, fontWeight: '700', color: '#FFFFFF', marginBottom: 2 },
+  s3RapportDesc: { fontSize: 11, color: 'rgba(255,255,255,0.38)', lineHeight: 15 },
+
+  s3BadgesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  s3Badge: {
+    paddingHorizontal: 12, paddingVertical: 6,
     borderRadius: Radius.full,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
     backgroundColor: 'rgba(255,255,255,0.04)',
   },
-  s3ProgramTxt: { fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.6)' },
+  s3BadgeTxt: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.6)' },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 4 — Logistique Centralisée — Fond Blanc
+  // SLIDE 4 — Fond Blanc  (marginTop: -1 pour coller au slide sombre)
   // ══════════════════════════════════════════════════════════════════════════
   slide4: {
     minHeight: H,
+    marginTop: -1,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 24,
-    paddingVertical: 56,
-    gap: 24,
+    paddingTop: 57,
+    paddingBottom: 56,
+    gap: 22,
     justifyContent: 'center',
   },
   s4Tag: {
@@ -872,13 +924,21 @@ const styles = StyleSheet.create({
   s4Title: { fontSize: 28, fontWeight: '900', color: '#050A12', letterSpacing: -0.8, lineHeight: 34 },
   s4Desc: { fontSize: 14, color: '#4B5563', lineHeight: 22 },
   s4Card: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FFFFFF',
     borderRadius: 20, padding: 20, gap: 18,
-    borderWidth: 1, borderColor: '#E5E7EB',
+    borderWidth: 1, borderColor: '#F3F4F6',
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0 4px 28px rgba(0,0,0,0.07)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.07, shadowRadius: 28, elevation: 3 }),
   },
   s4CardTitle: { fontSize: 10, fontWeight: '800', color: '#9CA3AF', letterSpacing: 2, textTransform: 'uppercase' },
   s4Connector: { flex: 1, height: 1.5, backgroundColor: '#E5E7EB', marginTop: 22, marginHorizontal: -6 },
-  s4Badges: { gap: 10 },
+  s4AdminNote: {
+    fontSize: 11, color: '#9CA3AF',
+    letterSpacing: 0.2, lineHeight: 17,
+    fontStyle: 'italic', paddingHorizontal: 4,
+  },
+  s4Badges: { gap: 8 },
   s4Badge: {
     paddingHorizontal: 16, paddingVertical: 10,
     borderRadius: 12,
@@ -888,14 +948,14 @@ const styles = StyleSheet.create({
   s4BadgeTxt: { fontSize: 13, fontWeight: '600', color: '#374151' },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 5 — B2B & Finisher — Fond Sombre
+  // SLIDE 5 — Infrastructure Pros / Fond Sombre
   // ══════════════════════════════════════════════════════════════════════════
   slide5: {
     minHeight: H,
     paddingHorizontal: 24,
     paddingTop: 56,
     paddingBottom: 40,
-    gap: 28,
+    gap: 24,
     justifyContent: 'center',
     overflow: 'hidden',
   },
@@ -905,8 +965,8 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
   },
   s5B2BIconRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  s5B2BChip: { fontSize: 10, fontWeight: '800', color: Colors.accent, letterSpacing: 2, textTransform: 'uppercase' },
-  s5B2BTitle: { fontSize: 17, fontWeight: '800', color: '#FFFFFF', lineHeight: 26 },
+  s5B2BChip: { fontSize: 9, fontWeight: '800', color: Colors.accent, letterSpacing: 1.5, textTransform: 'uppercase' },
+  s5B2BTitle: { fontSize: 18, fontWeight: '900', color: '#FFFFFF', lineHeight: 26, letterSpacing: -0.4 },
   s5B2BDesc: { fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 20 },
 
   s5TrustBlock: { gap: 10, paddingHorizontal: 4 },
@@ -944,14 +1004,14 @@ const styles = StyleSheet.create({
   s5LegalSep: { fontSize: 11, color: 'rgba(255,255,255,0.15)' },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // Email sent (shared)
+  // Shared
   // ══════════════════════════════════════════════════════════════════════════
   emailSentBox: { alignItems: 'center', gap: 8, paddingVertical: 20 },
   emailSentTxt: { fontSize: 20, color: Colors.text, fontWeight: '700' },
   emailSentSub: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center' },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // Welcome / Goal / Measures (unchanged)
+  // Welcome / Goal / Measures (inchangé)
   // ══════════════════════════════════════════════════════════════════════════
   screen: {
     flex: 1, paddingHorizontal: Spacing.lg,
