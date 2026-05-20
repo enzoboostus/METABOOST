@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Flame, TrendingUp, Shield, ChevronRight, ScanLine,
-  Activity, Users, ChevronDown,
+  Activity, Users, ChevronDown, Bot,
 } from 'lucide-react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, Gender, Goal } from '@/store/userStore';
@@ -28,7 +28,6 @@ const GOALS: GoalDef[] = [
   { key: 'muscle',    label: 'Prise de muscle',  sub: 'Gagner en masse musculaire & puissance',      color: Colors.accent, icon: <TrendingUp size={22} color={Colors.accent} strokeWidth={2} /> },
   { key: 'maintain',  label: 'Maintien & Forme', sub: 'Rester tonique & en pleine santé',            color: Colors.teal,  icon: <Shield     size={22} color={Colors.teal}  strokeWidth={2} /> },
 ];
-
 const ROW1 = [
   { key: 'weight', label: 'Poids',  desc: 'Poids actuel',   unit: 'kg', ph: '75'  },
   { key: 'height', label: 'Taille', desc: 'Ta hauteur',     unit: 'cm', ph: '175' },
@@ -45,18 +44,18 @@ const ECG_HEIGHTS = [2, 2, 2, 4, 2, 16, 3, 12, 7, 3, 2, 2, 2, 4, 2, 16, 3, 12, 7
 
 function MacroBlock({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', paddingVertical: 14, borderRadius: 14, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F3F4F6', gap: 3 }}>
-      <Text style={{ fontSize: 22, fontWeight: '900', color }}>{value}</Text>
-      <Text style={{ fontSize: 8, fontWeight: '800', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 1.2 }}>{label}</Text>
+    <View style={{ flex: 1, alignItems: 'center', paddingVertical: 13, borderRadius: 12, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F3F4F6', gap: 3 }}>
+      <Text style={{ fontSize: 20, fontWeight: '900', color }}>{value}</Text>
+      <Text style={{ fontSize: 8, fontWeight: '800', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 1 }}>{label}</Text>
     </View>
   );
 }
 
-function MorphoBar({ label, pct, color }: { label: string; pct: number; color: string }) {
+function ProgressBar({ label, pct, color }: { label: string; pct: number; color: string }) {
   return (
     <View style={{ gap: 5 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#6B7280', letterSpacing: 0.4 }}>{label}</Text>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: '#6B7280' }}>{label}</Text>
         <Text style={{ fontSize: 12, fontWeight: '900', color }}>{pct}%</Text>
       </View>
       <View style={{ height: 7, backgroundColor: '#E5E7EB', borderRadius: 4, overflow: 'hidden' }}>
@@ -66,34 +65,52 @@ function MorphoBar({ label, pct, color }: { label: string; pct: number; color: s
   );
 }
 
-function RapportCard({ emoji, title, desc }: { emoji: string; title: string; desc: string }) {
+function FeatureCard({ emoji, title, desc, accent }: { emoji: string; title: string; desc: string; accent: string }) {
   return (
-    <View style={styles.s3RapportCard}>
-      <View style={styles.s3RapportCardInner}>
-        <Text style={{ fontSize: 20 }}>{emoji}</Text>
-        <View style={{ flex: 1, gap: 2 }}>
-          <Text style={styles.s3RapportTitle}>{title}</Text>
-          <Text style={styles.s3RapportDesc}>{desc}</Text>
-        </View>
-      </View>
-      <ChevronRight size={14} color="rgba(255,255,255,0.2)" strokeWidth={2} />
+    <View style={[styles.s2FeatureCard, { borderTopColor: accent, borderTopWidth: 2.5 }]}>
+      <Text style={{ fontSize: 22, marginBottom: 6 }}>{emoji}</Text>
+      <Text style={styles.s2FeatureTitle}>{title}</Text>
+      <Text style={styles.s2FeatureDesc}>{desc}</Text>
     </View>
   );
 }
 
-function LogisticsStep({ icon, label, time, highlight }: { icon: string; label: string; time: string; highlight?: boolean }) {
+function RapportCard({ emoji, title, desc }: { emoji: string; title: string; desc: string }) {
   return (
-    <View style={{ alignItems: 'center', gap: 5, flex: 1 }}>
-      <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: highlight ? '#050A12' : '#F3F4F6', alignItems: 'center', justifyContent: 'center', borderWidth: highlight ? 0 : 1, borderColor: '#E5E7EB' }}>
-        <Text style={{ fontSize: 20 }}>{icon}</Text>
-      </View>
-      <Text style={{ fontSize: 10, fontWeight: highlight ? '800' : '600', color: highlight ? '#050A12' : '#9CA3AF', textAlign: 'center' }}>{label}</Text>
-      <Text style={{ fontSize: 10, fontWeight: '600', color: highlight ? '#374151' : '#D1D5DB' }}>{time}</Text>
-      {highlight && (
-        <View style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6, backgroundColor: '#DCFCE7', borderWidth: 1, borderColor: '#BBF7D0' }}>
-          <Text style={{ fontSize: 8, fontWeight: '800', color: '#15803D', letterSpacing: 0.5 }}>LIVE</Text>
+    <View style={styles.s3RapportCard}>
+      <View style={styles.s3RapportInner}>
+        <Text style={{ fontSize: 18 }}>{emoji}</Text>
+        <View style={{ flex: 1, gap: 1 }}>
+          <Text style={styles.s3RapportTitle}>{title}</Text>
+          <Text style={styles.s3RapportDesc}>{desc}</Text>
         </View>
-      )}
+      </View>
+      <ChevronRight size={13} color="rgba(255,255,255,0.2)" strokeWidth={2} />
+    </View>
+  );
+}
+
+function PushNotif({ title, sub }: { title: string; sub: string }) {
+  return (
+    <View style={styles.s4PushBanner}>
+      <View style={styles.s4PushDot} />
+      <View style={{ flex: 1, gap: 1 }}>
+        <Text style={styles.s4PushTitle}>{title}</Text>
+        <Text style={styles.s4PushSub}>{sub}</Text>
+      </View>
+      <View style={styles.s4PushBadge}>
+        <Text style={styles.s4PushBadgeTxt}>LIVE</Text>
+      </View>
+    </View>
+  );
+}
+
+function B2BOption({ emoji, title, desc, dark }: { emoji: string; title: string; desc: string; dark?: boolean }) {
+  return (
+    <View style={[styles.s5OptionCard, dark && styles.s5OptionCardDark]}>
+      <Text style={{ fontSize: 24 }}>{emoji}</Text>
+      <Text style={[styles.s5OptionTitle, dark && { color: '#FFFFFF' }]}>{title}</Text>
+      <Text style={[styles.s5OptionDesc, dark && { color: 'rgba(255,255,255,0.5)' }]}>{desc}</Text>
     </View>
   );
 }
@@ -103,6 +120,18 @@ function TrustBadge({ text }: { text: string }) {
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
       <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#8E9AA8' }} />
       <Text style={{ fontSize: 12, color: '#8E9AA8', fontWeight: '500', letterSpacing: 0.3 }}>{text}</Text>
+    </View>
+  );
+}
+
+function LogisticsStep({ icon, label, time, highlight }: { icon: string; label: string; time: string; highlight?: boolean }) {
+  return (
+    <View style={{ alignItems: 'center', gap: 4, flex: 1 }}>
+      <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: highlight ? '#050A12' : '#F3F4F6', alignItems: 'center', justifyContent: 'center', borderWidth: highlight ? 0 : 1, borderColor: '#E5E7EB' }}>
+        <Text style={{ fontSize: 18 }}>{icon}</Text>
+      </View>
+      <Text style={{ fontSize: 9, fontWeight: highlight ? '800' : '600', color: highlight ? '#050A12' : '#9CA3AF', textAlign: 'center', lineHeight: 13 }}>{label}</Text>
+      <Text style={{ fontSize: 9, fontWeight: '600', color: highlight ? '#374151' : '#D1D5DB' }}>{time}</Text>
     </View>
   );
 }
@@ -213,31 +242,21 @@ export default function Onboarding() {
             <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
           </View>
         )}
-
         <Animated.View style={[{ flex: 1 }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
 
           {/* ══════════════ LOGIN — 5 SLIDES ══════════════ */}
           {step === 'login' && (
-            <ScrollView
-              style={{ flex: 1 }}
-              showsVerticalScrollIndicator={false}
-              bounces={false}
-              overScrollMode="never"
-            >
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} bounces={false} overScrollMode="never">
 
-              {/* ── SLIDE 1 : Entrée Immersive Premium ── */}
+              {/* ════════════════════════════════════════════
+                  SLIDE 1 — Entrée Immersive Premium
+              ════════════════════════════════════════════ */}
               <View style={styles.slide1}>
-                <LinearGradient
-                  colors={['#050A12', '#0B1628', '#050A12']}
-                  locations={[0, 0.55, 1]}
-                  style={StyleSheet.absoluteFill}
-                />
+                <LinearGradient colors={['#050A12', '#0B1628', '#050A12']} locations={[0, 0.55, 1]} style={StyleSheet.absoluteFill} />
                 <View style={styles.s1Glow} />
 
                 <View style={styles.s1Header}>
-                  <View style={styles.s1LogoBadge}>
-                    <Text style={styles.s1LogoEmoji}>⚡</Text>
-                  </View>
+                  <View style={styles.s1LogoBadge}><Text style={styles.s1LogoEmoji}>⚡</Text></View>
                   <Text style={styles.s1Brand}>METABOOST</Text>
                 </View>
 
@@ -267,21 +286,10 @@ export default function Onboarding() {
                         spellCheck={false}
                         inputMode="email"
                       />
-                      <TouchableOpacity
-                        style={[styles.s1CTA, emailLoading && { opacity: 0.6 }]}
-                        onPress={handleEmailLogin}
-                        activeOpacity={0.9}
-                        disabled={emailLoading}
-                      >
-                        <Text style={styles.s1CTATxt}>
-                          {emailLoading ? 'ENVOI...' : 'DÉMARRER MON SUIVI'}
-                        </Text>
+                      <TouchableOpacity style={[styles.s1CTA, emailLoading && { opacity: 0.6 }]} onPress={handleEmailLogin} activeOpacity={0.9} disabled={emailLoading}>
+                        <Text style={styles.s1CTATxt}>{emailLoading ? 'ENVOI...' : 'DÉMARRER MON SUIVI'}</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity
-                        style={styles.s1Ghost}
-                        onPress={() => transitionTo('welcome')}
-                        activeOpacity={0.8}
-                      >
+                      <TouchableOpacity style={styles.s1Ghost} onPress={() => transitionTo('welcome')} activeOpacity={0.8}>
                         <Text style={styles.s1GhostTxt}>Commencer sans compte</Text>
                       </TouchableOpacity>
                     </>
@@ -294,31 +302,62 @@ export default function Onboarding() {
                 </View>
               </View>
 
-              {/* ── SLIDE 2 : IA Nutritionnelle & Avatar 3D — Fond Blanc ── */}
+              {/* ════════════════════════════════════════════
+                  SLIDE 2 — IA Nutritionnelle & Avatar 3D
+              ════════════════════════════════════════════ */}
               <View style={styles.slide2}>
+
                 <View style={styles.s2Tag}>
-                  <Text style={styles.s2TagTxt}>IA NUTRITIONNELLE</Text>
+                  <Text style={styles.s2TagTxt}>IA NUTRITIONNELLE & AVATAR 3D</Text>
                 </View>
-                <Text style={styles.s2Title}>VOTRE ÉVOLUTION EN 3D{'\n'}& NUTRITION COMPLÈTE</Text>
+                <Text style={styles.s2Title}>NUTRITION COMPLÈTE{'\n'}& ÉVOLUTION EN 3D</Text>
                 <Text style={styles.s2Desc}>
-                  Scannez vos repas par IA, gérez vos calories selon vos objectifs (prise de masse, perte de gras, maintien sain) et observez la transformation en temps réel de votre avatar morphologique dynamique. L'IA supprime toute charge mentale.
+                  Scannez vos repas par IA, gérez vos calories selon vos objectifs et observez la transformation en temps réel de votre avatar morphologique dynamique.
                 </Text>
 
+                {/* Macros card */}
                 <View style={styles.s2Card}>
-                  <Text style={styles.s2CardTitle}>MACROS JOURNALIERS</Text>
+                  <Text style={styles.s2CardLabel}>MACROS JOURNALIERS</Text>
                   <View style={{ flexDirection: 'row', gap: 8 }}>
                     <MacroBlock label="Protéines" value="142g" color="#3B82F6" />
-                    <MacroBlock label="Glucides" value="220g" color="#F59E0B" />
-                    <MacroBlock label="Lipides" value="58g" color="#EF4444" />
+                    <MacroBlock label="Glucides"  value="220g" color="#F59E0B" />
+                    <MacroBlock label="Lipides"   value="58g"  color="#EF4444" />
                   </View>
-                  <View style={styles.s2Divider} />
-                  <View style={{ gap: 12 }}>
-                    <MorphoBar label="Masse musculaire" pct={73} color="#050A12" />
-                    <MorphoBar label="Hydratation — Objectif litres / jour" pct={61} color="#3B82F6" />
-                    <MorphoBar label="Qualité du Sommeil / Récupération" pct={84} color="#8B5CF6" />
+                  <View style={styles.s2CardDivider} />
+                  <View style={{ gap: 10 }}>
+                    <ProgressBar label="💧 Hydratation — Objectif litres / jour" pct={61} color="#3B82F6" />
+                    <ProgressBar label="🌙 Qualité du Sommeil / Récupération"   pct={84} color="#8B5CF6" />
                   </View>
                 </View>
 
+                {/* Feature cards */}
+                <View style={styles.s2FeaturesRow}>
+                  <FeatureCard
+                    emoji="📸"
+                    title="SCAN OPTIQUE IA"
+                    desc="Photo de votre assiette → Calories & macros calculés instantanément."
+                    accent="#3B82F6"
+                  />
+                  <FeatureCard
+                    emoji="🛒"
+                    title="SMART SHOPPING"
+                    desc={"Optimisé selon votre Budget Courses, vos allergies et vos goûts."}
+                    accent="#10B981"
+                  />
+                </View>
+
+                {/* Avatar 3D */}
+                <View style={styles.s2AvatarBlock}>
+                  <View style={styles.s2AvatarIcon}>
+                    <Text style={{ fontSize: 28 }}>🧬</Text>
+                  </View>
+                  <View style={{ flex: 1, gap: 2 }}>
+                    <Text style={styles.s2AvatarTitle}>AVATAR 3D MORPHOLOGIQUE</Text>
+                    <Text style={styles.s2AvatarDesc}>Votre silhouette se transforme visuellement au fil de vos progrès mesurés.</Text>
+                  </View>
+                </View>
+
+                {/* Objective pills */}
                 <View style={styles.s2PillsRow}>
                   {['Prise de masse', 'Perte de poids', 'Maintien sain'].map((tag) => (
                     <View key={tag} style={styles.s2Pill}>
@@ -328,63 +367,71 @@ export default function Onboarding() {
                 </View>
               </View>
 
-              {/* ── SLIDE 3 : Moteur EnzoBoost & Reporting Caméléon — Fond Sombre ── */}
+              {/* ════════════════════════════════════════════
+                  SLIDE 3 — Moteur EnzoBoost & Clinique
+              ════════════════════════════════════════════ */}
               <View style={styles.slide3}>
-                <LinearGradient
-                  colors={['#0B132B', '#060E1C', '#0B132B']}
-                  locations={[0, 0.5, 1]}
-                  style={StyleSheet.absoluteFill}
-                />
+                <LinearGradient colors={['#0B132B', '#060E1C', '#0B132B']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
 
                 <View style={styles.s3Tag}>
                   <Activity size={11} color={Colors.teal} strokeWidth={2} />
-                  <Text style={styles.s3TagTxt}>MOTEUR ENZOBOOST</Text>
+                  <Text style={styles.s3TagTxt}>MOTEUR ENZOBOOST — IA CORE</Text>
                 </View>
                 <Text style={styles.s3Title}>PRÉCISION CLINIQUE{'\n'}& PASSEPORT SANTÉ</Text>
                 <Text style={styles.s3Desc}>
-                  Bâtie sur la méthode algorithmique EnzoBoost — IA Core répliquant vos protocoles de musculation, haltérophilie, course et natation même en votre absence. Synchronisation chirurgicale avec Apple Santé, Google Fit et ceintures cardio (VFC).
+                  Méthode algorithmique EnzoBoost — IA Core répliquant vos protocoles même en votre absence. Synchronisation avec Apple Santé, Google Fit et ceintures cardio (VFC).
                 </Text>
 
+                {/* Dashboard MedTech */}
                 <View style={styles.s3Dashboard}>
+
                   {/* ECG */}
                   <View style={styles.s3EcgBox}>
                     <Text style={styles.s3EcgLabel}>FC EN DIRECT</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 2, paddingTop: 4 }}>
                       {ECG_HEIGHTS.map((h, i) => {
                         const opacity = h >= 12 ? 1 : h >= 6 ? 0.65 : h >= 3 ? 0.38 : 0.18;
-                        return (
-                          <View key={i} style={{ width: 4, height: h, borderRadius: 2, backgroundColor: Colors.teal, opacity }} />
-                        );
+                        return <View key={i} style={{ width: 4, height: h, borderRadius: 2, backgroundColor: Colors.teal, opacity }} />;
                       })}
                     </View>
-                    <Text style={styles.s3Bpm}>68 <Text style={styles.s3BpmUnit}>bpm  •  VFC 52ms</Text></Text>
+                    <Text style={styles.s3Bpm}>68 <Text style={styles.s3BpmUnit}>bpm  •  VFC 52 ms</Text></Text>
                   </View>
 
-                  {/* Rapports Caméléon */}
-                  <View style={styles.s3RapportHeader}>
-                    <Text style={styles.s3RapportHeaderTxt}>MOTEUR CAMÉLÉON — 3 RAPPORTS EN 1 CLIC</Text>
-                  </View>
-                  <View style={styles.s3RapportCards}>
-                    <RapportCard
-                      emoji="👤"
-                      title="Rapport Client"
-                      desc="Visuel & Évolution Avatar 3D morphologique"
-                    />
-                    <RapportCard
-                      emoji="📊"
-                      title="Rapport Performance"
-                      desc="Courbes de charges & Macros sur la période"
-                    />
-                    <RapportCard
-                      emoji="🏥"
-                      title="Rapport Médical"
-                      desc="Tolérance à l'effort, VFC — validé ARS, médecins, kinés & subventions d'État"
-                    />
+                  {/* IA Core disciplines */}
+                  <View style={styles.s3IACore}>
+                    <Text style={styles.s3IACoreLabel}>IA CORE — CLONAGE MÉTHODE ENZOBOOST</Text>
+                    <View style={styles.s3IACorePills}>
+                      {['💪 Musculation', '🏋️ Haltérophilie', '🏊 Natation', '🏃 Course'].map((d) => (
+                        <View key={d} style={styles.s3IACoreItem}>
+                          <Text style={styles.s3IACoreItemTxt}>{d}</Text>
+                        </View>
+                      ))}
+                    </View>
+                    <View style={styles.s3HandicapNote}>
+                      <Text style={styles.s3HandicapTxt}>♿  Fiches spécifiques fauteuil roulant & programmes APA disponibles</Text>
+                    </View>
                   </View>
                 </View>
 
+                {/* Rapport Caméléon */}
+                <View style={styles.s3RapportSection}>
+                  <Text style={styles.s3RapportHeader}>MOTEUR CAMÉLÉON — 3 RAPPORTS EN 1 CLIC</Text>
+                  <View style={styles.s3RapportList}>
+                    <RapportCard emoji="👤" title="Rapport Client"        desc="Évolution visuelle Avatar 3D & courbes de progression" />
+                    <RapportCard emoji="🎽" title="Rapport Coach"         desc="Charges, charges nettes, densité d'entraînement & macros" />
+                    <RapportCard emoji="🏥" title="Rapport Institutionnel" desc="Tolérance à l'effort, VFC — validé ARS, médecins, kinés & subventions d'État" />
+                  </View>
+                </View>
+
+                {/* Public badges */}
                 <View style={styles.s3BadgesRow}>
-                  {['Athlètes Élite', 'Seniors / Sarcopénie', 'Post-Opératoire / ALD', 'PMR & Handicap'].map((p) => (
+                  {[
+                    'Athlètes Élite',
+                    'Seniors (Anti-Sarcopénie)',
+                    'Post-Rééducation & ALD',
+                    'PMR (Fauteuil)',
+                    'Handicap Mental (UX Simplifiée)',
+                  ].map((p) => (
                     <View key={p} style={styles.s3Badge}>
                       <Text style={styles.s3BadgeTxt}>{p}</Text>
                     </View>
@@ -392,31 +439,55 @@ export default function Onboarding() {
                 </View>
               </View>
 
-              {/* ── SLIDE 4 : Logistique Centralisée — Fond Blanc ── */}
+              {/* ════════════════════════════════════════════
+                  SLIDE 4 — Logistique & Transports
+              ════════════════════════════════════════════ */}
               <View style={styles.slide4}>
+
                 <View style={styles.s4Tag}>
                   <Text style={styles.s4TagTxt}>MAISON SPORT-SANTÉ</Text>
                 </View>
                 <Text style={styles.s4Title}>ZÉRO ÉPARPILLEMENT.{'\n'}LOGISTIQUE CENTRALISÉE.</Text>
                 <Text style={styles.s4Desc}>
-                  Éradication totale des groupes WhatsApp. L'application intègre un module logistique complet pour les structures disposant d'un service de ramassage — navette adaptée / mini-bus style ambulance pour seniors, personnes isolées ou PMR.
+                  Éradication totale des groupes WhatsApp. Module logistique intégré pour les structures disposant d'un service de ramassage — navette adaptée pour seniors, personnes isolées ou PMR.
                 </Text>
 
+                {/* Prochain RDV */}
+                <View style={styles.s4RdvCard}>
+                  <View style={styles.s4RdvLeft}>
+                    <Text style={styles.s4RdvEmoji}>📅</Text>
+                    <View style={{ gap: 2 }}>
+                      <Text style={styles.s4RdvLabel}>MON PROCHAIN RDV</Text>
+                      <Text style={styles.s4RdvTime}>Mercredi — 08h30</Text>
+                    </View>
+                  </View>
+                  <View style={styles.s4RdvConfirmed}>
+                    <Text style={styles.s4RdvConfirmedTxt}>Navette ✓</Text>
+                  </View>
+                </View>
+
+                {/* Timeline */}
                 <View style={styles.s4Card}>
                   <Text style={styles.s4CardTitle}>VOTRE JOURNÉE AUTOMATISÉE</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
                     <LogisticsStep icon="🏠" label="Domicile" time="08h30" />
                     <View style={styles.s4Connector} />
-                    <LogisticsStep icon="🚍" label="Navette METABOOST" time="08h45" highlight />
+                    <LogisticsStep icon="🚍" label={"Navette\nMETABOOST"} time="08h45" highlight />
                     <View style={styles.s4Connector} />
-                    <LogisticsStep icon="🏋️" label="10 Bornes Tactiles" time="09h00" />
+                    <LogisticsStep icon="🏋️" label={"10 Bornes\nTactiles"} time="09h00" />
                     <View style={styles.s4Connector} />
-                    <LogisticsStep icon="📱" label="Suivi Clinique" time="Live" />
+                    <LogisticsStep icon="📱" label={"Suivi\nClinique"} time="Live" />
                   </View>
                 </View>
 
+                {/* Push notification simulée */}
+                <PushNotif
+                  title="🔔  Votre chauffeur arrive dans 12 min"
+                  sub="Ahmed • Navette METABOOST • 📍 Rue de la Paix, en route"
+                />
+
                 <Text style={styles.s4AdminNote}>
-                  ⚙️  Feuille de route du chauffeur générée automatiquement via le God Mode Admin.
+                  ⚙️  Feuille de route chauffeur générée automatiquement via le God Mode Admin.
                 </Text>
 
                 <View style={styles.s4Badges}>
@@ -428,37 +499,66 @@ export default function Onboarding() {
                 </View>
               </View>
 
-              {/* ── SLIDE 5 : Infrastructure Professionnels & Capture Finale ── */}
+              {/* ════════════════════════════════════════════
+                  SLIDE 5 — Infrastructure B2B & Capture
+              ════════════════════════════════════════════ */}
               <View style={styles.slide5}>
-                <LinearGradient
-                  colors={['#050A12', '#0A0F1E', '#050A12']}
-                  locations={[0, 0.5, 1]}
-                  style={StyleSheet.absoluteFill}
-                />
+                <LinearGradient colors={['#050A12', '#0A0F1E', '#050A12']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
 
-                <View style={styles.s5B2BCard}>
-                  <View style={styles.s5B2BIconRow}>
-                    <Users size={18} color={Colors.accent} strokeWidth={1.8} />
-                    <Text style={styles.s5B2BChip}>PROFESSIONNELS & ÉTABLISSEMENTS</Text>
-                  </View>
-                  <Text style={styles.s5B2BTitle}>
-                    L'INFRASTRUCTURE POUR LES PROFESSIONNELS
-                  </Text>
-                  <Text style={styles.s5B2BDesc}>
-                    Coach indépendant, gérant de salle, EHPAD ou structure de santé ? Utilisez la puissance de METABOOST en option{' '}
-                    <Text style={{ color: Colors.accent, fontWeight: '700' }}>"Clé en main"</Text>
-                    {' '}(Méthode EnzoBoost intégrée) ou en{' '}
-                    <Text style={{ color: Colors.accent, fontWeight: '700' }}>"Outil Blanc"</Text>
-                    {' '}(intégrez vos propres protocoles en profitant de notre scanner IA, Avatar 3D et module transport).
-                  </Text>
+                <View style={styles.s5Header}>
+                  <Users size={16} color={Colors.accent} strokeWidth={1.8} />
+                  <Text style={styles.s5HeaderChip}>PROFESSIONNELS & ÉTABLISSEMENTS</Text>
+                </View>
+                <Text style={styles.s5Title}>L'INFRASTRUCTURE{'\n'}POUR LES PROS</Text>
+
+                {/* Options B2B */}
+                <View style={styles.s5OptionsRow}>
+                  <B2BOption
+                    emoji="🔑"
+                    title="Clé en main"
+                    desc={"Méthode EnzoBoost intégrée. Lancez votre structure en 48h."}
+                    dark
+                  />
+                  <B2BOption
+                    emoji="🏷️"
+                    title="Marque Blanche"
+                    desc={"Vos protocoles + notre infrastructure IA, Scanner & Navette."}
+                  />
                 </View>
 
+                {/* Cibles B2B */}
+                <View style={styles.s5TargetsRow}>
+                  {['🏋️ Salles de sport', '🎽 Coachs indépendants', '🏠 EHPAD & Maisons de Santé'].map((t) => (
+                    <View key={t} style={styles.s5TargetBadge}>
+                      <Text style={styles.s5TargetTxt}>{t}</Text>
+                    </View>
+                  ))}
+                </View>
+
+                {/* Copilote IA Chatbot */}
+                <View style={styles.s5CopiloteCard}>
+                  <View style={styles.s5CopiloteHeader}>
+                    <Bot size={18} color={Colors.teal} strokeWidth={1.8} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.s5CopiloteTitle}>COPILOTE IA CHATBOT</Text>
+                      <Text style={styles.s5CopiloteDesc}>
+                        Répond à vos questions nutrition, entraînement et logistique — disponible 24h/24, 7j/7, sans délai.
+                      </Text>
+                    </View>
+                    <View style={styles.s5CopiloteBadge}>
+                      <Text style={styles.s5CopiloteBadgeTxt}>24H/24</Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Trust badges */}
                 <View style={styles.s5TrustBlock}>
                   <TrustBadge text="Données Chiffrées RGPD" />
                   <TrustBadge text="Synchronisation IoT Native" />
                   <TrustBadge text="Protocoles Certifiés Sport-Santé" />
                 </View>
 
+                {/* CTA zone */}
                 <View style={styles.s5CTAZone}>
                   {emailSent ? (
                     <View style={styles.emailSentBox}>
@@ -479,21 +579,10 @@ export default function Onboarding() {
                         spellCheck={false}
                         inputMode="email"
                       />
-                      <TouchableOpacity
-                        style={[styles.s5CTA, emailLoading && { opacity: 0.6 }]}
-                        onPress={handleEmailLogin}
-                        activeOpacity={0.9}
-                        disabled={emailLoading}
-                      >
-                        <Text style={styles.s5CTATxt}>
-                          {emailLoading ? 'ENVOI...' : 'DÉMARRER MON SUIVI'}
-                        </Text>
+                      <TouchableOpacity style={[styles.s5CTA, emailLoading && { opacity: 0.6 }]} onPress={handleEmailLogin} activeOpacity={0.9} disabled={emailLoading}>
+                        <Text style={styles.s5CTATxt}>{emailLoading ? 'ENVOI...' : 'DÉMARRER MON SUIVI'}</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity
-                        style={styles.s5Ghost}
-                        onPress={() => transitionTo('welcome')}
-                        activeOpacity={0.8}
-                      >
+                      <TouchableOpacity style={styles.s5Ghost} onPress={() => transitionTo('welcome')} activeOpacity={0.8}>
                         <Text style={styles.s5GhostTxt}>Commencer sans compte</Text>
                         <ChevronRight size={14} color="rgba(255,255,255,0.4)" strokeWidth={2} />
                       </TouchableOpacity>
@@ -501,13 +590,14 @@ export default function Onboarding() {
                   )}
                 </View>
 
+                {/* Footer légal */}
                 <View style={styles.s5Legal}>
                   <Text style={styles.s5LegalTxt}>
                     En continuant, tu acceptes nos{' '}
                     <Text style={styles.s5LegalLink} onPress={() => router.push('/legal/cgu')}>Conditions d'utilisation</Text>
                     {' '}et notre{' '}
                     <Text style={styles.s5LegalLink} onPress={() => router.push('/legal/privacy')}>Politique de confidentialité</Text>
-                    {' '}(RGPD). Tu consens au traitement de tes données de santé au sens de l'art. 9 du RGPD, sous le contrôle de la CNIL.
+                    {' '}(RGPD). Traitement des données de santé au sens de l'art. 9 du RGPD, sous contrôle de la CNIL.
                   </Text>
                   <View style={styles.s5LegalRow}>
                     <Text style={styles.s5LegalLink} onPress={() => router.push('/legal/mentions')}>Mentions légales</Text>
@@ -527,9 +617,7 @@ export default function Onboarding() {
             <View style={styles.screen}>
               <View style={[styles.screenContent, Platform.OS === 'web' && { paddingBottom: 80 }]}>
                 <View style={styles.welcomeBlock}>
-                  <View style={styles.emojiRing}>
-                    <Text style={{ fontSize: 34 }}>👋</Text>
-                  </View>
+                  <View style={styles.emojiRing}><Text style={{ fontSize: 34 }}>👋</Text></View>
                   <Text style={styles.welcomeHi}>Ravi de te rencontrer,</Text>
                   <TextInput
                     style={styles.nameInput}
@@ -545,12 +633,7 @@ export default function Onboarding() {
                   <Text style={styles.welcomeSub}>Prêt(e) à transformer ton corps ? 🔥</Text>
                   <View style={styles.genderRow}>
                     {([{ key: 'male' as Gender, sym: '♂', lbl: 'Homme' }, { key: 'female' as Gender, sym: '♀', lbl: 'Femme' }]).map((g) => (
-                      <TouchableOpacity
-                        key={g.key}
-                        style={[styles.genderPill, gender === g.key && styles.genderOn]}
-                        onPress={() => { setGender(g.key); Haptics.selectionAsync?.(); }}
-                        activeOpacity={0.8}
-                      >
+                      <TouchableOpacity key={g.key} style={[styles.genderPill, gender === g.key && styles.genderOn]} onPress={() => { setGender(g.key); Haptics.selectionAsync?.(); }} activeOpacity={0.8}>
                         <Text style={[styles.genderSym, gender === g.key && { color: '#2a2a2a' }]}>{g.sym}</Text>
                         <Text style={[styles.genderLbl, gender === g.key && styles.genderLblOn]}>{g.lbl}</Text>
                       </TouchableOpacity>
@@ -579,22 +662,11 @@ export default function Onboarding() {
                   {GOALS.map((g) => {
                     const on = goal === g.key;
                     return (
-                      <TouchableOpacity
-                        key={String(g.key)}
-                        style={[styles.goalCard, on && { borderColor: g.color + '55', borderWidth: 1.5 }]}
-                        onPress={() => { setGoal(g.key); Haptics.selectionAsync?.(); }}
-                        activeOpacity={0.85}
-                      >
+                      <TouchableOpacity key={String(g.key)} style={[styles.goalCard, on && { borderColor: g.color + '55', borderWidth: 1.5 }]} onPress={() => { setGoal(g.key); Haptics.selectionAsync?.(); }} activeOpacity={0.85}>
                         {on && (
-                          <LinearGradient
-                            colors={[g.color + '16', 'transparent']}
-                            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                            style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
-                          />
+                          <LinearGradient colors={[g.color + '16', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
                         )}
-                        <View style={[styles.goalIconBox, on && { borderColor: g.color + '45', backgroundColor: g.color + '12' }]}>
-                          {g.icon}
-                        </View>
+                        <View style={[styles.goalIconBox, on && { borderColor: g.color + '45', backgroundColor: g.color + '12' }]}>{g.icon}</View>
                         <View style={{ flex: 1 }}>
                           <Text style={[styles.goalLabel, on && { color: Colors.text }]}>{g.label}</Text>
                           <Text style={styles.goalSub}>{g.sub}</Text>
@@ -629,17 +701,7 @@ export default function Onboarding() {
                     <View key={k} style={styles.mCard}>
                       <Text style={styles.mLabel}>{label}</Text>
                       <Text style={styles.mDesc}>{desc}</Text>
-                      <TextInput
-                        style={styles.mInput}
-                        value={vals[k]}
-                        onChangeText={sets[k]}
-                        keyboardType="numeric"
-                        inputMode="numeric"
-                        placeholder={ph}
-                        placeholderTextColor="rgba(226,209,179,0.22)"
-                        textAlign="center"
-                        autoCorrect={false}
-                      />
+                      <TextInput style={styles.mInput} value={vals[k]} onChangeText={sets[k]} keyboardType="numeric" inputMode="numeric" placeholder={ph} placeholderTextColor="rgba(226,209,179,0.22)" textAlign="center" autoCorrect={false} />
                       <Text style={styles.mUnit}>{unit}</Text>
                     </View>
                   ))}
@@ -654,27 +716,13 @@ export default function Onboarding() {
                     <View key={k} style={[styles.mCard, styles.mCardOpt]}>
                       <Text style={styles.mLabel}>{label}</Text>
                       <Text style={styles.mDesc}>{desc}</Text>
-                      <TextInput
-                        style={styles.mInput}
-                        value={vals[k]}
-                        onChangeText={sets[k]}
-                        keyboardType="numeric"
-                        inputMode="numeric"
-                        placeholder={ph}
-                        placeholderTextColor="rgba(255,255,255,0.14)"
-                        textAlign="center"
-                        autoCorrect={false}
-                      />
+                      <TextInput style={styles.mInput} value={vals[k]} onChangeText={sets[k]} keyboardType="numeric" inputMode="numeric" placeholder={ph} placeholderTextColor="rgba(255,255,255,0.14)" textAlign="center" autoCorrect={false} />
                       <Text style={styles.mUnit}>{unit}</Text>
                     </View>
                   ))}
                   <View style={styles.mFiller} />
                 </View>
-                <TouchableOpacity
-                  style={styles.scanBtn}
-                  onPress={() => Alert.alert('Bientôt disponible', 'Scanner ton ticket de balance — disponible très prochainement ✨')}
-                  activeOpacity={0.8}
-                >
+                <TouchableOpacity style={styles.scanBtn} onPress={() => Alert.alert('Bientôt disponible', 'Scanner ton ticket de balance — disponible très prochainement ✨')} activeOpacity={0.8}>
                   <ScanLine size={16} color={Colors.teal} strokeWidth={1.8} />
                   <Text style={styles.scanTxt}>Scanner mon ticket de balance</Text>
                   <View style={styles.beta}><Text style={styles.betaTxt}>BÊTA</Text></View>
@@ -697,7 +745,14 @@ export default function Onboarding() {
   );
 }
 
+// ── StyleSheet ────────────────────────────────────────────────────────────────
+
+const CARD_SHADOW = Platform.OS === 'web'
+  ? { boxShadow: '0 4px 28px rgba(0,0,0,0.08)' } as any
+  : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 28, elevation: 4 };
+
 const styles = StyleSheet.create({
+
   // ── Root ───────────────────────────────────────────────────────────────────
   root: { flex: 1, backgroundColor: '#050A12' },
   rootWeb: {
@@ -709,7 +764,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: 0,
   },
-
   glowA: {
     position: 'absolute', top: -80, alignSelf: 'center',
     width: W * 0.88, height: 300, borderRadius: 999,
@@ -722,7 +776,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,200,212,0.045)',
     ...(Platform.OS === 'web' ? { filter: 'blur(80px)' } as any : {}),
   },
-
   progressTrack: {
     height: 2, backgroundColor: 'rgba(255,255,255,0.07)',
     marginHorizontal: Spacing.lg, borderRadius: Radius.full,
@@ -737,12 +790,8 @@ const styles = StyleSheet.create({
   // SLIDE 1
   // ══════════════════════════════════════════════════════════════════════════
   slide1: {
-    minHeight: H,
-    paddingHorizontal: 24,
-    paddingTop: 56,
-    paddingBottom: 36,
-    justifyContent: 'space-between',
-    overflow: 'hidden',
+    minHeight: H, paddingHorizontal: 24, paddingTop: 56, paddingBottom: 36,
+    justifyContent: 'space-between', overflow: 'hidden',
   },
   s1Glow: {
     position: 'absolute', top: -120, alignSelf: 'center',
@@ -759,43 +808,30 @@ const styles = StyleSheet.create({
   },
   s1LogoEmoji: { fontSize: 16 },
   s1Brand: { fontSize: 13, fontWeight: '800', color: 'rgba(255,255,255,0.55)', letterSpacing: 6 },
-
   s1Hero: { alignItems: 'center', gap: 14 },
   s1Title: {
-    fontSize: 56, fontWeight: '900', color: '#FFFFFF',
-    letterSpacing: -1.5, textAlign: 'center',
+    fontSize: 56, fontWeight: '900', color: '#FFFFFF', letterSpacing: -1.5, textAlign: 'center',
     ...(Platform.OS === 'web' ? { textShadow: '0 0 80px rgba(255,255,255,0.12)' } as any : {}),
   },
   s1Tagline: {
-    fontSize: 13, fontWeight: '700',
-    color: 'rgba(255,255,255,0.65)',
+    fontSize: 13, fontWeight: '700', color: 'rgba(255,255,255,0.65)',
     letterSpacing: 2.5, textAlign: 'center', textTransform: 'uppercase', lineHeight: 22,
   },
   s1Sub: { fontSize: 12, color: '#8E9AA8', letterSpacing: 0.4, textAlign: 'center' },
-
   s1Auth: { gap: 12 },
   s1Input: {
-    height: 54,
-    backgroundColor: '#111827',
-    borderRadius: Radius.full,
-    paddingHorizontal: 24,
-    fontSize: 16,
-    color: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    height: 54, backgroundColor: '#111827', borderRadius: Radius.full,
+    paddingHorizontal: 24, fontSize: 16, color: '#FFFFFF',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
   },
   s1CTA: {
-    height: 54,
-    backgroundColor: '#FFFFFF',
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: 54, backgroundColor: '#FFFFFF', borderRadius: Radius.full,
+    alignItems: 'center', justifyContent: 'center',
     ...(Platform.OS === 'web' ? { boxShadow: '0 8px 32px rgba(255,255,255,0.15)' } as any : {}),
   },
   s1CTATxt: { fontSize: 14, fontWeight: '800', color: '#050A12', letterSpacing: 2 },
   s1Ghost: {
-    height: 54, borderRadius: Radius.full,
-    alignItems: 'center', justifyContent: 'center',
+    height: 54, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.22)',
   },
   s1GhostTxt: { fontSize: 14, fontWeight: '500', color: 'rgba(255,255,255,0.55)' },
@@ -803,200 +839,220 @@ const styles = StyleSheet.create({
   s1ScrollTxt: { fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: 2.5, textTransform: 'uppercase' },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 2 — Fond Blanc  (marginTop: -1 pour coller au slide sombre)
+  // SLIDE 2 — Fond Blanc (marginTop: -1)
   // ══════════════════════════════════════════════════════════════════════════
   slide2: {
-    minHeight: H,
-    marginTop: -1,
+    minHeight: H, marginTop: -1,
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 24,
-    paddingTop: 57,
-    paddingBottom: 56,
-    gap: 24,
-    justifyContent: 'center',
+    paddingHorizontal: 24, paddingTop: 52, paddingBottom: 52,
+    gap: 20,
   },
   s2Tag: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12, paddingVertical: 5,
-    borderRadius: Radius.full,
-    backgroundColor: '#F3F4F6',
+    alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5,
+    borderRadius: Radius.full, backgroundColor: '#F3F4F6',
     borderWidth: 1, borderColor: '#E5E7EB',
   },
   s2TagTxt: { fontSize: 10, fontWeight: '800', color: '#6B7280', letterSpacing: 1.8, textTransform: 'uppercase' },
-  s2Title: { fontSize: 28, fontWeight: '900', color: '#050A12', letterSpacing: -0.8, lineHeight: 34 },
-  s2Desc: { fontSize: 14, color: '#4B5563', lineHeight: 22 },
+  s2Title: { fontSize: 26, fontWeight: '900', color: '#050A12', letterSpacing: -0.8, lineHeight: 32 },
+  s2Desc: { fontSize: 13, color: '#4B5563', lineHeight: 20 },
   s2Card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20, padding: 20, gap: 14,
-    borderWidth: 1, borderColor: '#F3F4F6',
-    ...(Platform.OS === 'web'
-      ? { boxShadow: '0 4px 28px rgba(0,0,0,0.07)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.07, shadowRadius: 28, elevation: 3 }),
+    backgroundColor: '#FFFFFF', borderRadius: 20, padding: 18, gap: 12,
+    borderWidth: 1, borderColor: '#F3F4F6', ...CARD_SHADOW,
   },
-  s2CardTitle: { fontSize: 10, fontWeight: '800', color: '#9CA3AF', letterSpacing: 2, textTransform: 'uppercase' },
-  s2Divider: { height: 1, backgroundColor: '#F3F4F6' },
+  s2CardLabel: { fontSize: 10, fontWeight: '800', color: '#9CA3AF', letterSpacing: 2, textTransform: 'uppercase' },
+  s2CardDivider: { height: 1, backgroundColor: '#F3F4F6' },
+  s2FeaturesRow: { flexDirection: 'row', gap: 10 },
+  s2FeatureCard: {
+    flex: 1, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 14,
+    borderWidth: 1, borderColor: '#F3F4F6', gap: 4, ...CARD_SHADOW,
+  },
+  s2FeatureTitle: { fontSize: 11, fontWeight: '800', color: '#050A12', letterSpacing: 0.5, textTransform: 'uppercase' },
+  s2FeatureDesc: { fontSize: 11, color: '#6B7280', lineHeight: 16 },
+  s2AvatarBlock: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: '#F9FAFB', borderRadius: 14, padding: 14,
+    borderWidth: 1, borderColor: '#E5E7EB',
+  },
+  s2AvatarIcon: {
+    width: 46, height: 46, borderRadius: 23,
+    backgroundColor: '#EEF2FF', alignItems: 'center', justifyContent: 'center',
+  },
+  s2AvatarTitle: { fontSize: 11, fontWeight: '800', color: '#050A12', letterSpacing: 0.8, textTransform: 'uppercase' },
+  s2AvatarDesc: { fontSize: 11, color: '#6B7280', lineHeight: 16, marginTop: 2 },
   s2PillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  s2Pill: {
-    paddingHorizontal: 14, paddingVertical: 7,
-    borderRadius: Radius.full,
-    backgroundColor: '#050A12',
-  },
+  s2Pill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: Radius.full, backgroundColor: '#050A12' },
   s2PillTxt: { fontSize: 12, fontWeight: '700', color: '#FFFFFF', letterSpacing: 0.3 },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 3 — Précision Clinique / Moteur EnzoBoost
+  // SLIDE 3 — Fond Sombre #0B132B
   // ══════════════════════════════════════════════════════════════════════════
   slide3: {
-    minHeight: H,
-    paddingHorizontal: 24,
-    paddingVertical: 56,
-    gap: 22,
-    justifyContent: 'center',
-    overflow: 'hidden',
+    minHeight: H, paddingHorizontal: 24, paddingVertical: 52,
+    gap: 18, overflow: 'hidden',
   },
   s3Tag: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12, paddingVertical: 5,
-    borderRadius: Radius.full,
-    backgroundColor: 'rgba(0,200,212,0.1)',
-    borderWidth: 1, borderColor: 'rgba(0,200,212,0.25)',
+    flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start',
+    paddingHorizontal: 12, paddingVertical: 5, borderRadius: Radius.full,
+    backgroundColor: 'rgba(0,200,212,0.1)', borderWidth: 1, borderColor: 'rgba(0,200,212,0.25)',
   },
-  s3TagTxt: { fontSize: 10, fontWeight: '800', color: Colors.teal, letterSpacing: 1.8 },
-  s3Title: { fontSize: 28, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.8, lineHeight: 34 },
-  s3Desc: { fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 21 },
+  s3TagTxt: { fontSize: 10, fontWeight: '800', color: Colors.teal, letterSpacing: 1.5 },
+  s3Title: { fontSize: 26, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.8, lineHeight: 32 },
+  s3Desc: { fontSize: 13, color: 'rgba(255,255,255,0.48)', lineHeight: 20 },
   s3Dashboard: {
     backgroundColor: 'rgba(255,255,255,0.03)',
-    borderRadius: 20, padding: 16, gap: 12,
+    borderRadius: 18, padding: 14, gap: 10,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
   },
-  s3EcgBox: {
-    backgroundColor: 'rgba(0,200,212,0.06)',
-    borderRadius: 12, padding: 12, gap: 0,
-  },
+  s3EcgBox: { backgroundColor: 'rgba(0,200,212,0.06)', borderRadius: 12, padding: 12 },
   s3EcgLabel: { fontSize: 9, fontWeight: '800', color: Colors.teal, letterSpacing: 2, textTransform: 'uppercase' },
-  s3Bpm: { fontSize: 20, fontWeight: '900', color: '#FFFFFF', marginTop: 5, letterSpacing: -0.5 },
+  s3Bpm: { fontSize: 19, fontWeight: '900', color: '#FFFFFF', marginTop: 6, letterSpacing: -0.5 },
   s3BpmUnit: { fontSize: 11, fontWeight: '400', color: 'rgba(255,255,255,0.35)' },
-
-  s3RapportHeader: { paddingHorizontal: 2 },
-  s3RapportHeaderTxt: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.28)', letterSpacing: 1.5, textTransform: 'uppercase' },
-  s3RapportCards: { gap: 6 },
+  s3IACore: {
+    backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 12, gap: 8,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+  },
+  s3IACoreLabel: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.32)', letterSpacing: 1.5, textTransform: 'uppercase' },
+  s3IACorePills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  s3IACoreItem: {
+    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)',
+  },
+  s3IACoreItemTxt: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.7)' },
+  s3HandicapNote: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingVertical: 6, paddingHorizontal: 8, borderRadius: 8,
+    backgroundColor: 'rgba(0,200,212,0.07)', borderWidth: 1, borderColor: 'rgba(0,200,212,0.2)',
+  },
+  s3HandicapTxt: { fontSize: 11, color: Colors.teal, fontWeight: '600' },
+  s3RapportSection: { gap: 8 },
+  s3RapportHeader: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.28)', letterSpacing: 1.5, textTransform: 'uppercase' },
+  s3RapportList: { gap: 6 },
   s3RapportCard: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: 14, padding: 12,
+    backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 13, padding: 11,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
   },
-  s3RapportCardInner: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
-  s3RapportTitle: { fontSize: 13, fontWeight: '700', color: '#FFFFFF', marginBottom: 2 },
-  s3RapportDesc: { fontSize: 11, color: 'rgba(255,255,255,0.38)', lineHeight: 15 },
-
-  s3BadgesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  s3RapportInner: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
+  s3RapportTitle: { fontSize: 13, fontWeight: '700', color: '#FFFFFF', marginBottom: 1 },
+  s3RapportDesc: { fontSize: 10, color: 'rgba(255,255,255,0.38)', lineHeight: 14 },
+  s3BadgesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   s3Badge: {
-    paddingHorizontal: 12, paddingVertical: 6,
-    borderRadius: Radius.full,
+    paddingHorizontal: 11, paddingVertical: 6, borderRadius: Radius.full,
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
     backgroundColor: 'rgba(255,255,255,0.04)',
   },
   s3BadgeTxt: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.6)' },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 4 — Fond Blanc  (marginTop: -1 pour coller au slide sombre)
+  // SLIDE 4 — Fond Blanc (marginTop: -1)
   // ══════════════════════════════════════════════════════════════════════════
   slide4: {
-    minHeight: H,
-    marginTop: -1,
+    minHeight: H, marginTop: -1,
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 24,
-    paddingTop: 57,
-    paddingBottom: 56,
-    gap: 22,
-    justifyContent: 'center',
+    paddingHorizontal: 24, paddingTop: 52, paddingBottom: 52,
+    gap: 18,
   },
   s4Tag: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12, paddingVertical: 5,
-    borderRadius: Radius.full,
-    backgroundColor: '#F3F4F6',
+    alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5,
+    borderRadius: Radius.full, backgroundColor: '#F3F4F6',
     borderWidth: 1, borderColor: '#E5E7EB',
   },
   s4TagTxt: { fontSize: 10, fontWeight: '800', color: '#6B7280', letterSpacing: 1.8, textTransform: 'uppercase' },
-  s4Title: { fontSize: 28, fontWeight: '900', color: '#050A12', letterSpacing: -0.8, lineHeight: 34 },
-  s4Desc: { fontSize: 14, color: '#4B5563', lineHeight: 22 },
+  s4Title: { fontSize: 26, fontWeight: '900', color: '#050A12', letterSpacing: -0.8, lineHeight: 32 },
+  s4Desc: { fontSize: 13, color: '#4B5563', lineHeight: 20 },
+  s4RdvCard: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    backgroundColor: '#050A12', borderRadius: 16, padding: 16,
+  },
+  s4RdvLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  s4RdvEmoji: { fontSize: 24 },
+  s4RdvLabel: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.45)', letterSpacing: 1.5, textTransform: 'uppercase' },
+  s4RdvTime: { fontSize: 18, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.3 },
+  s4RdvConfirmed: {
+    paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radius.full,
+    backgroundColor: '#DCFCE7', borderWidth: 1, borderColor: '#BBF7D0',
+  },
+  s4RdvConfirmedTxt: { fontSize: 11, fontWeight: '800', color: '#15803D' },
   s4Card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20, padding: 20, gap: 18,
-    borderWidth: 1, borderColor: '#F3F4F6',
-    ...(Platform.OS === 'web'
-      ? { boxShadow: '0 4px 28px rgba(0,0,0,0.07)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.07, shadowRadius: 28, elevation: 3 }),
+    backgroundColor: '#FFFFFF', borderRadius: 18, padding: 18, gap: 16,
+    borderWidth: 1, borderColor: '#F3F4F6', ...CARD_SHADOW,
   },
   s4CardTitle: { fontSize: 10, fontWeight: '800', color: '#9CA3AF', letterSpacing: 2, textTransform: 'uppercase' },
-  s4Connector: { flex: 1, height: 1.5, backgroundColor: '#E5E7EB', marginTop: 22, marginHorizontal: -6 },
-  s4AdminNote: {
-    fontSize: 11, color: '#9CA3AF',
-    letterSpacing: 0.2, lineHeight: 17,
-    fontStyle: 'italic', paddingHorizontal: 4,
+  s4Connector: { flex: 1, height: 1.5, backgroundColor: '#E5E7EB', marginTop: 20, marginHorizontal: -6 },
+  s4PushBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: '#FFF7ED', borderRadius: 14, padding: 14,
+    borderWidth: 1, borderColor: '#FED7AA',
   },
+  s4PushDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#F97316' },
+  s4PushTitle: { fontSize: 13, fontWeight: '700', color: '#050A12', flex: 1 },
+  s4PushSub: { fontSize: 11, color: '#9A3412', marginTop: 2 },
+  s4PushBadge: {
+    paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8,
+    backgroundColor: '#FED7AA',
+  },
+  s4PushBadgeTxt: { fontSize: 9, fontWeight: '900', color: '#C2410C', letterSpacing: 1 },
+  s4AdminNote: { fontSize: 11, color: '#9CA3AF', letterSpacing: 0.2, lineHeight: 17, fontStyle: 'italic', paddingHorizontal: 2 },
   s4Badges: { gap: 8 },
   s4Badge: {
-    paddingHorizontal: 16, paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: '#F9FAFB',
-    borderWidth: 1, borderColor: '#E5E7EB',
+    paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12,
+    backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#E5E7EB',
   },
   s4BadgeTxt: { fontSize: 13, fontWeight: '600', color: '#374151' },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 5 — Infrastructure Pros / Fond Sombre
+  // SLIDE 5 — Fond Sombre #050A12
   // ══════════════════════════════════════════════════════════════════════════
   slide5: {
-    minHeight: H,
-    paddingHorizontal: 24,
-    paddingTop: 56,
-    paddingBottom: 40,
-    gap: 24,
-    justifyContent: 'center',
-    overflow: 'hidden',
+    minHeight: H, paddingHorizontal: 24, paddingTop: 52, paddingBottom: 40,
+    gap: 22, overflow: 'hidden',
   },
-  s5B2BCard: {
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 20, padding: 20, gap: 12,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+  s5Header: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  s5HeaderChip: { fontSize: 9, fontWeight: '800', color: Colors.accent, letterSpacing: 1.5, textTransform: 'uppercase' },
+  s5Title: { fontSize: 28, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.8, lineHeight: 34 },
+  s5OptionsRow: { flexDirection: 'row', gap: 10 },
+  s5OptionCard: {
+    flex: 1, backgroundColor: '#FFFFFF', borderRadius: 16,
+    padding: 16, gap: 6, ...CARD_SHADOW,
   },
-  s5B2BIconRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  s5B2BChip: { fontSize: 9, fontWeight: '800', color: Colors.accent, letterSpacing: 1.5, textTransform: 'uppercase' },
-  s5B2BTitle: { fontSize: 18, fontWeight: '900', color: '#FFFFFF', lineHeight: 26, letterSpacing: -0.4 },
-  s5B2BDesc: { fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 20 },
-
+  s5OptionCardDark: { backgroundColor: '#111827', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  s5OptionTitle: { fontSize: 13, fontWeight: '900', color: '#050A12', letterSpacing: 0.2 },
+  s5OptionDesc: { fontSize: 11, color: '#6B7280', lineHeight: 16 },
+  s5TargetsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  s5TargetBadge: {
+    paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radius.full,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+  },
+  s5TargetTxt: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.65)' },
+  s5CopiloteCard: {
+    backgroundColor: 'rgba(0,200,212,0.07)',
+    borderRadius: 16, padding: 16,
+    borderWidth: 1, borderColor: 'rgba(0,200,212,0.22)',
+  },
+  s5CopiloteHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  s5CopiloteTitle: { fontSize: 12, fontWeight: '800', color: Colors.teal, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 4 },
+  s5CopiloteDesc: { fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 18 },
+  s5CopiloteBadge: {
+    paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8,
+    backgroundColor: Colors.teal, alignSelf: 'flex-start',
+  },
+  s5CopiloteBadgeTxt: { fontSize: 9, fontWeight: '900', color: '#FFFFFF', letterSpacing: 1 },
   s5TrustBlock: { gap: 10, paddingHorizontal: 4 },
-
   s5CTAZone: { gap: 12 },
   s5Input: {
-    height: 54,
-    backgroundColor: '#111827',
-    borderRadius: Radius.full,
-    paddingHorizontal: 24,
-    fontSize: 16,
-    color: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    height: 54, backgroundColor: '#111827', borderRadius: Radius.full,
+    paddingHorizontal: 24, fontSize: 16, color: '#FFFFFF',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
   },
   s5CTA: {
-    height: 54,
-    backgroundColor: '#FFFFFF',
-    borderRadius: Radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: 54, backgroundColor: '#FFFFFF', borderRadius: Radius.full,
+    alignItems: 'center', justifyContent: 'center',
     ...(Platform.OS === 'web' ? { boxShadow: '0 8px 32px rgba(255,255,255,0.12)' } as any : {}),
   },
   s5CTATxt: { fontSize: 14, fontWeight: '800', color: '#050A12', letterSpacing: 2 },
-  s5Ghost: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4,
-    paddingVertical: 14,
-  },
+  s5Ghost: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 14 },
   s5GhostTxt: { fontSize: 14, fontWeight: '500', color: 'rgba(255,255,255,0.4)' },
-
   s5Legal: { gap: 8, alignItems: 'center' },
   s5LegalTxt: { fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'center', lineHeight: 17, letterSpacing: 0.2 },
   s5LegalRow: { flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'center' },
@@ -1014,15 +1070,13 @@ const styles = StyleSheet.create({
   // Welcome / Goal / Measures (inchangé)
   // ══════════════════════════════════════════════════════════════════════════
   screen: {
-    flex: 1, paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.xl, paddingBottom: Spacing.xl,
-    justifyContent: 'space-between', gap: Spacing.lg,
+    flex: 1, paddingHorizontal: Spacing.lg, paddingTop: Spacing.xl,
+    paddingBottom: Spacing.xl, justifyContent: 'space-between', gap: Spacing.lg,
   },
   screenContent: { flex: 1, justifyContent: 'center', gap: Spacing.md },
   screenHead:  { gap: 6 },
   screenTitle: { fontSize: 27, fontWeight: '900', color: Colors.text, letterSpacing: -0.4 },
   screenSub:   { fontSize: 14, color: Colors.textSecondary, lineHeight: 21 },
-
   welcomeBlock: { alignItems: 'center', gap: 14 },
   emojiRing: {
     width: 68, height: 68, borderRadius: 34,
@@ -1039,7 +1093,7 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
   },
   welcomeSub: { fontSize: 16, color: Colors.text, textAlign: 'center' },
-  genderRow:  { flexDirection: 'row', gap: 10, width: '100%' },
+  genderRow: { flexDirection: 'row', gap: 10, width: '100%' },
   genderPill: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     paddingVertical: 14, borderRadius: Radius.full,
@@ -1050,7 +1104,6 @@ const styles = StyleSheet.create({
   genderSym:   { fontSize: 16, color: Colors.textSecondary },
   genderLbl:   { fontSize: 15, fontWeight: '600', color: Colors.textSecondary },
   genderLblOn: { color: '#2a2a2a', fontWeight: '800' },
-
   goalList: { gap: 10 },
   goalCard: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
@@ -1072,15 +1125,12 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.14)',
     alignItems: 'center', justifyContent: 'center',
   },
-
-  mGrid:    { flexDirection: 'row', gap: 8 },
+  mGrid: { flexDirection: 'row', gap: 8 },
   mCard: {
-    flex: 1, alignItems: 'center',
-    paddingVertical: 16, paddingHorizontal: 4,
+    flex: 1, alignItems: 'center', paddingVertical: 16, paddingHorizontal: 4,
     borderRadius: Radius.xl, borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    gap: 2,
+    backgroundColor: 'rgba(255,255,255,0.05)', gap: 2,
     ...(Platform.OS === 'web' ? { backdropFilter: 'blur(10px)' } as any : {}),
   },
   mCardOpt: { borderColor: 'rgba(255,255,255,0.06)', backgroundColor: 'rgba(255,255,255,0.03)' },
@@ -1092,12 +1142,10 @@ const styles = StyleSheet.create({
     textAlign: 'center', width: '100%', paddingVertical: 6,
     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
   },
-  mUnit: { fontSize: 10, color: Colors.textSecondary, fontWeight: '500' },
-
+  mUnit:   { fontSize: 10, color: Colors.textSecondary, fontWeight: '500' },
   optSep:  { flexDirection: 'row', alignItems: 'center', gap: 10 },
   optLine: { flex: 1, height: 0.5, backgroundColor: 'rgba(255,255,255,0.08)' },
   optTxt:  { fontSize: 10, color: Colors.textTertiary, textTransform: 'uppercase', letterSpacing: 1 },
-
   scanBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingVertical: 13, paddingHorizontal: Spacing.md,
@@ -1108,17 +1156,15 @@ const styles = StyleSheet.create({
   scanTxt: { flex: 1, fontSize: 13, fontWeight: '600', color: Colors.teal },
   beta:    { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: Colors.teal + '18', borderWidth: 0.5, borderColor: Colors.teal + '40' },
   betaTxt: { fontSize: 8, fontWeight: '900', color: Colors.teal, letterSpacing: 1.5 },
-
   ctaBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
     backgroundColor: Colors.accent, borderRadius: Radius.full, paddingVertical: 18,
     ...(Platform.OS === 'web' ? { boxShadow: '0 8px 30px rgba(226,209,179,0.2)' } as any : {}),
   },
-  ctaOff: { opacity: 0.35 },
-  ctaTxt: { fontSize: 17, fontWeight: '800', color: '#2a2a2a', letterSpacing: 0.2 },
+  ctaOff:  { opacity: 0.35 },
+  ctaTxt:  { fontSize: 17, fontWeight: '800', color: '#2a2a2a', letterSpacing: 0.2 },
   skipBtn: { alignItems: 'center', paddingVertical: Spacing.sm },
   skipTxt: { fontSize: 13, color: Colors.textTertiary },
-
   ctaFixed: Platform.OS === 'web' ? {
     position: 'fixed' as any,
     bottom: 'calc(20px + var(--kb-offset, 0px) + env(safe-area-inset-bottom))' as any,
