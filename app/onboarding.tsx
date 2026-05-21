@@ -54,8 +54,8 @@ function MacroBlock({ label, value, color }: { label: string; value: string; col
 function ProgressBar({ label, pct, color }: { label: string; pct: number; color: string }) {
   return (
     <View style={{ gap: 5 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ fontSize: 11, fontWeight: '700', color: '#6B7280' }}>{label}</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={{ fontSize: 11, fontWeight: '700', color: '#374151' }}>{label}</Text>
         <Text style={{ fontSize: 12, fontWeight: '900', color }}>{pct}%</Text>
       </View>
       <View style={{ height: 7, backgroundColor: '#E5E7EB', borderRadius: 4, overflow: 'hidden' }}>
@@ -90,17 +90,21 @@ function RapportCard({ emoji, title, desc }: { emoji: string; title: string; des
   );
 }
 
+// iOS-style compact push notification
 function PushNotif({ title, sub }: { title: string; sub: string }) {
   return (
     <View style={styles.s4PushBanner}>
-      <View style={styles.s4PushDot} />
-      <View style={{ flex: 1, gap: 1 }}>
-        <Text style={styles.s4PushTitle}>{title}</Text>
-        <Text style={styles.s4PushSub}>{sub}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+        <View style={styles.s4PushDot} />
+        <Text style={styles.s4PushApp}>METABOOST</Text>
+        <Text style={styles.s4PushTime}>à l'instant</Text>
+        <View style={{ flex: 1 }} />
+        <View style={styles.s4PushBadge}>
+          <Text style={styles.s4PushBadgeTxt}>LIVE</Text>
+        </View>
       </View>
-      <View style={styles.s4PushBadge}>
-        <Text style={styles.s4PushBadgeTxt}>LIVE</Text>
-      </View>
+      <Text style={styles.s4PushTitle} numberOfLines={1}>{title}</Text>
+      <Text style={styles.s4PushSub} numberOfLines={2}>{sub}</Text>
     </View>
   );
 }
@@ -255,17 +259,20 @@ export default function Onboarding() {
                 <LinearGradient colors={['#050A12', '#0B1628', '#050A12']} locations={[0, 0.55, 1]} style={StyleSheet.absoluteFill} />
                 <View style={styles.s1Glow} />
 
+                {/* TOP — Header logo */}
                 <View style={styles.s1Header}>
                   <View style={styles.s1LogoBadge}><Text style={styles.s1LogoEmoji}>⚡</Text></View>
                   <Text style={styles.s1Brand}>METABOOST</Text>
                 </View>
 
+                {/* MIDDLE — Hero (flex:1 to fill space, centered) */}
                 <View style={styles.s1Hero}>
                   <Text style={styles.s1Title}>METABOOST</Text>
                   <Text style={styles.s1Tagline}>SPORT, HAUTE NUTRITION{'\n'}& SANTÉ CONNECTÉE</Text>
                   <Text style={styles.s1Sub}>Écosystème expert  •  Suivi métabolique, Performance & APA</Text>
                 </View>
 
+                {/* BOTTOM — Auth form */}
                 <View style={styles.s1Auth}>
                   {emailSent ? (
                     <View style={styles.emailSentBox}>
@@ -324,7 +331,7 @@ export default function Onboarding() {
                     <MacroBlock label="Lipides"   value="58g"  color="#EF4444" />
                   </View>
                   <View style={styles.s2CardDivider} />
-                  <View style={{ gap: 10 }}>
+                  <View style={{ gap: 12 }}>
                     <ProgressBar label="💧 Hydratation — Objectif litres / jour" pct={61} color="#3B82F6" />
                     <ProgressBar label="🌙 Qualité du Sommeil / Récupération"   pct={84} color="#8B5CF6" />
                   </View>
@@ -357,7 +364,7 @@ export default function Onboarding() {
                   </View>
                 </View>
 
-                {/* Objective pills */}
+                {/* Objective pills — centered */}
                 <View style={styles.s2PillsRow}>
                   {['Prise de masse', 'Perte de poids', 'Maintien sain'].map((tag) => (
                     <View key={tag} style={styles.s2Pill}>
@@ -388,7 +395,7 @@ export default function Onboarding() {
                   {/* ECG */}
                   <View style={styles.s3EcgBox}>
                     <Text style={styles.s3EcgLabel}>FC EN DIRECT</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 2, paddingTop: 4 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 2, paddingTop: 6 }}>
                       {ECG_HEIGHTS.map((h, i) => {
                         const opacity = h >= 12 ? 1 : h >= 6 ? 0.65 : h >= 3 ? 0.38 : 0.18;
                         return <View key={i} style={{ width: 4, height: h, borderRadius: 2, backgroundColor: Colors.teal, opacity }} />;
@@ -480,7 +487,7 @@ export default function Onboarding() {
                   </View>
                 </View>
 
-                {/* Push notification simulée */}
+                {/* iOS-style push notification */}
                 <PushNotif
                   title="🔔  Votre chauffeur arrive dans 12 min"
                   sub="Ahmed • Navette METABOOST • 📍 Rue de la Paix, en route"
@@ -787,11 +794,13 @@ const styles = StyleSheet.create({
   },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 1
+  // SLIDE 1 — flex column, hero gets flex:1 to fill center space
   // ══════════════════════════════════════════════════════════════════════════
   slide1: {
-    minHeight: H, paddingHorizontal: 24, paddingTop: 56, paddingBottom: 36,
-    justifyContent: 'space-between', overflow: 'hidden',
+    minHeight: H,
+    paddingHorizontal: 24,
+    paddingTop: 52,
+    paddingBottom: 32,
   },
   s1Glow: {
     position: 'absolute', top: -120, alignSelf: 'center',
@@ -799,7 +808,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(80,120,255,0.07)',
     ...(Platform.OS === 'web' ? { filter: 'blur(90px)' } as any : {}),
   },
-  s1Header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  s1Header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 10, marginBottom: 0,
+  },
   s1LogoBadge: {
     width: 32, height: 32, borderRadius: 16,
     backgroundColor: 'rgba(255,255,255,0.1)',
@@ -808,7 +820,14 @@ const styles = StyleSheet.create({
   },
   s1LogoEmoji: { fontSize: 16 },
   s1Brand: { fontSize: 13, fontWeight: '800', color: 'rgba(255,255,255,0.55)', letterSpacing: 6 },
-  s1Hero: { alignItems: 'center', gap: 14 },
+  // flex:1 fills the space between header and auth — keeps hero perfectly centered
+  s1Hero: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 14,
+    paddingVertical: 20,
+  },
   s1Title: {
     fontSize: 56, fontWeight: '900', color: '#FFFFFF', letterSpacing: -1.5, textAlign: 'center',
     ...(Platform.OS === 'web' ? { textShadow: '0 0 80px rgba(255,255,255,0.12)' } as any : {}),
@@ -835,11 +854,11 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.22)',
   },
   s1GhostTxt: { fontSize: 14, fontWeight: '500', color: 'rgba(255,255,255,0.55)' },
-  s1ScrollHint: { alignItems: 'center', gap: 4 },
+  s1ScrollHint: { alignItems: 'center', gap: 4, marginTop: 20 },
   s1ScrollTxt: { fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: 2.5, textTransform: 'uppercase' },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 2 — Fond Blanc (marginTop: -1)
+  // SLIDE 2 — Fond Blanc
   // ══════════════════════════════════════════════════════════════════════════
   slide2: {
     minHeight: H, marginTop: -1,
@@ -854,9 +873,9 @@ const styles = StyleSheet.create({
   },
   s2TagTxt: { fontSize: 10, fontWeight: '800', color: '#6B7280', letterSpacing: 1.8, textTransform: 'uppercase' },
   s2Title: { fontSize: 26, fontWeight: '900', color: '#050A12', letterSpacing: -0.8, lineHeight: 32 },
-  s2Desc: { fontSize: 13, color: '#4B5563', lineHeight: 20 },
+  s2Desc: { fontSize: 13, color: '#374151', lineHeight: 20 },
   s2Card: {
-    backgroundColor: '#FFFFFF', borderRadius: 20, padding: 18, gap: 12,
+    backgroundColor: '#FFFFFF', borderRadius: 20, padding: 18, gap: 14,
     borderWidth: 1, borderColor: '#F3F4F6', ...CARD_SHADOW,
   },
   s2CardLabel: { fontSize: 10, fontWeight: '800', color: '#9CA3AF', letterSpacing: 2, textTransform: 'uppercase' },
@@ -867,7 +886,7 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: '#F3F4F6', gap: 4, ...CARD_SHADOW,
   },
   s2FeatureTitle: { fontSize: 11, fontWeight: '800', color: '#050A12', letterSpacing: 0.5, textTransform: 'uppercase' },
-  s2FeatureDesc: { fontSize: 11, color: '#6B7280', lineHeight: 16 },
+  s2FeatureDesc: { fontSize: 11, color: '#4B5563', lineHeight: 16 },
   s2AvatarBlock: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
     backgroundColor: '#F9FAFB', borderRadius: 14, padding: 14,
@@ -878,8 +897,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#EEF2FF', alignItems: 'center', justifyContent: 'center',
   },
   s2AvatarTitle: { fontSize: 11, fontWeight: '800', color: '#050A12', letterSpacing: 0.8, textTransform: 'uppercase' },
-  s2AvatarDesc: { fontSize: 11, color: '#6B7280', lineHeight: 16, marginTop: 2 },
-  s2PillsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  s2AvatarDesc: { fontSize: 11, color: '#4B5563', lineHeight: 16, marginTop: 2 },
+  // centered row with wrap for the 3 pills
+  s2PillsRow: {
+    flexDirection: 'row', flexWrap: 'wrap', gap: 8,
+    justifyContent: 'center', marginTop: 4,
+  },
   s2Pill: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: Radius.full, backgroundColor: '#050A12' },
   s2PillTxt: { fontSize: 12, fontWeight: '700', color: '#FFFFFF', letterSpacing: 0.3 },
 
@@ -887,8 +910,7 @@ const styles = StyleSheet.create({
   // SLIDE 3 — Fond Sombre #0B132B
   // ══════════════════════════════════════════════════════════════════════════
   slide3: {
-    minHeight: H, paddingHorizontal: 24, paddingVertical: 52,
-    gap: 18, overflow: 'hidden',
+    minHeight: H, paddingHorizontal: 24, paddingVertical: 52, gap: 18,
   },
   s3Tag: {
     flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start',
@@ -905,7 +927,7 @@ const styles = StyleSheet.create({
   },
   s3EcgBox: { backgroundColor: 'rgba(0,200,212,0.06)', borderRadius: 12, padding: 12 },
   s3EcgLabel: { fontSize: 9, fontWeight: '800', color: Colors.teal, letterSpacing: 2, textTransform: 'uppercase' },
-  s3Bpm: { fontSize: 19, fontWeight: '900', color: '#FFFFFF', marginTop: 6, letterSpacing: -0.5 },
+  s3Bpm: { fontSize: 19, fontWeight: '900', color: '#FFFFFF', marginTop: 8, letterSpacing: -0.5 },
   s3BpmUnit: { fontSize: 11, fontWeight: '400', color: 'rgba(255,255,255,0.35)' },
   s3IACore: {
     backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 12, gap: 8,
@@ -944,7 +966,7 @@ const styles = StyleSheet.create({
   s3BadgeTxt: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.6)' },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 4 — Fond Blanc (marginTop: -1)
+  // SLIDE 4 — Fond Blanc
   // ══════════════════════════════════════════════════════════════════════════
   slide4: {
     minHeight: H, marginTop: -1,
@@ -959,7 +981,7 @@ const styles = StyleSheet.create({
   },
   s4TagTxt: { fontSize: 10, fontWeight: '800', color: '#6B7280', letterSpacing: 1.8, textTransform: 'uppercase' },
   s4Title: { fontSize: 26, fontWeight: '900', color: '#050A12', letterSpacing: -0.8, lineHeight: 32 },
-  s4Desc: { fontSize: 13, color: '#4B5563', lineHeight: 20 },
+  s4Desc: { fontSize: 13, color: '#374151', lineHeight: 20 },
   s4RdvCard: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     backgroundColor: '#050A12', borderRadius: 16, padding: 16,
@@ -979,19 +1001,23 @@ const styles = StyleSheet.create({
   },
   s4CardTitle: { fontSize: 10, fontWeight: '800', color: '#9CA3AF', letterSpacing: 2, textTransform: 'uppercase' },
   s4Connector: { flex: 1, height: 1.5, backgroundColor: '#E5E7EB', marginTop: 20, marginHorizontal: -6 },
+  // Compact iOS-style notification card
   s4PushBanner: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#FFF7ED', borderRadius: 14, padding: 14,
-    borderWidth: 1, borderColor: '#FED7AA',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 14, padding: 13,
+    borderWidth: 1, borderColor: '#E5E7EB',
+    ...(Platform.OS === 'web' ? { boxShadow: '0 2px 10px rgba(0,0,0,0.04)' } as any : {}),
   },
-  s4PushDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#F97316' },
-  s4PushTitle: { fontSize: 13, fontWeight: '700', color: '#050A12', flex: 1 },
-  s4PushSub: { fontSize: 11, color: '#9A3412', marginTop: 2 },
+  s4PushDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#F97316' },
+  s4PushApp: { fontSize: 11, fontWeight: '700', color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.4 },
+  s4PushTime: { fontSize: 11, color: '#9CA3AF', fontWeight: '400' },
+  s4PushTitle: { fontSize: 13, fontWeight: '700', color: '#111827', marginBottom: 2 },
+  s4PushSub: { fontSize: 12, color: '#6B7280', lineHeight: 17 },
   s4PushBadge: {
-    paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8,
-    backgroundColor: '#FED7AA',
+    paddingHorizontal: 7, paddingVertical: 3, borderRadius: 6,
+    backgroundColor: '#FEF3C7',
   },
-  s4PushBadgeTxt: { fontSize: 9, fontWeight: '900', color: '#C2410C', letterSpacing: 1 },
+  s4PushBadgeTxt: { fontSize: 9, fontWeight: '900', color: '#D97706', letterSpacing: 1 },
   s4AdminNote: { fontSize: 11, color: '#9CA3AF', letterSpacing: 0.2, lineHeight: 17, fontStyle: 'italic', paddingHorizontal: 2 },
   s4Badges: { gap: 8 },
   s4Badge: {
@@ -1004,8 +1030,7 @@ const styles = StyleSheet.create({
   // SLIDE 5 — Fond Sombre #050A12
   // ══════════════════════════════════════════════════════════════════════════
   slide5: {
-    minHeight: H, paddingHorizontal: 24, paddingTop: 52, paddingBottom: 40,
-    gap: 22, overflow: 'hidden',
+    minHeight: H, paddingHorizontal: 24, paddingTop: 52, paddingBottom: 40, gap: 22,
   },
   s5Header: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   s5HeaderChip: { fontSize: 9, fontWeight: '800', color: Colors.accent, letterSpacing: 1.5, textTransform: 'uppercase' },
