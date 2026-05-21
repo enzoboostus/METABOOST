@@ -233,7 +233,7 @@ export default function Onboarding() {
   });
 
   return (
-    <View style={[styles.root, Platform.OS === 'web' && styles.rootWeb]}>
+    <View style={[styles.root, step === 'login' && styles.rootLight, Platform.OS === 'web' && styles.rootWeb]}>
       {step !== 'login' && (
         <LinearGradient colors={['#0B1628', '#060E1C', '#03080F']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
       )}
@@ -253,40 +253,48 @@ export default function Onboarding() {
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} bounces={false} overScrollMode="never">
 
               {/* ════════════════════════════════════════════
-                  SLIDE 1 — Entrée Immersive Premium
+                  SLIDE 1 — Accueil Premium Style TSE
               ════════════════════════════════════════════ */}
               <View style={styles.slide1}>
-                <LinearGradient colors={['#050A12', '#0B1628', '#050A12']} locations={[0, 0.55, 1]} style={StyleSheet.absoluteFill} />
-                <View style={styles.s1Glow} />
 
-                {/* TOP — Header logo */}
-                <View style={styles.s1Header}>
-                  <View style={styles.s1LogoBadge}><Text style={styles.s1LogoEmoji}>⚡</Text></View>
-                  <Text style={styles.s1Brand}>METABOOST</Text>
+                {/* TOP BAR — Marque */}
+                <View style={styles.s1TopBar}>
+                  <View style={styles.s1LogoBadge}>
+                    <Text style={styles.s1LogoEmoji}>⚡</Text>
+                  </View>
+                  <Text style={styles.s1Brand}>Enzoboost.us</Text>
                 </View>
 
-                {/* MIDDLE — Hero (flex:1 to fill space, centered) */}
+                {/* HERO — flex:1 centré verticalement */}
                 <View style={styles.s1Hero}>
+                  <Text style={styles.s1Eyebrow}>ÉCOSYSTÈME SPORT-SANTÉ</Text>
                   <Text style={styles.s1Title}>METABOOST</Text>
-                  <Text style={styles.s1Tagline}>SPORT, HAUTE NUTRITION{'\n'}& SANTÉ CONNECTÉE</Text>
-                  <Text style={styles.s1Sub}>Écosystème expert  •  Suivi métabolique, Performance & APA</Text>
+                  <Text style={styles.s1Tagline}>SPORT, NUTRITION{'\n'}& SANTÉ CONNECTÉE</Text>
+                  <View style={styles.s1HeroBadges}>
+                    {['⚡ Performance', '🧬 Métabolisme', '🏥 APA'].map((b) => (
+                      <View key={b} style={styles.s1HeroBadge}>
+                        <Text style={styles.s1HeroBadgeTxt}>{b}</Text>
+                      </View>
+                    ))}
+                  </View>
                 </View>
 
-                {/* BOTTOM — Auth form */}
-                <View style={styles.s1Auth}>
+                {/* BENTO CARD — formulaire d'inscription */}
+                <View style={styles.s1BentoCard}>
                   {emailSent ? (
                     <View style={styles.emailSentBox}>
-                      <Text style={styles.emailSentTxt}>📧 Vérifie ta boîte mail !</Text>
-                      <Text style={styles.emailSentSub}>Un lien de connexion a été envoyé à {email.trim()}</Text>
+                      <Text style={[styles.emailSentTxt, { color: '#0D1117' }]}>📧 Vérifie ta boîte mail !</Text>
+                      <Text style={[styles.emailSentSub, { color: '#6B7280' }]}>Lien envoyé à {email.trim()}</Text>
                     </View>
                   ) : (
                     <>
+                      <Text style={styles.s1CardLabel}>Commencez votre suivi dès aujourd'hui</Text>
                       <TextInput
                         style={styles.s1Input}
                         value={email}
                         onChangeText={setEmail}
-                        placeholder="Ton adresse email"
-                        placeholderTextColor="rgba(255,255,255,0.28)"
+                        placeholder="Votre adresse e-mail"
+                        placeholderTextColor="#9CA3AF"
                         keyboardType="email-address"
                         autoCapitalize="none"
                         autoCorrect={false}
@@ -294,10 +302,10 @@ export default function Onboarding() {
                         inputMode="email"
                       />
                       <TouchableOpacity style={[styles.s1CTA, emailLoading && { opacity: 0.6 }]} onPress={handleEmailLogin} activeOpacity={0.9} disabled={emailLoading}>
-                        <Text style={styles.s1CTATxt}>{emailLoading ? 'ENVOI...' : 'DÉMARRER MON SUIVI'}</Text>
+                        <Text style={styles.s1CTATxt}>{emailLoading ? 'ENVOI...' : 'DÉMARRER MON SUIVI →'}</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.s1Ghost} onPress={() => transitionTo('welcome')} activeOpacity={0.8}>
-                        <Text style={styles.s1GhostTxt}>Commencer sans compte</Text>
+                        <Text style={styles.s1GhostTxt}>Continuer sans compte</Text>
                       </TouchableOpacity>
                     </>
                   )}
@@ -305,7 +313,7 @@ export default function Onboarding() {
 
                 <View style={styles.s1ScrollHint}>
                   <Text style={styles.s1ScrollTxt}>DÉCOUVRIR L'ÉCOSYSTÈME</Text>
-                  <ChevronDown size={13} color="rgba(255,255,255,0.22)" strokeWidth={2} />
+                  <ChevronDown size={13} color="#B0B8C4" strokeWidth={2} />
                 </View>
               </View>
 
@@ -794,68 +802,86 @@ const styles = StyleSheet.create({
   },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 1 — flex column, hero gets flex:1 to fill center space
+  // SLIDE 1 — Style TrainSweatEat : fond clair, bento blanc, typo sombre
   // ══════════════════════════════════════════════════════════════════════════
+  rootLight: { backgroundColor: '#F4F7FC' },
   slide1: {
     minHeight: H,
-    paddingHorizontal: 24,
+    backgroundColor: '#F4F7FC',
+    paddingHorizontal: 20,
     paddingTop: 52,
-    paddingBottom: 32,
+    paddingBottom: 28,
   },
-  s1Glow: {
-    position: 'absolute', top: -120, alignSelf: 'center',
-    width: W * 0.9, height: 340, borderRadius: 999,
-    backgroundColor: 'rgba(80,120,255,0.07)',
-    ...(Platform.OS === 'web' ? { filter: 'blur(90px)' } as any : {}),
-  },
-  s1Header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 10, marginBottom: 0,
+  s1TopBar: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
   },
   s1LogoBadge: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)',
+    width: 34, height: 34, borderRadius: 17,
+    backgroundColor: '#0D1117',
     alignItems: 'center', justifyContent: 'center',
   },
   s1LogoEmoji: { fontSize: 16 },
-  s1Brand: { fontSize: 13, fontWeight: '800', color: 'rgba(255,255,255,0.55)', letterSpacing: 6 },
-  // flex:1 fills the space between header and auth — keeps hero perfectly centered
+  s1Brand: { fontSize: 15, fontWeight: '800', color: '#0D1117', letterSpacing: 0.2 },
   s1Hero: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 14,
-    paddingVertical: 20,
+    gap: 10,
+    paddingVertical: 24,
+  },
+  s1Eyebrow: {
+    fontSize: 10, fontWeight: '700', color: '#9CA3AF',
+    letterSpacing: 2.5, textTransform: 'uppercase',
   },
   s1Title: {
-    fontSize: 56, fontWeight: '900', color: '#FFFFFF', letterSpacing: -1.5, textAlign: 'center',
-    ...(Platform.OS === 'web' ? { textShadow: '0 0 80px rgba(255,255,255,0.12)' } as any : {}),
+    fontSize: 54, fontWeight: '900', color: '#0D1117',
+    letterSpacing: -2, textAlign: 'center',
   },
   s1Tagline: {
-    fontSize: 13, fontWeight: '700', color: 'rgba(255,255,255,0.65)',
-    letterSpacing: 2.5, textAlign: 'center', textTransform: 'uppercase', lineHeight: 22,
+    fontSize: 11, fontWeight: '700', color: '#6B7280',
+    letterSpacing: 2, textAlign: 'center', textTransform: 'uppercase', lineHeight: 18,
   },
   s1Sub: { fontSize: 12, color: '#8E9AA8', letterSpacing: 0.4, textAlign: 'center' },
+  s1HeroBadges: {
+    flexDirection: 'row', gap: 7, flexWrap: 'wrap',
+    justifyContent: 'center', marginTop: 6,
+  },
+  s1HeroBadge: {
+    paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radius.full,
+    backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E5E7EB',
+    ...(Platform.OS === 'web' ? { boxShadow: '0 1px 4px rgba(0,0,0,0.05)' } as any : {}),
+  },
+  s1HeroBadgeTxt: { fontSize: 11, fontWeight: '600', color: '#374151' },
+  s1BentoCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 32,
+    padding: 24,
+    gap: 12,
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0 8px 40px rgba(0,0,0,0.07)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 24, elevation: 3 }),
+  },
+  s1CardLabel: {
+    fontSize: 13, fontWeight: '600', color: '#374151', textAlign: 'center',
+  },
   s1Auth: { gap: 12 },
   s1Input: {
-    height: 54, backgroundColor: '#111827', borderRadius: Radius.full,
-    paddingHorizontal: 24, fontSize: 16, color: '#FFFFFF',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+    height: 54, backgroundColor: '#F3F4F6', borderRadius: Radius.full,
+    paddingHorizontal: 20, fontSize: 16, color: '#0D1117',
+    borderWidth: 1, borderColor: '#E5E7EB',
   },
   s1CTA: {
-    height: 54, backgroundColor: '#FFFFFF', borderRadius: Radius.full,
+    height: 54, backgroundColor: '#1A1F26', borderRadius: Radius.full,
     alignItems: 'center', justifyContent: 'center',
-    ...(Platform.OS === 'web' ? { boxShadow: '0 8px 32px rgba(255,255,255,0.15)' } as any : {}),
+    ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(26,31,38,0.22)' } as any : {}),
   },
-  s1CTATxt: { fontSize: 14, fontWeight: '800', color: '#050A12', letterSpacing: 2 },
+  s1CTATxt: { fontSize: 14, fontWeight: '800', color: '#FFFFFF', letterSpacing: 1.5 },
   s1Ghost: {
-    height: 54, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.22)',
+    alignItems: 'center', justifyContent: 'center', paddingVertical: 10,
   },
-  s1GhostTxt: { fontSize: 14, fontWeight: '500', color: 'rgba(255,255,255,0.55)' },
-  s1ScrollHint: { alignItems: 'center', gap: 4, marginTop: 20 },
-  s1ScrollTxt: { fontSize: 9, color: 'rgba(255,255,255,0.2)', letterSpacing: 2.5, textTransform: 'uppercase' },
+  s1GhostTxt: { fontSize: 13, fontWeight: '500', color: '#9CA3AF' },
+  s1ScrollHint: { alignItems: 'center', gap: 4, marginTop: 16 },
+  s1ScrollTxt: { fontSize: 9, color: '#B0B8C4', letterSpacing: 2.5, textTransform: 'uppercase' },
 
   // ══════════════════════════════════════════════════════════════════════════
   // SLIDE 2 — Fond Blanc
