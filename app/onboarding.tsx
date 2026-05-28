@@ -265,18 +265,39 @@ export default function Onboarding() {
                   <Text style={styles.s1Brand}>Enzoboost.us</Text>
                 </View>
 
-                {/* HERO — flex:1 centré verticalement */}
+                {/* HERO — cards aperçu + headline style TSE */}
                 <View style={styles.s1Hero}>
-                  <Text style={styles.s1Eyebrow}>ÉCOSYSTÈME SPORT-SANTÉ</Text>
-                  <Text style={styles.s1Title}>METABOOST</Text>
-                  <Text style={styles.s1Tagline}>SPORT, NUTRITION{'\n'}& SANTÉ CONNECTÉE</Text>
-                  <View style={styles.s1HeroBadges}>
-                    {['⚡ Performance', '🧬 Métabolisme', '🏥 APA'].map((b) => (
-                      <View key={b} style={styles.s1HeroBadge}>
-                        <Text style={styles.s1HeroBadgeTxt}>{b}</Text>
-                      </View>
-                    ))}
+
+                  {/* Mini-cards — remplacent les screenshots TSE */}
+                  <View style={styles.s1PreviewRow}>
+                    <View style={[styles.s1PreviewCard, styles.s1PreviewDark]}>
+                      <Text style={styles.s1PreviewEmoji}>📊</Text>
+                      <Text style={[styles.s1PreviewLabel, { color: 'rgba(255,255,255,0.4)' }]}>NUTRITION</Text>
+                      <Text style={[styles.s1PreviewValue, { color: '#FFFFFF' }]}>142g Pro</Text>
+                    </View>
+                    <View style={styles.s1PreviewCard}>
+                      <Text style={styles.s1PreviewEmoji}>❤️</Text>
+                      <Text style={styles.s1PreviewLabel}>FC LIVE</Text>
+                      <Text style={styles.s1PreviewValue}>68 bpm</Text>
+                    </View>
+                    <View style={[styles.s1PreviewCard, styles.s1PreviewDark]}>
+                      <Text style={styles.s1PreviewEmoji}>📅</Text>
+                      <Text style={[styles.s1PreviewLabel, { color: 'rgba(255,255,255,0.4)' }]}>MON RDV</Text>
+                      <Text style={[styles.s1PreviewValue, { color: '#FFFFFF' }]}>Mer 08h30</Text>
+                    </View>
                   </View>
+
+                  {/* Headline bold avec accents couleur — style TSE */}
+                  <View style={styles.s1HeadlineBlock}>
+                    <Text style={styles.s1HeadlineTop}>L'EXPERTISE</Text>
+                    <View style={styles.s1HeadlineRow}>
+                      <Text style={[styles.s1HeadlineBig, { color: '#00C8D4' }]}>SPORT</Text>
+                      <Text style={styles.s1HeadlineBig}>{' '}&{' '}</Text>
+                    </View>
+                    <Text style={[styles.s1HeadlineBig, { color: '#E2AA27' }]}>NUTRITION</Text>
+                    <Text style={styles.s1HeadlineTop}>CONNECTÉE !</Text>
+                  </View>
+
                 </View>
 
                 {/* BENTO CARD — formulaire d'inscription */}
@@ -288,7 +309,6 @@ export default function Onboarding() {
                     </View>
                   ) : (
                     <>
-                      <Text style={styles.s1CardLabel}>Commencez votre suivi dès aujourd'hui</Text>
                       <TextInput
                         style={styles.s1Input}
                         value={email}
@@ -824,33 +844,45 @@ const styles = StyleSheet.create({
   s1Brand: { fontSize: 15, fontWeight: '800', color: '#0D1117', letterSpacing: 0.2 },
   s1Hero: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-    paddingVertical: 24,
+    gap: 20,
+    paddingVertical: 16,
   },
-  s1Eyebrow: {
-    fontSize: 10, fontWeight: '700', color: '#9CA3AF',
-    letterSpacing: 2.5, textTransform: 'uppercase',
+  // Mini preview cards (remplacent les screenshots TSE)
+  s1PreviewRow: { flexDirection: 'row', gap: 8 },
+  s1PreviewCard: {
+    flex: 1, backgroundColor: '#FFFFFF', borderRadius: 16,
+    padding: 12, gap: 3,
+    borderWidth: 1, borderColor: '#E5E7EB',
+    ...(Platform.OS === 'web' ? { boxShadow: '0 2px 14px rgba(0,0,0,0.05)' } as any : {
+      shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+    }),
   },
-  s1Title: {
-    fontSize: 54, fontWeight: '900', color: '#0D1117',
-    letterSpacing: -2, textAlign: 'center',
+  s1PreviewDark: { backgroundColor: '#0D1117', borderColor: '#0D1117' },
+  s1PreviewEmoji: { fontSize: 18, marginBottom: 2 },
+  s1PreviewLabel: {
+    fontSize: 8, fontWeight: '700', color: '#9CA3AF',
+    textTransform: 'uppercase', letterSpacing: 0.8,
   },
-  s1Tagline: {
-    fontSize: 11, fontWeight: '700', color: '#6B7280',
-    letterSpacing: 2, textAlign: 'center', textTransform: 'uppercase', lineHeight: 18,
+  s1PreviewValue: { fontSize: 13, fontWeight: '900', color: '#0D1117', letterSpacing: -0.3 },
+  // Headline avec accents couleur — style TSE
+  s1HeadlineBlock: { gap: 0 },
+  s1HeadlineRow: { flexDirection: 'row', alignItems: 'baseline' },
+  s1HeadlineTop: {
+    fontSize: 22, fontWeight: '700', color: '#6B7280', letterSpacing: -0.3,
   },
+  s1HeadlineBig: {
+    fontSize: 46, fontWeight: '900', color: '#0D1117',
+    letterSpacing: -2, lineHeight: 50,
+  },
+  // kept for compat (unused in new JSX but no TS error if defined)
+  s1Eyebrow: { fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 2.5, textTransform: 'uppercase' },
+  s1Title: { fontSize: 54, fontWeight: '900', color: '#0D1117', letterSpacing: -2, textAlign: 'center' },
+  s1Tagline: { fontSize: 11, fontWeight: '700', color: '#6B7280', letterSpacing: 2, textAlign: 'center', textTransform: 'uppercase', lineHeight: 18 },
   s1Sub: { fontSize: 12, color: '#8E9AA8', letterSpacing: 0.4, textAlign: 'center' },
-  s1HeroBadges: {
-    flexDirection: 'row', gap: 7, flexWrap: 'wrap',
-    justifyContent: 'center', marginTop: 6,
-  },
-  s1HeroBadge: {
-    paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radius.full,
-    backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E5E7EB',
-    ...(Platform.OS === 'web' ? { boxShadow: '0 1px 4px rgba(0,0,0,0.05)' } as any : {}),
-  },
+  s1HeroBadges: { flexDirection: 'row', gap: 7, flexWrap: 'wrap', justifyContent: 'center', marginTop: 6 },
+  s1HeroBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radius.full, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E5E7EB' },
   s1HeroBadgeTxt: { fontSize: 11, fontWeight: '600', color: '#374151' },
   s1BentoCard: {
     backgroundColor: '#FFFFFF',
