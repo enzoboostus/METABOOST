@@ -257,47 +257,108 @@ export default function Onboarding() {
               ════════════════════════════════════════════ */}
               <View style={styles.slide1}>
 
+                {/* FOND DÉGRADÉ */}
+                <LinearGradient
+                  colors={['#FFFFFF', '#F4F7FC']}
+                  locations={[0, 1]}
+                  style={StyleSheet.absoluteFill}
+                />
+
                 {/* TOP BAR — Marque */}
                 <View style={styles.s1TopBar}>
                   <View style={styles.s1LogoBadge}>
                     <Text style={styles.s1LogoEmoji}>⚡</Text>
                   </View>
-                  <Text style={styles.s1Brand}>Enzoboost.us</Text>
+                  <Text style={styles.s1Brand}>METABOOST</Text>
                 </View>
 
-                {/* HERO — cards aperçu + headline style TSE */}
-                <View style={styles.s1Hero}>
+                {/* ZONE MOCKUPS TÉLÉPHONES */}
+                <View style={styles.s1MockupsZone}>
 
-                  {/* Mini-cards — remplacent les screenshots TSE */}
-                  <View style={styles.s1PreviewRow}>
-                    <View style={[styles.s1PreviewCard, styles.s1PreviewDark]}>
-                      <Text style={styles.s1PreviewEmoji}>📊</Text>
-                      <Text style={[styles.s1PreviewLabel, { color: 'rgba(255,255,255,0.4)' }]}>NUTRITION</Text>
-                      <Text style={[styles.s1PreviewValue, { color: '#FFFFFF' }]}>142g Pro</Text>
+                  {/* PHONE LEFT — Nutrition */}
+                  <View style={styles.s1PhoneLeft}>
+                    <View style={styles.s1PhnStatusBar}>
+                      <Text style={styles.s1PhnStatusTime}>9:41</Text>
+                      <View style={{ flexDirection: 'row', gap: 4 }}>
+                        <View style={{ width: 14, height: 6, borderRadius: 2, backgroundColor: '#0D1117', opacity: 0.2 }} />
+                        <View style={{ width: 6, height: 6, borderRadius: 1, backgroundColor: '#0D1117', opacity: 0.2 }} />
+                      </View>
                     </View>
-                    <View style={styles.s1PreviewCard}>
-                      <Text style={styles.s1PreviewEmoji}>❤️</Text>
-                      <Text style={styles.s1PreviewLabel}>FC LIVE</Text>
-                      <Text style={styles.s1PreviewValue}>68 bpm</Text>
-                    </View>
-                    <View style={[styles.s1PreviewCard, styles.s1PreviewDark]}>
-                      <Text style={styles.s1PreviewEmoji}>📅</Text>
-                      <Text style={[styles.s1PreviewLabel, { color: 'rgba(255,255,255,0.4)' }]}>MON RDV</Text>
-                      <Text style={[styles.s1PreviewValue, { color: '#FFFFFF' }]}>Mer 08h30</Text>
+                    <View style={styles.s1PhnBody}>
+                      <Text style={styles.s1PhnTitle}>Nutrition</Text>
+                      {/* Calorie ring */}
+                      <View style={styles.s1CalRingWrap}>
+                        <View style={styles.s1CalRing}>
+                          <Text style={styles.s1CalNum}>1 840</Text>
+                          <Text style={styles.s1CalUnit}>kcal</Text>
+                        </View>
+                      </View>
+                      {/* Macro bars */}
+                      <View style={styles.s1MacroBars}>
+                        <View style={styles.s1MacroRow}>
+                          <Text style={styles.s1MacroLbl}>Prot.</Text>
+                          <View style={styles.s1MacroTrack}>
+                            <View style={[styles.s1MacroFill, { width: '72%', backgroundColor: '#3B82F6' }]} />
+                          </View>
+                        </View>
+                        <View style={styles.s1MacroRow}>
+                          <Text style={styles.s1MacroLbl}>Gluc.</Text>
+                          <View style={styles.s1MacroTrack}>
+                            <View style={[styles.s1MacroFill, { width: '58%', backgroundColor: '#F59E0B' }]} />
+                          </View>
+                        </View>
+                        <View style={styles.s1MacroRow}>
+                          <Text style={styles.s1MacroLbl}>Lipi.</Text>
+                          <View style={styles.s1MacroTrack}>
+                            <View style={[styles.s1MacroFill, { width: '44%', backgroundColor: '#EF4444' }]} />
+                          </View>
+                        </View>
+                      </View>
                     </View>
                   </View>
 
-                  {/* Headline bold avec accents couleur — style TSE */}
-                  <View style={styles.s1HeadlineBlock}>
-                    <Text style={styles.s1HeadlineTop}>L'EXPERTISE</Text>
-                    <View style={styles.s1HeadlineRow}>
-                      <Text style={[styles.s1HeadlineBig, { color: '#00C8D4' }]}>SPORT</Text>
-                      <Text style={styles.s1HeadlineBig}>{' '}&{' '}</Text>
+                  {/* PHONE RIGHT — Training */}
+                  <View style={styles.s1PhoneRight}>
+                    <View style={styles.s1PhnStatusBar}>
+                      <Text style={styles.s1PhnStatusTime}>9:41</Text>
+                      <View style={{ flexDirection: 'row', gap: 4 }}>
+                        <View style={{ width: 14, height: 6, borderRadius: 2, backgroundColor: '#FFFFFF', opacity: 0.4 }} />
+                        <View style={{ width: 6, height: 6, borderRadius: 1, backgroundColor: '#FFFFFF', opacity: 0.4 }} />
+                      </View>
                     </View>
-                    <Text style={[styles.s1HeadlineBig, { color: '#E2AA27' }]}>NUTRITION</Text>
-                    <Text style={styles.s1HeadlineTop}>CONNECTÉE !</Text>
+                    <View style={[styles.s1PhnBody, { backgroundColor: '#0D1117' }]}>
+                      <Text style={[styles.s1PhnTitle, { color: '#FFFFFF' }]}>Training</Text>
+                      {/* Exercise card */}
+                      <View style={styles.s1ExoCard}>
+                        <View style={styles.s1ExoHero}>
+                          <View style={styles.s1ExoBadgeNew}>
+                            <Text style={styles.s1ExoBadgeNewTxt}>SÉANCE DU JOUR</Text>
+                          </View>
+                        </View>
+                        <View style={styles.s1ExoFooter}>
+                          <Text style={styles.s1ExoTitle}>Push — Chest & Delts</Text>
+                          <Text style={styles.s1ExoMeta}>6 exercices · 48 min</Text>
+                        </View>
+                      </View>
+                      {/* Progress bar */}
+                      <View style={styles.s1ExoProgressTrack}>
+                        <View style={[styles.s1ExoProgressFill, { width: '65%' }]} />
+                      </View>
+                      <Text style={styles.s1PhnSub}>65% complété</Text>
+                    </View>
                   </View>
 
+                </View>
+
+                {/* HEADLINE */}
+                <View style={styles.s1HeadlineBlock}>
+                  <Text style={styles.s1HeadlineTop}>L'EXPERTISE</Text>
+                  <View style={styles.s1HeadlineRow}>
+                    <Text style={[styles.s1HeadlineBig, { color: '#00C8D4' }]}>SPORT</Text>
+                    <Text style={styles.s1HeadlineBig}>{' '}&{' '}</Text>
+                  </View>
+                  <Text style={[styles.s1HeadlineBig, { color: '#E2AA27' }]}>NUTRITION</Text>
+                  <Text style={styles.s1HeadlineTop}>CONNECTÉE !</Text>
                 </View>
 
                 {/* BENTO CARD — formulaire d'inscription */}
@@ -782,6 +843,13 @@ export default function Onboarding() {
 
 // ── StyleSheet ────────────────────────────────────────────────────────────────
 
+// Phone mockup dimensions — proportional to screen
+const PHONE_R_W = Math.round(W * 0.47);
+const PHONE_R_H = Math.round(Math.min(W * 0.70, H * 0.30));
+const PHONE_L_W = Math.round(W * 0.37);
+const PHONE_L_H = Math.round(PHONE_R_H * 0.82);
+const MOCKUP_ZONE_H = PHONE_R_H + 32;
+
 const CARD_SHADOW = Platform.OS === 'web'
   ? { boxShadow: '0 4px 28px rgba(0,0,0,0.08)' } as any
   : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 28, elevation: 4 };
@@ -822,15 +890,15 @@ const styles = StyleSheet.create({
   },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 1 — Style TrainSweatEat : fond clair, bento blanc, typo sombre
+  // SLIDE 1 — Style TrainSweatEat : gradient, mockups téléphone, typo sombre
   // ══════════════════════════════════════════════════════════════════════════
-  rootLight: { backgroundColor: '#F4F7FC' },
+  rootLight: { backgroundColor: '#FFFFFF' },
   slide1: {
     minHeight: H,
-    backgroundColor: '#F4F7FC',
     paddingHorizontal: 20,
     paddingTop: 52,
     paddingBottom: 28,
+    overflow: 'hidden' as any,
   },
   s1TopBar: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
@@ -841,42 +909,128 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   s1LogoEmoji: { fontSize: 16 },
-  s1Brand: { fontSize: 15, fontWeight: '800', color: '#0D1117', letterSpacing: 0.2 },
-  s1Hero: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: 20,
-    paddingVertical: 16,
+  s1Brand: { fontSize: 15, fontWeight: '800', color: '#0D1117', letterSpacing: 1.2 },
+  // ── Mockup zone ──
+  s1MockupsZone: {
+    height: MOCKUP_ZONE_H,
+    position: 'relative' as any,
+    marginTop: 16,
+    marginBottom: 8,
   },
-  // Mini preview cards (remplacent les screenshots TSE)
-  s1PreviewRow: { flexDirection: 'row', gap: 8 },
-  s1PreviewCard: {
-    flex: 1, backgroundColor: '#FFFFFF', borderRadius: 16,
-    padding: 12, gap: 3,
-    borderWidth: 1, borderColor: '#E5E7EB',
-    ...(Platform.OS === 'web' ? { boxShadow: '0 2px 14px rgba(0,0,0,0.05)' } as any : {
-      shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
-    }),
+  s1PhoneLeft: {
+    position: 'absolute' as any,
+    left: 0,
+    top: Math.round(MOCKUP_ZONE_H * 0.12),
+    width: PHONE_L_W,
+    height: PHONE_L_H,
+    borderRadius: 20,
+    overflow: 'hidden',
+    zIndex: 1,
+    transform: [{ rotate: '-7deg' }],
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.07)',
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0 8px 32px rgba(0,0,0,0.10)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.10, shadowRadius: 20, elevation: 5 }),
   },
-  s1PreviewDark: { backgroundColor: '#0D1117', borderColor: '#0D1117' },
-  s1PreviewEmoji: { fontSize: 18, marginBottom: 2 },
-  s1PreviewLabel: {
-    fontSize: 8, fontWeight: '700', color: '#9CA3AF',
-    textTransform: 'uppercase', letterSpacing: 0.8,
+  s1PhoneRight: {
+    position: 'absolute' as any,
+    right: 0,
+    top: 0,
+    width: PHONE_R_W,
+    height: PHONE_R_H,
+    borderRadius: 24,
+    overflow: 'hidden',
+    zIndex: 2,
+    transform: [{ rotate: '2deg' }],
+    backgroundColor: '#0D1117',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0 12px 40px rgba(0,0,0,0.18)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.18, shadowRadius: 28, elevation: 8 }),
   },
-  s1PreviewValue: { fontSize: 13, fontWeight: '900', color: '#0D1117', letterSpacing: -0.3 },
-  // Headline avec accents couleur — style TSE
-  s1HeadlineBlock: { gap: 0 },
+  s1PhnStatusBar: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 10, paddingTop: 8, paddingBottom: 4,
+  },
+  s1PhnStatusTime: { fontSize: 9, fontWeight: '700', color: '#0D1117', opacity: 0.5 },
+  s1PhnBody: {
+    flex: 1, backgroundColor: '#FFFFFF',
+    paddingHorizontal: 10, paddingBottom: 10, gap: 6,
+  },
+  s1PhnTitle: { fontSize: 11, fontWeight: '800', color: '#0D1117', letterSpacing: 0.4 },
+  s1PhnSub: { fontSize: 8, color: 'rgba(255,255,255,0.4)', marginTop: 2 },
+  // calorie ring
+  s1CalRingWrap: { alignItems: 'center', marginVertical: 4 },
+  s1CalRing: {
+    width: 56, height: 56, borderRadius: 28,
+    borderWidth: 5,
+    borderTopColor: '#00C8D4',
+    borderRightColor: '#00C8D4',
+    borderBottomColor: '#E5E7EB',
+    borderLeftColor: '#E5E7EB',
+    alignItems: 'center', justifyContent: 'center',
+    transform: [{ rotate: '-45deg' }],
+  },
+  s1CalNum: {
+    fontSize: 9, fontWeight: '900', color: '#0D1117',
+    transform: [{ rotate: '45deg' }],
+    letterSpacing: -0.3,
+  },
+  s1CalUnit: {
+    fontSize: 6, color: '#9CA3AF', fontWeight: '600',
+    transform: [{ rotate: '45deg' }],
+  },
+  // macro bars
+  s1MacroBars: { gap: 4 },
+  s1MacroRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  s1MacroLbl: { fontSize: 7, fontWeight: '600', color: '#6B7280', width: 22 },
+  s1MacroTrack: { flex: 1, height: 4, backgroundColor: '#F3F4F6', borderRadius: 2, overflow: 'hidden' },
+  s1MacroFill: { height: '100%', borderRadius: 2 },
+  // exercise card
+  s1ExoCard: {
+    borderRadius: 10, overflow: 'hidden',
+    backgroundColor: '#1A1F26', flex: 1,
+  },
+  s1ExoHero: {
+    flex: 1, backgroundColor: '#1E293B',
+    padding: 8, justifyContent: 'flex-start',
+  },
+  s1ExoBadgeNew: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(0,200,212,0.15)',
+    paddingHorizontal: 5, paddingVertical: 2,
+    borderRadius: 4,
+  },
+  s1ExoBadgeNewTxt: { fontSize: 6, fontWeight: '800', color: '#00C8D4', letterSpacing: 0.8 },
+  s1ExoFooter: { padding: 7 },
+  s1ExoTitle: { fontSize: 9, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.2 },
+  s1ExoMeta: { fontSize: 7, color: 'rgba(255,255,255,0.4)', marginTop: 1 },
+  s1ExoProgressTrack: {
+    height: 3, backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 2, overflow: 'hidden', marginTop: 4,
+  },
+  s1ExoProgressFill: { height: '100%', backgroundColor: '#00C8D4', borderRadius: 2 },
+  // ── Headline ──
+  s1HeadlineBlock: { gap: 0, marginTop: 8 },
   s1HeadlineRow: { flexDirection: 'row', alignItems: 'baseline' },
   s1HeadlineTop: {
-    fontSize: 22, fontWeight: '700', color: '#6B7280', letterSpacing: -0.3,
+    fontSize: 18, fontWeight: '700', color: '#6B7280', letterSpacing: -0.3,
   },
   s1HeadlineBig: {
-    fontSize: 46, fontWeight: '900', color: '#0D1117',
-    letterSpacing: -2, lineHeight: 50,
+    fontSize: 40, fontWeight: '900', color: '#0D1117',
+    letterSpacing: -2, lineHeight: 44,
   },
-  // kept for compat (unused in new JSX but no TS error if defined)
+  // kept for compat
+  s1Hero: { flex: 1, justifyContent: 'center', gap: 20, paddingVertical: 16 },
+  s1PreviewRow: { flexDirection: 'row', gap: 8 },
+  s1PreviewCard: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 12, gap: 3, borderWidth: 1, borderColor: '#E5E7EB' },
+  s1PreviewDark: { backgroundColor: '#0D1117', borderColor: '#0D1117' },
+  s1PreviewEmoji: { fontSize: 18, marginBottom: 2 },
+  s1PreviewLabel: { fontSize: 8, fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 0.8 },
+  s1PreviewValue: { fontSize: 13, fontWeight: '900', color: '#0D1117', letterSpacing: -0.3 },
   s1Eyebrow: { fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 2.5, textTransform: 'uppercase' },
   s1Title: { fontSize: 54, fontWeight: '900', color: '#0D1117', letterSpacing: -2, textAlign: 'center' },
   s1Tagline: { fontSize: 11, fontWeight: '700', color: '#6B7280', letterSpacing: 2, textAlign: 'center', textTransform: 'uppercase', lineHeight: 18 },
@@ -890,12 +1044,10 @@ const styles = StyleSheet.create({
     padding: 24,
     gap: 12,
     ...(Platform.OS === 'web'
-      ? { boxShadow: '0 8px 40px rgba(0,0,0,0.07)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.04, shadowRadius: 24, elevation: 3 }),
+      ? { boxShadow: '0 4px 32px rgba(0,0,0,0.05)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 24, elevation: 2 }),
   },
-  s1CardLabel: {
-    fontSize: 13, fontWeight: '600', color: '#374151', textAlign: 'center',
-  },
+  s1CardLabel: { fontSize: 13, fontWeight: '600', color: '#374151', textAlign: 'center' },
   s1Auth: { gap: 12 },
   s1Input: {
     height: 54, backgroundColor: '#F3F4F6', borderRadius: Radius.full,
@@ -908,9 +1060,7 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(26,31,38,0.22)' } as any : {}),
   },
   s1CTATxt: { fontSize: 14, fontWeight: '800', color: '#FFFFFF', letterSpacing: 1.5 },
-  s1Ghost: {
-    alignItems: 'center', justifyContent: 'center', paddingVertical: 10,
-  },
+  s1Ghost: { alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
   s1GhostTxt: { fontSize: 13, fontWeight: '500', color: '#9CA3AF' },
   s1ScrollHint: { alignItems: 'center', gap: 4, marginTop: 16 },
   s1ScrollTxt: { fontSize: 9, color: '#B0B8C4', letterSpacing: 2.5, textTransform: 'uppercase' },
