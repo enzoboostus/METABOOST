@@ -1023,11 +1023,11 @@ const styles = StyleSheet.create({
   s1HeadlineBlock: { gap: 0, marginTop: 8 },
   s1HeadlineRow: { flexDirection: 'row', alignItems: 'baseline' },
   s1HeadlineTop: {
-    fontSize: 18, fontWeight: '700', color: '#6B7280', letterSpacing: -0.3,
+    fontSize: 14, fontWeight: '700', color: '#6B7280', letterSpacing: -0.3,
   },
   s1HeadlineBig: {
-    fontSize: 40, fontWeight: '900', color: '#0D1117',
-    letterSpacing: -2, lineHeight: 44,
+    fontSize: 32, fontWeight: '900', color: '#0D1117',
+    letterSpacing: -1.5, lineHeight: 36,
   },
   // kept for compat
   s1Hero: { flex: 1, justifyContent: 'center', gap: 20, paddingVertical: 16 },
