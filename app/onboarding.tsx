@@ -267,70 +267,83 @@ export default function Onboarding() {
                 {/* HEADER — Marque centrée */}
                 <Text style={styles.s1Brand}>METABOOST</Text>
 
-                {/* ZONE MOCKUPS TÉLÉPHONES */}
+                {/* ZONE MOCKUPS — 3 téléphones style TSE */}
                 <View style={styles.s1MockupsZone}>
+
+                  {/* PHONE TOP-LEFT — Dashboard (arrière-plan, partiellement rogné) */}
+                  <View style={styles.s1PhoneTopLeft}>
+                    <View style={[styles.s1PhoneScreen, { backgroundColor: '#0D1117' }]}>
+                      <View style={styles.s1PhoneDI} />
+                      <View style={[styles.s1PhnBody, { backgroundColor: '#0D1117', gap: 6 }]}>
+                        <Text style={[styles.s1PhnTitle, { color: '#FFFFFF' }]}>Aujourd'hui</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                          <View style={[styles.s1CalRing, { width: 46, height: 46, borderRadius: 23, borderTopColor: '#E2AA27', borderRightColor: '#E2AA27' }]}>
+                            <Text style={[styles.s1CalNum, { transform: [{ rotate: '45deg' }] }]}>87%</Text>
+                          </View>
+                          <View style={{ gap: 1 }}>
+                            <Text style={{ fontSize: 7, color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>OBJECTIF</Text>
+                            <Text style={{ fontSize: 11, color: '#FFFFFF', fontWeight: '900' }}>2 040 kcal</Text>
+                          </View>
+                        </View>
+                        <View style={{ gap: 3 }}>
+                          {[{ e: '🏃', l: 'Séance terminée', p: '+25', c: '#00C8D4' }, { e: '🥗', l: 'Repas loggué', p: '+10', c: '#E2AA27' }].map((it, i) => (
+                            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 7, padding: 5 }}>
+                              <Text style={{ fontSize: 9 }}>{it.e}</Text>
+                              <Text style={{ fontSize: 7, color: 'rgba(255,255,255,0.6)', flex: 1 }}>{it.l}</Text>
+                              <Text style={{ fontSize: 8, color: it.c, fontWeight: '800' }}>{it.p}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      </View>
+                    </View>
+                  </View>
 
                   {/* PHONE LEFT — Nutrition */}
                   <View style={styles.s1PhoneLeft}>
-                    {/* Écran interne */}
                     <View style={[styles.s1PhoneScreen, { backgroundColor: '#FAFAFA' }]}>
-                      {/* Dynamic Island */}
                       <View style={styles.s1PhoneDI} />
                       <View style={styles.s1PhnBody}>
                         <Text style={styles.s1PhnTitle}>Nutrition</Text>
-                        {/* Calorie ring */}
                         <View style={styles.s1CalRingWrap}>
                           <View style={styles.s1CalRing}>
                             <Text style={styles.s1CalNum}>1 840</Text>
                             <Text style={styles.s1CalUnit}>kcal</Text>
                           </View>
                         </View>
-                        {/* Macro bars */}
                         <View style={styles.s1MacroBars}>
                           <View style={styles.s1MacroRow}>
                             <Text style={styles.s1MacroLbl}>Prot.</Text>
-                            <View style={styles.s1MacroTrack}>
-                              <View style={[styles.s1MacroFill, { width: '72%', backgroundColor: '#3B82F6' }]} />
-                            </View>
+                            <View style={styles.s1MacroTrack}><View style={[styles.s1MacroFill, { width: '72%', backgroundColor: '#3B82F6' }]} /></View>
                           </View>
                           <View style={styles.s1MacroRow}>
                             <Text style={styles.s1MacroLbl}>Gluc.</Text>
-                            <View style={styles.s1MacroTrack}>
-                              <View style={[styles.s1MacroFill, { width: '58%', backgroundColor: '#F59E0B' }]} />
-                            </View>
+                            <View style={styles.s1MacroTrack}><View style={[styles.s1MacroFill, { width: '58%', backgroundColor: '#F59E0B' }]} /></View>
                           </View>
                           <View style={styles.s1MacroRow}>
                             <Text style={styles.s1MacroLbl}>Lipi.</Text>
-                            <View style={styles.s1MacroTrack}>
-                              <View style={[styles.s1MacroFill, { width: '44%', backgroundColor: '#EF4444' }]} />
-                            </View>
+                            <View style={styles.s1MacroTrack}><View style={[styles.s1MacroFill, { width: '44%', backgroundColor: '#EF4444' }]} /></View>
                           </View>
                         </View>
                       </View>
                     </View>
                   </View>
 
-                  {/* PHONE RIGHT — Training */}
+                  {/* PHONE RIGHT — Training (héro principal) */}
                   <View style={styles.s1PhoneRight}>
-                    {/* Écran interne */}
                     <View style={[styles.s1PhoneScreen, { backgroundColor: '#0D1117' }]}>
-                      {/* Dynamic Island */}
                       <View style={styles.s1PhoneDI} />
                       <View style={[styles.s1PhnBody, { backgroundColor: '#0D1117' }]}>
                         <Text style={[styles.s1PhnTitle, { color: '#FFFFFF' }]}>Training</Text>
-                        {/* Exercise card */}
+                        <Text style={[styles.s1PhnSub, { marginBottom: 2 }]}>Révèle ton potentiel</Text>
                         <View style={styles.s1ExoCard}>
                           <View style={styles.s1ExoHero}>
-                            <View style={styles.s1ExoBadgeNew}>
-                              <Text style={styles.s1ExoBadgeNewTxt}>SÉANCE DU JOUR</Text>
-                            </View>
+                            <View style={styles.s1ExoBadgeNew}><Text style={styles.s1ExoBadgeNewTxt}>SÉANCE DU JOUR</Text></View>
                           </View>
                           <View style={styles.s1ExoFooter}>
                             <Text style={styles.s1ExoTitle}>Push — Chest & Delts</Text>
                             <Text style={styles.s1ExoMeta}>6 exercices · 48 min</Text>
                           </View>
                         </View>
-                        {/* Progress bar */}
                         <View style={styles.s1ExoProgressTrack}>
                           <View style={[styles.s1ExoProgressFill, { width: '65%' }]} />
                         </View>
@@ -834,12 +847,16 @@ export default function Onboarding() {
 
 // ── StyleSheet ────────────────────────────────────────────────────────────────
 
-// Phone mockup dimensions — proportional to screen
-const PHONE_R_W = Math.round(W * 0.47);
-const PHONE_R_H = Math.round(Math.min(W * 0.70, H * 0.30));
-const PHONE_L_W = Math.round(W * 0.37);
-const PHONE_L_H = Math.round(PHONE_R_H * 0.82);
-const MOCKUP_ZONE_H = PHONE_R_H + 32;
+// Phone mockup — proportions iPhone (ratio 9:19.5 ≈ 2.16)
+const PHN_ASPECT = 2.16;
+const ZONE_H = Math.round(H * 0.47);
+const PHONE_R_W = Math.round(W * 0.53);
+const PHONE_R_H = Math.min(Math.round(PHONE_R_W * PHN_ASPECT), Math.round(ZONE_H * 0.97));
+const PHONE_L_W = Math.round(W * 0.46);
+const PHONE_L_H = Math.min(Math.round(PHONE_L_W * PHN_ASPECT), Math.round(ZONE_H * 0.90));
+const PHONE_TL_W = Math.round(W * 0.38);
+const PHONE_TL_H = Math.min(Math.round(PHONE_TL_W * PHN_ASPECT), Math.round(ZONE_H * 0.72));
+const MOCKUP_ZONE_H = ZONE_H;
 
 const CARD_SHADOW = Platform.OS === 'web'
   ? { boxShadow: '0 4px 28px rgba(0,0,0,0.08)' } as any
@@ -898,48 +915,71 @@ const styles = StyleSheet.create({
     fontSize: 18, fontWeight: '900', color: '#0D1117',
     letterSpacing: 3.5, textAlign: 'center', marginBottom: 4,
   },
-  // ── Mockup zone ──
+  // ── Mockup zone — pleine largeur, overflow:hidden pour rogner les téléphones aux bords ──
   s1MockupsZone: {
     height: MOCKUP_ZONE_H,
     position: 'relative' as any,
-    marginTop: 16,
+    marginTop: 12,
     marginBottom: 8,
+    marginHorizontal: -20,
+    overflow: 'hidden',
   },
+  // Téléphone arrière-plan — haut gauche, partiellement rogné
+  s1PhoneTopLeft: {
+    position: 'absolute' as any,
+    left: -18,
+    top: -10,
+    width: PHONE_TL_W,
+    height: PHONE_TL_H,
+    borderRadius: 24,
+    overflow: 'hidden',
+    zIndex: 1,
+    transform: [{ rotate: '-10deg' }],
+    backgroundColor: '#1A1A1A',
+    borderWidth: 4,
+    borderColor: '#080808',
+    padding: 4,
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0 10px 32px rgba(0,0,0,0.22)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.22, shadowRadius: 20, elevation: 7 }),
+  },
+  // Téléphone bas gauche — Nutrition
   s1PhoneLeft: {
     position: 'absolute' as any,
-    left: 0,
-    top: Math.round(MOCKUP_ZONE_H * 0.12),
+    left: -6,
+    bottom: -10,
     width: PHONE_L_W,
     height: PHONE_L_H,
     borderRadius: 26,
     overflow: 'hidden',
-    zIndex: 1,
-    transform: [{ rotate: '-7deg' }],
+    zIndex: 2,
+    transform: [{ rotate: '-5deg' }],
     backgroundColor: '#1A1A1A',
     borderWidth: 4,
     borderColor: '#080808',
     padding: 4,
     ...(Platform.OS === 'web'
-      ? { boxShadow: '0 16px 48px rgba(0,0,0,0.30)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.30, shadowRadius: 28, elevation: 10 }),
+      ? { boxShadow: '0 16px 48px rgba(0,0,0,0.32)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.32, shadowRadius: 28, elevation: 11 }),
   },
+  // Téléphone droit — Training (héro principal)
   s1PhoneRight: {
     position: 'absolute' as any,
-    right: 0,
-    top: 0,
+    right: -10,
+    top: 6,
     width: PHONE_R_W,
     height: PHONE_R_H,
     borderRadius: 30,
     overflow: 'hidden',
-    zIndex: 2,
-    transform: [{ rotate: '2deg' }],
+    zIndex: 3,
+    transform: [{ rotate: '3deg' }],
     backgroundColor: '#1A1A1A',
     borderWidth: 4,
     borderColor: '#080808',
     padding: 4,
     ...(Platform.OS === 'web'
-      ? { boxShadow: '0 20px 60px rgba(0,0,0,0.38)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.38, shadowRadius: 36, elevation: 14 }),
+      ? { boxShadow: '0 24px 64px rgba(0,0,0,0.42)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 24 }, shadowOpacity: 0.42, shadowRadius: 40, elevation: 16 }),
   },
   // Écran intérieur (clippé dans le châssis)
   s1PhoneScreen: {
