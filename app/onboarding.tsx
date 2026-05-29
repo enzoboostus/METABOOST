@@ -264,53 +264,46 @@ export default function Onboarding() {
                   style={StyleSheet.absoluteFill}
                 />
 
-                {/* TOP BAR — Marque */}
-                <View style={styles.s1TopBar}>
-                  <View style={styles.s1LogoBadge}>
-                    <Text style={styles.s1LogoEmoji}>⚡</Text>
-                  </View>
-                  <Text style={styles.s1Brand}>METABOOST</Text>
-                </View>
+                {/* HEADER — Marque centrée */}
+                <Text style={styles.s1Brand}>METABOOST</Text>
 
                 {/* ZONE MOCKUPS TÉLÉPHONES */}
                 <View style={styles.s1MockupsZone}>
 
                   {/* PHONE LEFT — Nutrition */}
                   <View style={styles.s1PhoneLeft}>
-                    <View style={styles.s1PhnStatusBar}>
-                      <Text style={styles.s1PhnStatusTime}>9:41</Text>
-                      <View style={{ flexDirection: 'row', gap: 4 }}>
-                        <View style={{ width: 14, height: 6, borderRadius: 2, backgroundColor: '#0D1117', opacity: 0.2 }} />
-                        <View style={{ width: 6, height: 6, borderRadius: 1, backgroundColor: '#0D1117', opacity: 0.2 }} />
-                      </View>
-                    </View>
-                    <View style={styles.s1PhnBody}>
-                      <Text style={styles.s1PhnTitle}>Nutrition</Text>
-                      {/* Calorie ring */}
-                      <View style={styles.s1CalRingWrap}>
-                        <View style={styles.s1CalRing}>
-                          <Text style={styles.s1CalNum}>1 840</Text>
-                          <Text style={styles.s1CalUnit}>kcal</Text>
-                        </View>
-                      </View>
-                      {/* Macro bars */}
-                      <View style={styles.s1MacroBars}>
-                        <View style={styles.s1MacroRow}>
-                          <Text style={styles.s1MacroLbl}>Prot.</Text>
-                          <View style={styles.s1MacroTrack}>
-                            <View style={[styles.s1MacroFill, { width: '72%', backgroundColor: '#3B82F6' }]} />
+                    {/* Écran interne */}
+                    <View style={[styles.s1PhoneScreen, { backgroundColor: '#FAFAFA' }]}>
+                      {/* Dynamic Island */}
+                      <View style={styles.s1PhoneDI} />
+                      <View style={styles.s1PhnBody}>
+                        <Text style={styles.s1PhnTitle}>Nutrition</Text>
+                        {/* Calorie ring */}
+                        <View style={styles.s1CalRingWrap}>
+                          <View style={styles.s1CalRing}>
+                            <Text style={styles.s1CalNum}>1 840</Text>
+                            <Text style={styles.s1CalUnit}>kcal</Text>
                           </View>
                         </View>
-                        <View style={styles.s1MacroRow}>
-                          <Text style={styles.s1MacroLbl}>Gluc.</Text>
-                          <View style={styles.s1MacroTrack}>
-                            <View style={[styles.s1MacroFill, { width: '58%', backgroundColor: '#F59E0B' }]} />
+                        {/* Macro bars */}
+                        <View style={styles.s1MacroBars}>
+                          <View style={styles.s1MacroRow}>
+                            <Text style={styles.s1MacroLbl}>Prot.</Text>
+                            <View style={styles.s1MacroTrack}>
+                              <View style={[styles.s1MacroFill, { width: '72%', backgroundColor: '#3B82F6' }]} />
+                            </View>
                           </View>
-                        </View>
-                        <View style={styles.s1MacroRow}>
-                          <Text style={styles.s1MacroLbl}>Lipi.</Text>
-                          <View style={styles.s1MacroTrack}>
-                            <View style={[styles.s1MacroFill, { width: '44%', backgroundColor: '#EF4444' }]} />
+                          <View style={styles.s1MacroRow}>
+                            <Text style={styles.s1MacroLbl}>Gluc.</Text>
+                            <View style={styles.s1MacroTrack}>
+                              <View style={[styles.s1MacroFill, { width: '58%', backgroundColor: '#F59E0B' }]} />
+                            </View>
+                          </View>
+                          <View style={styles.s1MacroRow}>
+                            <Text style={styles.s1MacroLbl}>Lipi.</Text>
+                            <View style={styles.s1MacroTrack}>
+                              <View style={[styles.s1MacroFill, { width: '44%', backgroundColor: '#EF4444' }]} />
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -319,32 +312,30 @@ export default function Onboarding() {
 
                   {/* PHONE RIGHT — Training */}
                   <View style={styles.s1PhoneRight}>
-                    <View style={styles.s1PhnStatusBar}>
-                      <Text style={styles.s1PhnStatusTime}>9:41</Text>
-                      <View style={{ flexDirection: 'row', gap: 4 }}>
-                        <View style={{ width: 14, height: 6, borderRadius: 2, backgroundColor: '#FFFFFF', opacity: 0.4 }} />
-                        <View style={{ width: 6, height: 6, borderRadius: 1, backgroundColor: '#FFFFFF', opacity: 0.4 }} />
-                      </View>
-                    </View>
-                    <View style={[styles.s1PhnBody, { backgroundColor: '#0D1117' }]}>
-                      <Text style={[styles.s1PhnTitle, { color: '#FFFFFF' }]}>Training</Text>
-                      {/* Exercise card */}
-                      <View style={styles.s1ExoCard}>
-                        <View style={styles.s1ExoHero}>
-                          <View style={styles.s1ExoBadgeNew}>
-                            <Text style={styles.s1ExoBadgeNewTxt}>SÉANCE DU JOUR</Text>
+                    {/* Écran interne */}
+                    <View style={[styles.s1PhoneScreen, { backgroundColor: '#0D1117' }]}>
+                      {/* Dynamic Island */}
+                      <View style={styles.s1PhoneDI} />
+                      <View style={[styles.s1PhnBody, { backgroundColor: '#0D1117' }]}>
+                        <Text style={[styles.s1PhnTitle, { color: '#FFFFFF' }]}>Training</Text>
+                        {/* Exercise card */}
+                        <View style={styles.s1ExoCard}>
+                          <View style={styles.s1ExoHero}>
+                            <View style={styles.s1ExoBadgeNew}>
+                              <Text style={styles.s1ExoBadgeNewTxt}>SÉANCE DU JOUR</Text>
+                            </View>
+                          </View>
+                          <View style={styles.s1ExoFooter}>
+                            <Text style={styles.s1ExoTitle}>Push — Chest & Delts</Text>
+                            <Text style={styles.s1ExoMeta}>6 exercices · 48 min</Text>
                           </View>
                         </View>
-                        <View style={styles.s1ExoFooter}>
-                          <Text style={styles.s1ExoTitle}>Push — Chest & Delts</Text>
-                          <Text style={styles.s1ExoMeta}>6 exercices · 48 min</Text>
+                        {/* Progress bar */}
+                        <View style={styles.s1ExoProgressTrack}>
+                          <View style={[styles.s1ExoProgressFill, { width: '65%' }]} />
                         </View>
+                        <Text style={styles.s1PhnSub}>65% complété</Text>
                       </View>
-                      {/* Progress bar */}
-                      <View style={styles.s1ExoProgressTrack}>
-                        <View style={[styles.s1ExoProgressFill, { width: '65%' }]} />
-                      </View>
-                      <Text style={styles.s1PhnSub}>65% complété</Text>
                     </View>
                   </View>
 
@@ -900,16 +891,13 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
     overflow: 'hidden' as any,
   },
-  s1TopBar: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-  },
-  s1LogoBadge: {
-    width: 34, height: 34, borderRadius: 17,
-    backgroundColor: '#0D1117',
-    alignItems: 'center', justifyContent: 'center',
-  },
+  s1TopBar: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  s1LogoBadge: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#0D1117', alignItems: 'center', justifyContent: 'center' },
   s1LogoEmoji: { fontSize: 16 },
-  s1Brand: { fontSize: 15, fontWeight: '800', color: '#0D1117', letterSpacing: 1.2 },
+  s1Brand: {
+    fontSize: 18, fontWeight: '900', color: '#0D1117',
+    letterSpacing: 3.5, textAlign: 'center', marginBottom: 4,
+  },
   // ── Mockup zone ──
   s1MockupsZone: {
     height: MOCKUP_ZONE_H,
@@ -923,16 +911,17 @@ const styles = StyleSheet.create({
     top: Math.round(MOCKUP_ZONE_H * 0.12),
     width: PHONE_L_W,
     height: PHONE_L_H,
-    borderRadius: 20,
+    borderRadius: 26,
     overflow: 'hidden',
     zIndex: 1,
     transform: [{ rotate: '-7deg' }],
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.07)',
+    backgroundColor: '#1A1A1A',
+    borderWidth: 4,
+    borderColor: '#080808',
+    padding: 4,
     ...(Platform.OS === 'web'
-      ? { boxShadow: '0 8px 32px rgba(0,0,0,0.10)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.10, shadowRadius: 20, elevation: 5 }),
+      ? { boxShadow: '0 16px 48px rgba(0,0,0,0.30)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.30, shadowRadius: 28, elevation: 10 }),
   },
   s1PhoneRight: {
     position: 'absolute' as any,
@@ -940,16 +929,33 @@ const styles = StyleSheet.create({
     top: 0,
     width: PHONE_R_W,
     height: PHONE_R_H,
-    borderRadius: 24,
+    borderRadius: 30,
     overflow: 'hidden',
     zIndex: 2,
     transform: [{ rotate: '2deg' }],
-    backgroundColor: '#0D1117',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: '#1A1A1A',
+    borderWidth: 4,
+    borderColor: '#080808',
+    padding: 4,
     ...(Platform.OS === 'web'
-      ? { boxShadow: '0 12px 40px rgba(0,0,0,0.18)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.18, shadowRadius: 28, elevation: 8 }),
+      ? { boxShadow: '0 20px 60px rgba(0,0,0,0.38)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.38, shadowRadius: 36, elevation: 14 }),
+  },
+  // Écran intérieur (clippé dans le châssis)
+  s1PhoneScreen: {
+    flex: 1,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  // Dynamic Island — pill noire centrée en haut de l'écran
+  s1PhoneDI: {
+    alignSelf: 'center',
+    width: 54,
+    height: 11,
+    borderRadius: 6,
+    backgroundColor: '#000000',
+    marginTop: 7,
+    marginBottom: 5,
   },
   s1PhnStatusBar: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
