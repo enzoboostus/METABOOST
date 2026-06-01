@@ -849,13 +849,13 @@ export default function Onboarding() {
 
 // Phone mockup — proportions iPhone (ratio 9:19.5 ≈ 2.16)
 const PHN_ASPECT = 2.16;
-const ZONE_H = Math.round(H * 0.47);
-const PHONE_R_W = Math.round(W * 0.53);
-const PHONE_R_H = Math.min(Math.round(PHONE_R_W * PHN_ASPECT), Math.round(ZONE_H * 0.97));
-const PHONE_L_W = Math.round(W * 0.46);
-const PHONE_L_H = Math.min(Math.round(PHONE_L_W * PHN_ASPECT), Math.round(ZONE_H * 0.90));
-const PHONE_TL_W = Math.round(W * 0.38);
-const PHONE_TL_H = Math.min(Math.round(PHONE_TL_W * PHN_ASPECT), Math.round(ZONE_H * 0.72));
+const ZONE_H = Math.round(H * 0.54);
+const PHONE_R_W = Math.round(W * 0.50);
+const PHONE_R_H = Math.min(Math.round(PHONE_R_W * PHN_ASPECT), Math.round(ZONE_H * 0.96));
+const PHONE_L_W = Math.round(W * 0.41);
+const PHONE_L_H = Math.min(Math.round(PHONE_L_W * PHN_ASPECT), Math.round(ZONE_H * 0.84));
+const PHONE_TL_W = Math.round(W * 0.36);
+const PHONE_TL_H = Math.min(Math.round(PHONE_TL_W * PHN_ASPECT), Math.round(ZONE_H * 0.68));
 const MOCKUP_ZONE_H = ZONE_H;
 
 const CARD_SHADOW = Platform.OS === 'web'
@@ -915,58 +915,59 @@ const styles = StyleSheet.create({
     fontSize: 18, fontWeight: '900', color: '#0D1117',
     letterSpacing: 3.5, textAlign: 'center', marginBottom: 4,
   },
-  // ── Mockup zone — pleine largeur, overflow:hidden pour rogner les téléphones aux bords ──
+  // ── Mockup zone — pleine largeur, fond gris TSE ──
   s1MockupsZone: {
     height: MOCKUP_ZONE_H,
     position: 'relative' as any,
-    marginTop: 12,
-    marginBottom: 8,
+    marginTop: 10,
+    marginBottom: 12,
     marginHorizontal: -20,
     overflow: 'hidden',
+    backgroundColor: '#E9ECF2',
   },
-  // Téléphone arrière-plan — haut gauche, partiellement rogné
+  // Téléphone haut-gauche — arrière-plan, rogné en haut
   s1PhoneTopLeft: {
     position: 'absolute' as any,
-    left: -18,
-    top: -10,
+    left: 12,
+    top: -20,
     width: PHONE_TL_W,
     height: PHONE_TL_H,
     borderRadius: 24,
     overflow: 'hidden',
     zIndex: 1,
-    transform: [{ rotate: '-10deg' }],
+    transform: [{ rotate: '-7deg' }],
     backgroundColor: '#1A1A1A',
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: '#080808',
     padding: 4,
     ...(Platform.OS === 'web'
-      ? { boxShadow: '0 10px 32px rgba(0,0,0,0.22)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.22, shadowRadius: 20, elevation: 7 }),
+      ? { boxShadow: '0 8px 28px rgba(0,0,0,0.20)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.20, shadowRadius: 18, elevation: 6 }),
   },
-  // Téléphone bas gauche — Nutrition
+  // Téléphone bas-gauche — Nutrition, complet
   s1PhoneLeft: {
     position: 'absolute' as any,
-    left: -6,
-    bottom: -10,
+    left: 14,
+    bottom: 12,
     width: PHONE_L_W,
     height: PHONE_L_H,
     borderRadius: 26,
     overflow: 'hidden',
     zIndex: 2,
-    transform: [{ rotate: '-5deg' }],
+    transform: [{ rotate: '-4deg' }],
     backgroundColor: '#1A1A1A',
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: '#080808',
     padding: 4,
     ...(Platform.OS === 'web'
-      ? { boxShadow: '0 16px 48px rgba(0,0,0,0.32)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.32, shadowRadius: 28, elevation: 11 }),
+      ? { boxShadow: '0 14px 44px rgba(0,0,0,0.28)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 14 }, shadowOpacity: 0.28, shadowRadius: 26, elevation: 10 }),
   },
-  // Téléphone droit — Training (héro principal)
+  // Téléphone droit — Training (héro, dominant)
   s1PhoneRight: {
     position: 'absolute' as any,
-    right: -10,
-    top: 6,
+    right: 12,
+    top: 12,
     width: PHONE_R_W,
     height: PHONE_R_H,
     borderRadius: 30,
@@ -974,12 +975,12 @@ const styles = StyleSheet.create({
     zIndex: 3,
     transform: [{ rotate: '3deg' }],
     backgroundColor: '#1A1A1A',
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: '#080808',
     padding: 4,
     ...(Platform.OS === 'web'
-      ? { boxShadow: '0 24px 64px rgba(0,0,0,0.42)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 24 }, shadowOpacity: 0.42, shadowRadius: 40, elevation: 16 }),
+      ? { boxShadow: '0 20px 56px rgba(0,0,0,0.36)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.36, shadowRadius: 36, elevation: 14 }),
   },
   // Écran intérieur (clippé dans le châssis)
   s1PhoneScreen: {
