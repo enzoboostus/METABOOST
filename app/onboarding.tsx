@@ -365,35 +365,14 @@ export default function Onboarding() {
                   <Text style={styles.s1HeadlineTop}>CONNECTÉE !</Text>
                 </View>
 
-                {/* BENTO CARD — formulaire d'inscription */}
+                {/* BENTO CARD — boutons auth */}
                 <View style={styles.s1BentoCard}>
-                  {emailSent ? (
-                    <View style={styles.emailSentBox}>
-                      <Text style={[styles.emailSentTxt, { color: '#0D1117' }]}>📧 Vérifie ta boîte mail !</Text>
-                      <Text style={[styles.emailSentSub, { color: '#6B7280' }]}>Lien envoyé à {email.trim()}</Text>
-                    </View>
-                  ) : (
-                    <>
-                      <TextInput
-                        style={styles.s1Input}
-                        value={email}
-                        onChangeText={setEmail}
-                        placeholder="Votre adresse e-mail"
-                        placeholderTextColor="#9CA3AF"
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        spellCheck={false}
-                        inputMode="email"
-                      />
-                      <TouchableOpacity style={[styles.s1CTA, emailLoading && { opacity: 0.6 }]} onPress={handleEmailLogin} activeOpacity={0.9} disabled={emailLoading}>
-                        <Text style={styles.s1CTATxt}>{emailLoading ? 'ENVOI...' : 'DÉMARRER MON SUIVI →'}</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.s1Ghost} onPress={() => transitionTo('welcome')} activeOpacity={0.8}>
-                        <Text style={styles.s1GhostTxt}>Continuer sans compte</Text>
-                      </TouchableOpacity>
-                    </>
-                  )}
+                  <TouchableOpacity style={styles.s1CTA} onPress={() => transitionTo('welcome')} activeOpacity={0.9}>
+                    <Text style={styles.s1CTATxt}>S'INSCRIRE →</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.s1CTAOutline} onPress={() => transitionTo('welcome')} activeOpacity={0.8}>
+                    <Text style={styles.s1CTAOutlineTxt}>SE CONNECTER</Text>
+                  </TouchableOpacity>
                 </View>
 
                 <View style={styles.s1ScrollHint}>
@@ -1107,6 +1086,12 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(26,31,38,0.22)' } as any : {}),
   },
   s1CTATxt: { fontSize: 14, fontWeight: '800', color: '#FFFFFF', letterSpacing: 1.5 },
+  s1CTAOutline: {
+    height: 54, backgroundColor: 'transparent', borderRadius: Radius.full,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1.5, borderColor: '#0D1117',
+  },
+  s1CTAOutlineTxt: { fontSize: 14, fontWeight: '800', color: '#0D1117', letterSpacing: 1.5 },
   s1Ghost: { alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
   s1GhostTxt: { fontSize: 13, fontWeight: '500', color: '#9CA3AF' },
   s1ScrollHint: { alignItems: 'center', gap: 4, marginTop: 16 },
