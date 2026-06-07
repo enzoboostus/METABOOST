@@ -849,14 +849,13 @@ export default function Onboarding() {
 
 // ── StyleSheet ────────────────────────────────────────────────────────────────
 
-// Phone mockup — proportions iPhone pures (ratio h/w = 2.16), taille basée sur W uniquement
-const PHN_ASPECT = 2.16;
-const PHONE_R_W = Math.round(W * 0.43);
-const PHONE_R_H = Math.round(PHONE_R_W * PHN_ASPECT);
-const PHONE_L_W = Math.round(PHONE_R_W * 0.79);
-const PHONE_L_H = Math.round(PHONE_L_W * PHN_ASPECT);
-const PHONE_TL_W = Math.round(PHONE_R_W * 0.65);
-const PHONE_TL_H = Math.round(PHONE_TL_W * PHN_ASPECT);
+// Phone mockup — dimensions fixes (pixels absolus) comme le modèle TSE
+const PHONE_R_W = 180;
+const PHONE_R_H = 380;
+const PHONE_L_W = 158;
+const PHONE_L_H = 340;
+const PHONE_TL_W = 130;
+const PHONE_TL_H = 275;
 
 const CARD_SHADOW = Platform.OS === 'web'
   ? { boxShadow: '0 4px 28px rgba(0,0,0,0.08)' } as any
@@ -922,12 +921,12 @@ const styles = StyleSheet.create({
     fontSize: 30, fontWeight: '900', color: '#0D1117',
     letterSpacing: 4, textAlign: 'center',
   },
-  // ── Mockup zone — flex:1 prend TOUT l'espace restant entre header et footer ──
+  // ── Mockup zone — flex:1 + overflow visible pour que les téléphones s'expriment pleinement ──
   s1MockupsZone: {
     flex: 1,
     position: 'relative' as any,
     marginHorizontal: -20,
-    overflow: 'hidden',
+    overflow: 'visible' as any,
   },
   // Téléphone haut-gauche — arrière-plan, rogné en haut
   s1PhoneTopLeft: {
