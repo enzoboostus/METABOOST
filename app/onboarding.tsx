@@ -1129,8 +1129,8 @@ const styles = StyleSheet.create({
   // ══════════════════════════════════════════════════════════════════════════
   slide2: {
     minHeight: H, marginTop: -1,
-    paddingHorizontal: 24, paddingTop: 52, paddingBottom: 52,
-    gap: 20, overflow: 'hidden' as any,
+    paddingHorizontal: 24, paddingTop: 24, paddingBottom: 40,
+    gap: 16, overflow: 'hidden' as any,
   },
   s2SectionEye: {
     fontSize: 13, fontWeight: '700', color: '#6B7280', letterSpacing: 1,
@@ -1145,7 +1145,7 @@ const styles = StyleSheet.create({
       : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.07, shadowRadius: 16, elevation: 3 }),
   },
   s2ProfileImg: {
-    height: 210, backgroundColor: '#F4F6F9', borderTopWidth: 4,
+    height: 170, backgroundColor: '#F4F6F9', borderTopWidth: 4,
     alignItems: 'center', justifyContent: 'center',
   },
   s2ProfileTag: {
