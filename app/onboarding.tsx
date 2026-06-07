@@ -1066,9 +1066,9 @@ const styles = StyleSheet.create({
   s1HeroBadgeTxt: { fontSize: 11, fontWeight: '600', color: '#374151' },
   s1BentoCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 32,
-    padding: 24,
-    gap: 12,
+    borderRadius: 24,
+    padding: 14,
+    gap: 8,
     ...(Platform.OS === 'web'
       ? { boxShadow: '0 4px 32px rgba(0,0,0,0.05)' } as any
       : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 24, elevation: 2 }),
@@ -1081,17 +1081,17 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: '#E5E7EB',
   },
   s1CTA: {
-    height: 54, backgroundColor: '#1A1F26', borderRadius: Radius.full,
+    height: 46, backgroundColor: '#1A1F26', borderRadius: Radius.full,
     alignItems: 'center', justifyContent: 'center',
-    ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(26,31,38,0.22)' } as any : {}),
+    ...(Platform.OS === 'web' ? { boxShadow: '0 2px 12px rgba(26,31,38,0.18)' } as any : {}),
   },
-  s1CTATxt: { fontSize: 14, fontWeight: '800', color: '#FFFFFF', letterSpacing: 1.5 },
+  s1CTATxt: { fontSize: 13, fontWeight: '700', color: '#FFFFFF', letterSpacing: 1 },
   s1CTAOutline: {
-    height: 54, backgroundColor: 'transparent', borderRadius: Radius.full,
+    height: 46, backgroundColor: 'transparent', borderRadius: Radius.full,
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1.5, borderColor: '#0D1117',
+    borderWidth: 1, borderColor: '#CBD5E1',
   },
-  s1CTAOutlineTxt: { fontSize: 14, fontWeight: '800', color: '#0D1117', letterSpacing: 1.5 },
+  s1CTAOutlineTxt: { fontSize: 13, fontWeight: '600', color: '#374151', letterSpacing: 1 },
   s1Ghost: { alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
   s1GhostTxt: { fontSize: 13, fontWeight: '500', color: '#9CA3AF' },
   s1ScrollHint: { alignItems: 'center', gap: 4, marginTop: 16 },
