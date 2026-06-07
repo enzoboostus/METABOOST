@@ -264,12 +264,7 @@ export default function Onboarding() {
                   style={StyleSheet.absoluteFill}
                 />
 
-                {/* HEADER FIXE — hauteur constante, METABOOST centré */}
-                <View style={styles.s1Header}>
-                  <Text style={styles.s1Brand}>METABOOST</Text>
-                </View>
-
-                {/* ZONE MOCKUPS — 3 téléphones style TSE */}
+                {/* ZONE MOCKUPS — position absolute, fond derrière tout le contenu */}
                 <View style={styles.s1MockupsZone}>
 
                   {/* PHONE TOP-LEFT — Dashboard (arrière-plan, partiellement rogné) */}
@@ -355,6 +350,14 @@ export default function Onboarding() {
                   </View>
 
                 </View>
+
+                {/* HEADER FIXE — sur fond de téléphones, zIndex 10 */}
+                <View style={styles.s1Header}>
+                  <Text style={styles.s1Brand}>METABOOST</Text>
+                </View>
+
+                {/* SPACER — pousse headline/bento vers le bas */}
+                <View style={{ flex: 1 }} />
 
                 {/* HEADLINE */}
                 <View style={styles.s1HeadlineBlock}>
@@ -925,17 +928,15 @@ const styles = StyleSheet.create({
   },
   // ── Mockup zone — flex:1, overflow visible, zIndex sous le header ──
   s1MockupsZone: {
-    flex: 1,
-    position: 'relative' as any,
-    marginHorizontal: -20,
-    overflow: 'visible' as any,
-    zIndex: 1,
+    position: 'absolute' as any,
+    top: 0, left: 0, right: 0, bottom: 0,
+    zIndex: 0,
   },
   // Téléphone haut-gauche — arrière-plan
   s1PhoneTopLeft: {
     position: 'absolute' as any,
     left: 8,
-    top: 4,
+    top: 72,
     width: PHONE_TL_W,
     height: PHONE_TL_H,
     borderRadius: 24,
@@ -950,11 +951,11 @@ const styles = StyleSheet.create({
       ? { boxShadow: '0 8px 28px rgba(0,0,0,0.20)' } as any
       : { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.20, shadowRadius: 18, elevation: 6 }),
   },
-  // Téléphone gauche — Nutrition, ancré en haut (jamais négatif)
+  // Téléphone gauche — Nutrition, ancré sous le header
   s1PhoneLeft: {
     position: 'absolute' as any,
     left: 14,
-    top: 20,
+    top: 90,
     width: PHONE_L_W,
     height: PHONE_L_H,
     borderRadius: 26,
@@ -973,7 +974,7 @@ const styles = StyleSheet.create({
   s1PhoneRight: {
     position: 'absolute' as any,
     right: 8,
-    top: 8,
+    top: 72,
     width: PHONE_R_W,
     height: PHONE_R_H,
     borderRadius: 30,
@@ -1067,7 +1068,7 @@ const styles = StyleSheet.create({
   },
   s1ExoProgressFill: { height: '100%', backgroundColor: '#00C8D4', borderRadius: 2 },
   // ── Headline ──
-  s1HeadlineBlock: { gap: 0, marginTop: 4 },
+  s1HeadlineBlock: { gap: 0, marginTop: 4, position: 'relative' as any, zIndex: 5 },
   s1HeadlineRow: { flexDirection: 'row', alignItems: 'baseline' },
   s1HeadlineTop: {
     fontSize: 14, fontWeight: '700', color: '#6B7280', letterSpacing: -0.3,
@@ -1096,6 +1097,8 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     padding: 18,
     gap: 10,
+    position: 'relative' as any,
+    zIndex: 5,
     ...(Platform.OS === 'web'
       ? { boxShadow: '0 4px 32px rgba(0,0,0,0.05)' } as any
       : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 24, elevation: 2 }),
