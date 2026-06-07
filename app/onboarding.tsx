@@ -849,13 +849,13 @@ export default function Onboarding() {
 
 // Phone mockup — proportions iPhone élancées (ratio h/w ≈ 2.16)
 const PHN_ASPECT = 2.16;
-const ZONE_H = Math.round(H * 0.52);
-const PHONE_R_W = Math.round(W * 0.44);
+const ZONE_H = Math.round(H * 0.45);
+const PHONE_R_W = Math.round(W * 0.43);
 const PHONE_R_H = Math.min(Math.round(PHONE_R_W * PHN_ASPECT), Math.round(ZONE_H * 0.96));
-const PHONE_L_W = Math.round(W * 0.36);
-const PHONE_L_H = Math.min(Math.round(PHONE_L_W * PHN_ASPECT), Math.round(ZONE_H * 0.82));
-const PHONE_TL_W = Math.round(W * 0.30);
-const PHONE_TL_H = Math.min(Math.round(PHONE_TL_W * PHN_ASPECT), Math.round(ZONE_H * 0.66));
+const PHONE_L_W = Math.round(W * 0.34);
+const PHONE_L_H = Math.min(Math.round(PHONE_L_W * PHN_ASPECT), Math.round(ZONE_H * 0.83));
+const PHONE_TL_W = Math.round(W * 0.28);
+const PHONE_TL_H = Math.min(Math.round(PHONE_TL_W * PHN_ASPECT), Math.round(ZONE_H * 0.68));
 const MOCKUP_ZONE_H = ZONE_H;
 
 const CARD_SHADOW = Platform.OS === 'web'
@@ -904,8 +904,8 @@ const styles = StyleSheet.create({
   slide1: {
     minHeight: H,
     paddingHorizontal: 20,
-    paddingTop: 52,
-    paddingBottom: 28,
+    paddingTop: 40,
+    paddingBottom: 20,
     overflow: 'hidden' as any,
   },
   s1TopBar: { flexDirection: 'row', alignItems: 'center', gap: 10 },
@@ -914,14 +914,14 @@ const styles = StyleSheet.create({
   s1Brand: {
     fontSize: 30, fontWeight: '900', color: '#0D1117',
     letterSpacing: 4, textAlign: 'center',
-    marginTop: 8, marginBottom: 16,
+    marginTop: 4, marginBottom: 10,
   },
   // ── Mockup zone — pleine largeur, transparent (gradient du slide en fond) ──
   s1MockupsZone: {
     height: MOCKUP_ZONE_H,
     position: 'relative' as any,
     marginTop: 0,
-    marginBottom: 12,
+    marginBottom: 8,
     marginHorizontal: -20,
     overflow: 'hidden',
   },
@@ -1061,7 +1061,7 @@ const styles = StyleSheet.create({
   },
   s1ExoProgressFill: { height: '100%', backgroundColor: '#00C8D4', borderRadius: 2 },
   // ── Headline ──
-  s1HeadlineBlock: { gap: 0, marginTop: 8 },
+  s1HeadlineBlock: { gap: 0, marginTop: 4 },
   s1HeadlineRow: { flexDirection: 'row', alignItems: 'baseline' },
   s1HeadlineTop: {
     fontSize: 14, fontWeight: '700', color: '#6B7280', letterSpacing: -0.3,
@@ -1087,9 +1087,9 @@ const styles = StyleSheet.create({
   s1HeroBadgeTxt: { fontSize: 11, fontWeight: '600', color: '#374151' },
   s1BentoCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 32,
-    padding: 24,
-    gap: 12,
+    borderRadius: 28,
+    padding: 18,
+    gap: 10,
     ...(Platform.OS === 'web'
       ? { boxShadow: '0 4px 32px rgba(0,0,0,0.05)' } as any
       : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 24, elevation: 2 }),
@@ -1107,9 +1107,9 @@ const styles = StyleSheet.create({
     ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(26,31,38,0.22)' } as any : {}),
   },
   s1CTATxt: { fontSize: 14, fontWeight: '800', color: '#FFFFFF', letterSpacing: 1.5 },
-  s1Ghost: { alignItems: 'center', justifyContent: 'center', paddingVertical: 10 },
+  s1Ghost: { alignItems: 'center', justifyContent: 'center', paddingVertical: 6 },
   s1GhostTxt: { fontSize: 13, fontWeight: '500', color: '#9CA3AF' },
-  s1ScrollHint: { alignItems: 'center', gap: 4, marginTop: 16 },
+  s1ScrollHint: { alignItems: 'center', gap: 4, marginTop: 6 },
   s1ScrollTxt: { fontSize: 9, color: '#B0B8C4', letterSpacing: 2.5, textTransform: 'uppercase' },
 
   // ══════════════════════════════════════════════════════════════════════════
