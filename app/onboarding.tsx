@@ -20,10 +20,15 @@ const { width: W, height: H } = Dimensions.get('window');
 const PROFILE_CARD_W = Math.round(W * 0.76);
 const PROFILE_GAP = 12;
 const PROFILES = [
-  { title: 'HAUTE PERFORMANCE',   desc: 'Musculation, Haltérophilie, optimisation des charges et protocoles élite.',                                   accent: '#00C8D4', emoji: '💪', tag: 'SPORT & MUSCULATION' },
-  { title: 'SPORTS UNIVERSELS',   desc: 'Course à pied, Marche nordique, Natation — programmes adaptés à chaque discipline.',                          accent: '#00C8D4', emoji: '🏃', tag: 'TOUS SPORTS'         },
-  { title: 'SUIVI MÉDICAL & APA', desc: 'Prise en charge ALD, post-rééducation, handicap — suivi biométrique et interface adaptée.',                   accent: '#E2AA27', emoji: '🩺', tag: 'MÉDICAL & APA'       },
-  { title: 'SYSTÈME DE FRANCHISE',desc: 'Déployez sous licence METABOOST — pour coachs indépendants, salles privées et structures institutionnelles.',  accent: '#E2AA27', emoji: '🏢', tag: 'B2B & FRANCHISE'     },
+  {
+    title: 'MUSCULATION & PROGRAMMATION',
+    subTag: '(renforcement musculaire)',
+    desc: "Que votre objectif soit une prise de masse, une perte de poids, de l'entretien ou du renforcement fonctionnel et adapté (APA / Santé), notre système s'ajuste à chaque profil, du débutant absolu à l'athlète exigeant. Cette carte débloque un écosystème unique : bénéficiez de protocoles évolutifs automatisés, connectés directement à une plateforme de suivi personnalisé. Que ce soit avec mes propres programmes ou via votre coach et salle de sport partenaire, chaque professionnel peut piloter, valider et vous envoyer vos séances sur mesure pour un accompagnement à la fois humain, sécurisé et ultra-précis.",
+    accent: '#00C8D4', emoji: '💪', tag: 'UNIVERS DE LA MUSCULATION',
+  },
+  { title: 'SPORTS UNIVERSELS',   subTag: undefined, desc: 'Course à pied, Marche nordique, Natation — programmes adaptés à chaque discipline.',                          accent: '#00C8D4', emoji: '🏃', tag: 'TOUS SPORTS'         },
+  { title: 'SUIVI MÉDICAL & APA', subTag: undefined, desc: 'Prise en charge ALD, post-rééducation, handicap — suivi biométrique et interface adaptée.',                   accent: '#E2AA27', emoji: '🩺', tag: 'MÉDICAL & APA'       },
+  { title: 'SYSTÈME DE FRANCHISE',subTag: undefined, desc: 'Déployez sous licence METABOOST — pour coachs indépendants, salles privées et structures institutionnelles.',  accent: '#E2AA27', emoji: '🏢', tag: 'B2B & FRANCHISE'     },
 ];
 
 type Step = 'login' | 'welcome' | 'goal' | 'measures';
@@ -427,8 +432,13 @@ export default function Onboarding() {
                     <View key={i} style={[styles.s2ProfileCard, { width: PROFILE_CARD_W }]}>
                       <View style={[styles.s2ProfileImg, { borderTopColor: p.accent }]}>
                         <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
-                        <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
-                          <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
+                        <View style={{ position: 'absolute' as any, bottom: 12, left: 12, gap: 4 }}>
+                          <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
+                            <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
+                          </View>
+                          {p.subTag && (
+                            <Text style={styles.s2ProfileSubTag}>{p.subTag}</Text>
+                          )}
                         </View>
                       </View>
                       <View style={styles.s2ProfileBody}>
@@ -1149,10 +1159,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   s2ProfileTag: {
-    position: 'absolute' as any, bottom: 12, left: 12,
-    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20,
+    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, alignSelf: 'flex-start' as any,
   },
   s2ProfileTagTxt: { fontSize: 10, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.8 },
+  s2ProfileSubTag: { fontSize: 11, fontWeight: '500', color: 'rgba(255,255,255,0.75)', fontStyle: 'italic' as any },
   s2ProfileBody: { padding: 16, gap: 6 },
   s2ProfileTitle: { fontSize: 16, fontWeight: '900', color: '#0D1117', letterSpacing: -0.3 },
   s2ProfileDesc: { fontSize: 13, fontWeight: '500', color: '#6B7280', lineHeight: 19 },
