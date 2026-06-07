@@ -356,13 +356,13 @@ export default function Onboarding() {
 
                 {/* HEADLINE */}
                 <View style={styles.s1HeadlineBlock}>
-                  <Text style={styles.s1HeadlineTop}>L'EXPERTISE</Text>
+                  <Text style={styles.s1HeadlineTop}>L'ÉCOSYSTÈME</Text>
                   <View style={styles.s1HeadlineRow}>
                     <Text style={[styles.s1HeadlineBig, { color: '#00C8D4' }]}>SPORT</Text>
                     <Text style={styles.s1HeadlineBig}>{' '}&{' '}</Text>
                   </View>
-                  <Text style={[styles.s1HeadlineBig, { color: '#E2AA27' }]}>NUTRITION</Text>
-                  <Text style={styles.s1HeadlineTop}>CONNECTÉE !</Text>
+                  <Text style={[styles.s1HeadlineBig, { color: '#E2AA27' }]}>MÉDICAL</Text>
+                  <Text style={styles.s1HeadlineTop}>NOUVELLE GÉNÉRATION.</Text>
                 </View>
 
                 {/* BENTO CARD — boutons auth */}
