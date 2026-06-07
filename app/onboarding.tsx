@@ -912,8 +912,8 @@ const styles = StyleSheet.create({
   s1LogoBadge: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#0D1117', alignItems: 'center', justifyContent: 'center' },
   s1LogoEmoji: { fontSize: 16 },
   s1Brand: {
-    fontSize: 17, fontWeight: '800', color: '#0D1117',
-    letterSpacing: 2, textAlign: 'center',
+    fontSize: 28, fontWeight: '900', color: '#0D1117',
+    letterSpacing: 1, textAlign: 'center',
     marginTop: 8, marginBottom: 16,
   },
   // ── Mockup zone — pleine largeur, transparent (gradient du slide en fond) ──
