@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
-  Flame, TrendingUp, Shield, ChevronRight, ScanLine,
+  Flame, TrendingUp, Shield, ChevronRight, ChevronLeft, ScanLine,
   Activity, Users, ChevronDown, Bot,
 } from 'lucide-react-native';
 import { useShallow } from 'zustand/react/shallow';
@@ -17,6 +17,14 @@ import { Colors, Spacing, Radius } from '@/constants/theme';
 import * as Haptics from 'expo-haptics';
 
 const { width: W, height: H } = Dimensions.get('window');
+const PROFILE_CARD_W = Math.round(W * 0.76);
+const PROFILE_GAP = 12;
+const PROFILES = [
+  { title: 'HAUTE PERFORMANCE',   desc: 'Musculation, Haltérophilie, optimisation des charges et protocoles élite.',                                   accent: '#00C8D4', emoji: '💪', tag: 'SPORT & MUSCULATION' },
+  { title: 'SPORTS UNIVERSELS',   desc: 'Course à pied, Marche nordique, Natation — programmes adaptés à chaque discipline.',                          accent: '#00C8D4', emoji: '🏃', tag: 'TOUS SPORTS'         },
+  { title: 'SUIVI MÉDICAL & APA', desc: 'Prise en charge ALD, post-rééducation, handicap — suivi biométrique et interface adaptée.',                   accent: '#E2AA27', emoji: '🩺', tag: 'MÉDICAL & APA'       },
+  { title: 'SYSTÈME DE FRANCHISE',desc: 'Déployez sous licence METABOOST — pour coachs indépendants, salles privées et structures institutionnelles.',  accent: '#E2AA27', emoji: '🏢', tag: 'B2B & FRANCHISE'     },
+];
 
 type Step = 'login' | 'welcome' | 'goal' | 'measures';
 const STEPS: Step[] = ['login', 'welcome', 'goal', 'measures'];
@@ -158,6 +166,9 @@ export default function Onboarding() {
 
   const vals: Record<string, string>              = { weight, height, waist, thigh, arm };
   const sets: Record<string, (v: string) => void> = { weight: setWeight, height: setHeight, waist: setWaist, thigh: setThigh, arm: setArm };
+
+  const [profileIdx, setProfileIdx] = useState(0);
+  const profileScrollRef = useRef<ScrollView>(null);
 
   const fadeAnim     = useRef(new Animated.Value(1)).current;
   const slideAnim    = useRef(new Animated.Value(0)).current;
@@ -382,67 +393,83 @@ export default function Onboarding() {
               </View>
 
               {/* ════════════════════════════════════════════
-                  SLIDE 2 — IA Nutritionnelle & Avatar 3D
+                  SLIDE 2 — Carrousel Profils
               ════════════════════════════════════════════ */}
               <View style={styles.slide2}>
+                <LinearGradient
+                  colors={['#FFFFFF', '#F4F6F9', '#F4F6F9', '#FFFFFF']}
+                  locations={[0, 0.15, 0.85, 1]}
+                  style={StyleSheet.absoluteFill}
+                />
 
-                <View style={styles.s2Tag}>
-                  <Text style={styles.s2TagTxt}>IA NUTRITIONNELLE & AVATAR 3D</Text>
-                </View>
-                <Text style={styles.s2Title}>NUTRITION COMPLÈTE{'\n'}& ÉVOLUTION EN 3D</Text>
-                <Text style={styles.s2Desc}>
-                  Scannez vos repas par IA, gérez vos calories selon vos objectifs et observez la transformation en temps réel de votre avatar morphologique dynamique.
+                {/* Titre section */}
+                <Text style={styles.s2SectionEye}>UNE SOLUTION ADAPTÉE À</Text>
+                <Text style={styles.s2SectionTitle}>CHAQUE{' '}
+                  <Text style={{ color: '#00C8D4' }}>PROFIL</Text>
                 </Text>
 
-                {/* Macros card */}
-                <View style={styles.s2Card}>
-                  <Text style={styles.s2CardLabel}>MACROS JOURNALIERS</Text>
-                  <View style={{ flexDirection: 'row', gap: 8 }}>
-                    <MacroBlock label="Protéines" value="142g" color="#3B82F6" />
-                    <MacroBlock label="Glucides"  value="220g" color="#F59E0B" />
-                    <MacroBlock label="Lipides"   value="58g"  color="#EF4444" />
-                  </View>
-                  <View style={styles.s2CardDivider} />
-                  <View style={{ gap: 12 }}>
-                    <ProgressBar label="💧 Hydratation — Objectif litres / jour" pct={61} color="#3B82F6" />
-                    <ProgressBar label="🌙 Qualité du Sommeil / Récupération"   pct={84} color="#8B5CF6" />
-                  </View>
-                </View>
-
-                {/* Feature cards */}
-                <View style={styles.s2FeaturesRow}>
-                  <FeatureCard
-                    emoji="📸"
-                    title="SCAN OPTIQUE IA"
-                    desc="Photo de votre assiette → Calories & macros calculés instantanément."
-                    accent="#3B82F6"
-                  />
-                  <FeatureCard
-                    emoji="🛒"
-                    title="SMART SHOPPING"
-                    desc={"Optimisé selon votre Budget Courses, vos allergies et vos goûts."}
-                    accent="#10B981"
-                  />
-                </View>
-
-                {/* Avatar 3D */}
-                <View style={styles.s2AvatarBlock}>
-                  <View style={styles.s2AvatarIcon}>
-                    <Text style={{ fontSize: 28 }}>🧬</Text>
-                  </View>
-                  <View style={{ flex: 1, gap: 2 }}>
-                    <Text style={styles.s2AvatarTitle}>AVATAR 3D MORPHOLOGIQUE</Text>
-                    <Text style={styles.s2AvatarDesc}>Votre silhouette se transforme visuellement au fil de vos progrès mesurés.</Text>
-                  </View>
-                </View>
-
-                {/* Objective pills — centered */}
-                <View style={styles.s2PillsRow}>
-                  {['Prise de masse', 'Perte de poids', 'Maintien sain'].map((tag) => (
-                    <View key={tag} style={styles.s2Pill}>
-                      <Text style={styles.s2PillTxt}>{tag}</Text>
+                {/* Carrousel */}
+                <ScrollView
+                  ref={profileScrollRef}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  snapToInterval={PROFILE_CARD_W + PROFILE_GAP}
+                  decelerationRate="fast"
+                  scrollEventThrottle={16}
+                  onScroll={(e) => {
+                    const idx = Math.round(e.nativeEvent.contentOffset.x / (PROFILE_CARD_W + PROFILE_GAP));
+                    setProfileIdx(Math.max(0, Math.min(PROFILES.length - 1, idx)));
+                  }}
+                  style={{ marginHorizontal: -24 }}
+                  contentContainerStyle={{ paddingHorizontal: 24, gap: PROFILE_GAP }}
+                >
+                  {PROFILES.map((p, i) => (
+                    <View key={i} style={[styles.s2ProfileCard, { width: PROFILE_CARD_W }]}>
+                      <View style={[styles.s2ProfileImg, { borderTopColor: p.accent }]}>
+                        <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
+                        <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
+                          <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.s2ProfileBody}>
+                        <Text style={styles.s2ProfileTitle}>{p.title}</Text>
+                        <Text style={styles.s2ProfileDesc}>{p.desc}</Text>
+                      </View>
                     </View>
                   ))}
+                </ScrollView>
+
+                {/* Navigation */}
+                <View style={styles.s2NavRow}>
+                  <TouchableOpacity
+                    style={[styles.s2NavBtn, profileIdx === 0 && { opacity: 0.3 }]}
+                    onPress={() => {
+                      const next = Math.max(0, profileIdx - 1);
+                      setProfileIdx(next);
+                      profileScrollRef.current?.scrollTo({ x: next * (PROFILE_CARD_W + PROFILE_GAP), animated: true });
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <ChevronLeft size={18} color="#1A1F26" strokeWidth={2.5} />
+                  </TouchableOpacity>
+
+                  <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+                    {PROFILES.map((_, i) => (
+                      <View key={i} style={[styles.s2Dot, profileIdx === i && styles.s2DotActive]} />
+                    ))}
+                  </View>
+
+                  <TouchableOpacity
+                    style={[styles.s2NavBtn, profileIdx === PROFILES.length - 1 && { opacity: 0.3 }]}
+                    onPress={() => {
+                      const next = Math.min(PROFILES.length - 1, profileIdx + 1);
+                      setProfileIdx(next);
+                      profileScrollRef.current?.scrollTo({ x: next * (PROFILE_CARD_W + PROFILE_GAP), animated: true });
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <ChevronRight size={18} color="#1A1F26" strokeWidth={2.5} />
+                  </TouchableOpacity>
                 </View>
               </View>
 
@@ -1102,10 +1129,43 @@ const styles = StyleSheet.create({
   // ══════════════════════════════════════════════════════════════════════════
   slide2: {
     minHeight: H, marginTop: -1,
-    backgroundColor: '#FFFFFF',
     paddingHorizontal: 24, paddingTop: 52, paddingBottom: 52,
-    gap: 20,
+    gap: 20, overflow: 'hidden' as any,
   },
+  s2SectionEye: {
+    fontSize: 13, fontWeight: '700', color: '#6B7280', letterSpacing: 1,
+  },
+  s2SectionTitle: {
+    fontSize: 28, fontWeight: '900', color: '#0D1117', letterSpacing: -0.5, marginBottom: 4,
+  },
+  s2ProfileCard: {
+    backgroundColor: '#FFFFFF', borderRadius: 20, overflow: 'hidden' as any,
+    ...(Platform.OS === 'web'
+      ? { boxShadow: '0 4px 24px rgba(0,0,0,0.07)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.07, shadowRadius: 16, elevation: 3 }),
+  },
+  s2ProfileImg: {
+    height: 210, backgroundColor: '#F4F6F9', borderTopWidth: 4,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  s2ProfileTag: {
+    position: 'absolute' as any, bottom: 12, left: 12,
+    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20,
+  },
+  s2ProfileTagTxt: { fontSize: 10, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.8 },
+  s2ProfileBody: { padding: 16, gap: 6 },
+  s2ProfileTitle: { fontSize: 16, fontWeight: '900', color: '#0D1117', letterSpacing: -0.3 },
+  s2ProfileDesc: { fontSize: 13, fontWeight: '500', color: '#6B7280', lineHeight: 19 },
+  s2NavRow: {
+    flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 16,
+  },
+  s2NavBtn: {
+    width: 42, height: 42, borderRadius: 21,
+    borderWidth: 1.5, borderColor: '#1A1F26',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  s2Dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#D1D5DB' },
+  s2DotActive: { width: 22, height: 6, borderRadius: 3, backgroundColor: '#1A1F26' },
   s2Tag: {
     alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5,
     borderRadius: Radius.full, backgroundColor: '#F3F4F6',
