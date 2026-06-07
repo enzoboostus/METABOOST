@@ -257,15 +257,17 @@ export default function Onboarding() {
               ════════════════════════════════════════════ */}
               <View style={styles.slide1}>
 
-                {/* FOND DÉGRADÉ — blanc › gris clair › blanc, aucune coupure visible */}
+                {/* FOND DÉGRADÉ — blanc › gris clair › blanc */}
                 <LinearGradient
                   colors={['#FFFFFF', '#F4F6F9', '#F4F6F9', '#FFFFFF']}
                   locations={[0, 0.18, 0.78, 1]}
                   style={StyleSheet.absoluteFill}
                 />
 
-                {/* HEADER — Marque centrée */}
-                <Text style={styles.s1Brand}>METABOOST</Text>
+                {/* HEADER FIXE — hauteur constante, METABOOST centré */}
+                <View style={styles.s1Header}>
+                  <Text style={styles.s1Brand}>METABOOST</Text>
+                </View>
 
                 {/* ZONE MOCKUPS — 3 téléphones style TSE */}
                 <View style={styles.s1MockupsZone}>
@@ -847,16 +849,14 @@ export default function Onboarding() {
 
 // ── StyleSheet ────────────────────────────────────────────────────────────────
 
-// Phone mockup — proportions iPhone élancées (ratio h/w ≈ 2.16)
+// Phone mockup — proportions iPhone pures (ratio h/w = 2.16), taille basée sur W uniquement
 const PHN_ASPECT = 2.16;
-const ZONE_H = Math.round(H * 0.45);
 const PHONE_R_W = Math.round(W * 0.43);
-const PHONE_R_H = Math.min(Math.round(PHONE_R_W * PHN_ASPECT), Math.round(ZONE_H * 0.96));
-const PHONE_L_W = Math.round(W * 0.34);
-const PHONE_L_H = Math.min(Math.round(PHONE_L_W * PHN_ASPECT), Math.round(ZONE_H * 0.83));
-const PHONE_TL_W = Math.round(W * 0.28);
-const PHONE_TL_H = Math.min(Math.round(PHONE_TL_W * PHN_ASPECT), Math.round(ZONE_H * 0.68));
-const MOCKUP_ZONE_H = ZONE_H;
+const PHONE_R_H = Math.round(PHONE_R_W * PHN_ASPECT);
+const PHONE_L_W = Math.round(PHONE_R_W * 0.79);
+const PHONE_L_H = Math.round(PHONE_L_W * PHN_ASPECT);
+const PHONE_TL_W = Math.round(PHONE_R_W * 0.65);
+const PHONE_TL_H = Math.round(PHONE_TL_W * PHN_ASPECT);
 
 const CARD_SHADOW = Platform.OS === 'web'
   ? { boxShadow: '0 4px 28px rgba(0,0,0,0.08)' } as any
@@ -902,26 +902,30 @@ const styles = StyleSheet.create({
   // ══════════════════════════════════════════════════════════════════════════
   rootLight: { backgroundColor: '#FFFFFF' },
   slide1: {
-    minHeight: H,
+    // 100dvh = hauteur exacte du viewport web (adresse bar incluse) → jamais de scroll
+    height: Platform.OS === 'web' ? ('100dvh' as any) : H,
+    flexDirection: 'column',
     paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 20,
+    paddingBottom: 16,
     overflow: 'hidden' as any,
   },
   s1TopBar: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   s1LogoBadge: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#0D1117', alignItems: 'center', justifyContent: 'center' },
   s1LogoEmoji: { fontSize: 16 },
+  // Header fixe — METABOOST centré, hauteur immuable
+  s1Header: {
+    height: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   s1Brand: {
     fontSize: 30, fontWeight: '900', color: '#0D1117',
     letterSpacing: 4, textAlign: 'center',
-    marginTop: 4, marginBottom: 10,
   },
-  // ── Mockup zone — pleine largeur, transparent (gradient du slide en fond) ──
+  // ── Mockup zone — flex:1 prend TOUT l'espace restant entre header et footer ──
   s1MockupsZone: {
-    height: MOCKUP_ZONE_H,
+    flex: 1,
     position: 'relative' as any,
-    marginTop: 0,
-    marginBottom: 8,
     marginHorizontal: -20,
     overflow: 'hidden',
   },
