@@ -916,29 +916,32 @@ const styles = StyleSheet.create({
     height: 64,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative' as any,
+    zIndex: 10,
   },
   s1Brand: {
     fontSize: 30, fontWeight: '900', color: '#0D1117',
     letterSpacing: 4, textAlign: 'center',
   },
-  // ── Mockup zone — flex:1 + overflow visible pour que les téléphones s'expriment pleinement ──
+  // ── Mockup zone — flex:1, overflow visible, zIndex sous le header ──
   s1MockupsZone: {
     flex: 1,
     position: 'relative' as any,
     marginHorizontal: -20,
     overflow: 'visible' as any,
+    zIndex: 1,
   },
-  // Téléphone haut-gauche — arrière-plan, rogné en haut
+  // Téléphone haut-gauche — arrière-plan
   s1PhoneTopLeft: {
     position: 'absolute' as any,
-    left: 12,
-    top: -20,
+    left: 8,
+    top: 4,
     width: PHONE_TL_W,
     height: PHONE_TL_H,
     borderRadius: 24,
     overflow: 'hidden',
     zIndex: 1,
-    transform: [{ rotate: '-7deg' }],
+    transform: [{ rotate: '-8deg' }],
     backgroundColor: '#1A1A1A',
     borderWidth: 3,
     borderColor: '#080808',
@@ -947,11 +950,11 @@ const styles = StyleSheet.create({
       ? { boxShadow: '0 8px 28px rgba(0,0,0,0.20)' } as any
       : { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.20, shadowRadius: 18, elevation: 6 }),
   },
-  // Téléphone bas-gauche — Nutrition, complet
+  // Téléphone gauche — Nutrition, ancré en haut (jamais négatif)
   s1PhoneLeft: {
     position: 'absolute' as any,
     left: 14,
-    bottom: 12,
+    top: 20,
     width: PHONE_L_W,
     height: PHONE_L_H,
     borderRadius: 26,
@@ -969,8 +972,8 @@ const styles = StyleSheet.create({
   // Téléphone droit — Training (héro, dominant)
   s1PhoneRight: {
     position: 'absolute' as any,
-    right: 12,
-    top: 12,
+    right: 8,
+    top: 8,
     width: PHONE_R_W,
     height: PHONE_R_H,
     borderRadius: 30,
