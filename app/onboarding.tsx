@@ -257,10 +257,10 @@ export default function Onboarding() {
               ════════════════════════════════════════════ */}
               <View style={styles.slide1}>
 
-                {/* FOND DÉGRADÉ */}
+                {/* FOND DÉGRADÉ — blanc › gris clair › blanc, aucune coupure visible */}
                 <LinearGradient
-                  colors={['#FFFFFF', '#F4F7FC']}
-                  locations={[0, 1]}
+                  colors={['#FFFFFF', '#F4F6F9', '#F4F6F9', '#FFFFFF']}
+                  locations={[0, 0.18, 0.78, 1]}
                   style={StyleSheet.absoluteFill}
                 />
 
@@ -847,15 +847,15 @@ export default function Onboarding() {
 
 // ── StyleSheet ────────────────────────────────────────────────────────────────
 
-// Phone mockup — proportions iPhone (ratio 9:19.5 ≈ 2.16)
+// Phone mockup — proportions iPhone élancées (ratio h/w ≈ 2.16)
 const PHN_ASPECT = 2.16;
-const ZONE_H = Math.round(H * 0.54);
-const PHONE_R_W = Math.round(W * 0.50);
+const ZONE_H = Math.round(H * 0.52);
+const PHONE_R_W = Math.round(W * 0.44);
 const PHONE_R_H = Math.min(Math.round(PHONE_R_W * PHN_ASPECT), Math.round(ZONE_H * 0.96));
-const PHONE_L_W = Math.round(W * 0.41);
-const PHONE_L_H = Math.min(Math.round(PHONE_L_W * PHN_ASPECT), Math.round(ZONE_H * 0.84));
-const PHONE_TL_W = Math.round(W * 0.36);
-const PHONE_TL_H = Math.min(Math.round(PHONE_TL_W * PHN_ASPECT), Math.round(ZONE_H * 0.68));
+const PHONE_L_W = Math.round(W * 0.36);
+const PHONE_L_H = Math.min(Math.round(PHONE_L_W * PHN_ASPECT), Math.round(ZONE_H * 0.82));
+const PHONE_TL_W = Math.round(W * 0.30);
+const PHONE_TL_H = Math.min(Math.round(PHONE_TL_W * PHN_ASPECT), Math.round(ZONE_H * 0.66));
 const MOCKUP_ZONE_H = ZONE_H;
 
 const CARD_SHADOW = Platform.OS === 'web'
@@ -912,18 +912,18 @@ const styles = StyleSheet.create({
   s1LogoBadge: { width: 34, height: 34, borderRadius: 17, backgroundColor: '#0D1117', alignItems: 'center', justifyContent: 'center' },
   s1LogoEmoji: { fontSize: 16 },
   s1Brand: {
-    fontSize: 18, fontWeight: '900', color: '#0D1117',
-    letterSpacing: 3.5, textAlign: 'center', marginBottom: 4,
+    fontSize: 30, fontWeight: '900', color: '#0D1117',
+    letterSpacing: 4, textAlign: 'center',
+    marginTop: 8, marginBottom: 16,
   },
-  // ── Mockup zone — pleine largeur, fond gris TSE ──
+  // ── Mockup zone — pleine largeur, transparent (gradient du slide en fond) ──
   s1MockupsZone: {
     height: MOCKUP_ZONE_H,
     position: 'relative' as any,
-    marginTop: 10,
+    marginTop: 0,
     marginBottom: 12,
     marginHorizontal: -20,
     overflow: 'hidden',
-    backgroundColor: '#E9ECF2',
   },
   // Téléphone haut-gauche — arrière-plan, rogné en haut
   s1PhoneTopLeft: {
@@ -991,29 +991,29 @@ const styles = StyleSheet.create({
   // Dynamic Island — pill noire centrée en haut de l'écran
   s1PhoneDI: {
     alignSelf: 'center',
-    width: 54,
-    height: 11,
-    borderRadius: 6,
+    width: 44,
+    height: 9,
+    borderRadius: 5,
     backgroundColor: '#000000',
-    marginTop: 7,
-    marginBottom: 5,
+    marginTop: 6,
+    marginBottom: 4,
   },
   s1PhnStatusBar: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 10, paddingTop: 8, paddingBottom: 4,
+    paddingHorizontal: 8, paddingTop: 6, paddingBottom: 3,
   },
-  s1PhnStatusTime: { fontSize: 9, fontWeight: '700', color: '#0D1117', opacity: 0.5 },
+  s1PhnStatusTime: { fontSize: 8, fontWeight: '700', color: '#0D1117', opacity: 0.5 },
   s1PhnBody: {
     flex: 1, backgroundColor: '#FFFFFF',
-    paddingHorizontal: 10, paddingBottom: 10, gap: 6,
+    paddingHorizontal: 8, paddingBottom: 8, gap: 5,
   },
-  s1PhnTitle: { fontSize: 11, fontWeight: '800', color: '#0D1117', letterSpacing: 0.4 },
-  s1PhnSub: { fontSize: 8, color: 'rgba(255,255,255,0.4)', marginTop: 2 },
+  s1PhnTitle: { fontSize: 10, fontWeight: '800', color: '#0D1117', letterSpacing: 0.3 },
+  s1PhnSub: { fontSize: 7, color: 'rgba(255,255,255,0.4)', marginTop: 1 },
   // calorie ring
-  s1CalRingWrap: { alignItems: 'center', marginVertical: 4 },
+  s1CalRingWrap: { alignItems: 'center', marginVertical: 3 },
   s1CalRing: {
-    width: 56, height: 56, borderRadius: 28,
-    borderWidth: 5,
+    width: 44, height: 44, borderRadius: 22,
+    borderWidth: 4,
     borderTopColor: '#00C8D4',
     borderRightColor: '#00C8D4',
     borderBottomColor: '#E5E7EB',
@@ -1022,42 +1022,42 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-45deg' }],
   },
   s1CalNum: {
-    fontSize: 9, fontWeight: '900', color: '#0D1117',
+    fontSize: 8, fontWeight: '900', color: '#0D1117',
     transform: [{ rotate: '45deg' }],
     letterSpacing: -0.3,
   },
   s1CalUnit: {
-    fontSize: 6, color: '#9CA3AF', fontWeight: '600',
+    fontSize: 5, color: '#9CA3AF', fontWeight: '600',
     transform: [{ rotate: '45deg' }],
   },
   // macro bars
-  s1MacroBars: { gap: 4 },
-  s1MacroRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  s1MacroLbl: { fontSize: 7, fontWeight: '600', color: '#6B7280', width: 22 },
-  s1MacroTrack: { flex: 1, height: 4, backgroundColor: '#F3F4F6', borderRadius: 2, overflow: 'hidden' },
+  s1MacroBars: { gap: 3 },
+  s1MacroRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  s1MacroLbl: { fontSize: 6, fontWeight: '600', color: '#6B7280', width: 18 },
+  s1MacroTrack: { flex: 1, height: 3, backgroundColor: '#F3F4F6', borderRadius: 2, overflow: 'hidden' },
   s1MacroFill: { height: '100%', borderRadius: 2 },
   // exercise card
   s1ExoCard: {
-    borderRadius: 10, overflow: 'hidden',
+    borderRadius: 8, overflow: 'hidden',
     backgroundColor: '#1A1F26', flex: 1,
   },
   s1ExoHero: {
     flex: 1, backgroundColor: '#1E293B',
-    padding: 8, justifyContent: 'flex-start',
+    padding: 6, justifyContent: 'flex-start',
   },
   s1ExoBadgeNew: {
     alignSelf: 'flex-start',
     backgroundColor: 'rgba(0,200,212,0.15)',
-    paddingHorizontal: 5, paddingVertical: 2,
-    borderRadius: 4,
+    paddingHorizontal: 4, paddingVertical: 2,
+    borderRadius: 3,
   },
-  s1ExoBadgeNewTxt: { fontSize: 6, fontWeight: '800', color: '#00C8D4', letterSpacing: 0.8 },
-  s1ExoFooter: { padding: 7 },
-  s1ExoTitle: { fontSize: 9, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.2 },
-  s1ExoMeta: { fontSize: 7, color: 'rgba(255,255,255,0.4)', marginTop: 1 },
+  s1ExoBadgeNewTxt: { fontSize: 5, fontWeight: '800', color: '#00C8D4', letterSpacing: 0.6 },
+  s1ExoFooter: { padding: 5 },
+  s1ExoTitle: { fontSize: 8, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.2 },
+  s1ExoMeta: { fontSize: 6, color: 'rgba(255,255,255,0.4)', marginTop: 1 },
   s1ExoProgressTrack: {
-    height: 3, backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 2, overflow: 'hidden', marginTop: 4,
+    height: 2, backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 2, overflow: 'hidden', marginTop: 3,
   },
   s1ExoProgressFill: { height: '100%', backgroundColor: '#00C8D4', borderRadius: 2 },
   // ── Headline ──
