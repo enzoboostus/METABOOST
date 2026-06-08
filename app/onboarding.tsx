@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
-  Dimensions, Animated, Platform, Alert, Keyboard, ScrollView,
+  Dimensions, Animated, Platform, Alert, Keyboard, ScrollView, Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -26,9 +26,9 @@ const PROFILES = [
     desc: "Que votre objectif soit une prise de masse, une perte de poids, de l'entretien ou du renforcement fonctionnel et adapté (APA / Santé), notre système s'ajuste à chaque profil, du débutant absolu à l'athlète exigeant. Cette carte débloque un écosystème unique : bénéficiez de protocoles évolutifs automatisés, connectés directement à une plateforme de suivi personnalisé. Que ce soit avec mes propres programmes ou via votre coach et salle de sport partenaire, chaque professionnel peut piloter, valider et vous envoyer vos séances sur mesure pour un accompagnement à la fois humain, sécurisé et ultra-précis.",
     accent: '#00C8D4', emoji: '💪', tag: 'UNIVERS DE LA MUSCULATION',
     avatars: [
-      { label: 'ATHLÈTE',      h: 112, bg: '#E8F9FB', accent: '#00C8D4' },
-      { label: 'FEMME ACTIVE', h: 134, bg: '#D4F5F8', accent: '#00B8C4' },
-      { label: 'SENIOR',       h: 105, bg: '#E8F9FB', accent: '#00C8D4' },
+      { label: 'ATHLÈTE',      h: 112, img: require('../assets/avatars/athlete.jpeg') },
+      { label: 'FEMME ACTIVE', h: 134, img: require('../assets/avatars/woman.jpeg')   },
+      { label: 'SENIOR',       h: 105, img: require('../assets/avatars/senior.jpeg')  },
     ],
   },
   { title: 'SPORTS UNIVERSELS',   subTag: undefined, desc: 'Course à pied, Marche nordique, Natation — programmes adaptés à chaque discipline.',                          accent: '#00C8D4', emoji: '🏃', tag: 'TOUS SPORTS'         },
@@ -438,16 +438,11 @@ export default function Onboarding() {
                       <View style={[styles.s2ProfileImg, { borderTopColor: p.accent }]}>
                         {p.avatars ? (
                           <View style={styles.s2AvatarsRow}>
-                            {p.avatars.map((av: { label: string; h: number; bg: string; accent: string }, j: number) => (
+                            {p.avatars.map((av: { label: string; h: number; img: any }, j: number) => (
                               <View key={j} style={[styles.s2AvatarSlot, { height: av.h }]}>
-                                <LinearGradient
-                                  colors={[av.bg, av.accent + '55']}
-                                  style={StyleSheet.absoluteFill}
-                                />
-                                {/* Placeholder silhouette — à remplacer par <Image source={require(...)} style={StyleSheet.absoluteFill} resizeMode="cover" /> */}
-                                <Users size={36} color={av.accent} strokeWidth={1.5} style={{ marginBottom: 14, opacity: 0.5 } as any} />
-                                <View style={{ position: 'absolute' as any, bottom: 6, left: 0, right: 0, alignItems: 'center' }}>
-                                  <Text style={{ fontSize: 9, fontWeight: '700', color: av.accent, letterSpacing: 0.5, opacity: 0.8 }}>{av.label}</Text>
+                                <Image source={av.img} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                                <View style={{ position: 'absolute' as any, bottom: 0, left: 0, right: 0, alignItems: 'center', paddingBottom: 5, backgroundColor: 'rgba(0,0,0,0.22)' }}>
+                                  <Text style={{ fontSize: 8, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.6 }}>{av.label}</Text>
                                 </View>
                               </View>
                             ))}
