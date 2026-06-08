@@ -25,11 +25,7 @@ const PROFILES = [
     subTag: '(renforcement musculaire)',
     desc: "Que votre objectif soit une prise de masse, une perte de poids, de l'entretien ou du renforcement fonctionnel et adapté (APA / Santé), notre système s'ajuste à chaque profil, du débutant absolu à l'athlète exigeant. Cette carte débloque un écosystème unique : bénéficiez de protocoles évolutifs automatisés, connectés directement à une plateforme de suivi personnalisé. Que ce soit avec mes propres programmes ou via votre coach et salle de sport partenaire, chaque professionnel peut piloter, valider et vous envoyer vos séances sur mesure pour un accompagnement à la fois humain, sécurisé et ultra-précis.",
     accent: '#00C8D4', emoji: '💪', tag: 'UNIVERS DE LA MUSCULATION',
-    avatars: [
-      { label: 'ATHLÈTE',      flex: 1,   img: require('../assets/avatars/athlete.jpeg') },
-      { label: 'FEMME ACTIVE', flex: 1.1, img: require('../assets/avatars/woman.jpeg')   },
-      { label: 'SENIOR',       flex: 1,   img: require('../assets/avatars/senior.jpeg')  },
-    ],
+    trioImg: require('../assets/avatars/musculation_trio.jpeg'),
   },
   { title: 'SPORTS UNIVERSELS',   subTag: undefined, desc: 'Course à pied, Marche nordique, Natation — programmes adaptés à chaque discipline.',                          accent: '#00C8D4', emoji: '🏃', tag: 'TOUS SPORTS'         },
   { title: 'SUIVI MÉDICAL & APA', subTag: undefined, desc: 'Prise en charge ALD, post-rééducation, handicap — suivi biométrique et interface adaptée.',                   accent: '#E2AA27', emoji: '🩺', tag: 'MÉDICAL & APA'       },
@@ -436,17 +432,8 @@ export default function Onboarding() {
                   {PROFILES.map((p, i) => (
                     <View key={i} style={[styles.s2ProfileCard, { width: PROFILE_CARD_W }]}>
                       <View style={[styles.s2ProfileImg, { borderTopColor: p.accent }]}>
-                        {p.avatars ? (
-                          <>
-                            {p.avatars.map((av: { label: string; img: any; flex?: number }, j: number) => (
-                              <View key={j} style={{ flex: av.flex ?? 1, height: '100%' as any }}>
-                                <Image source={av.img} style={StyleSheet.absoluteFill} resizeMode="cover" />
-                                <View style={{ position: 'absolute' as any, bottom: 0, left: 0, right: 0, paddingVertical: 5, alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.28)' }}>
-                                  <Text style={{ fontSize: 8, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.5 }}>{av.label}</Text>
-                                </View>
-                              </View>
-                            ))}
-                          </>
+                        {p.trioImg ? (
+                          <Image source={p.trioImg} style={{ flex: 1, height: '100%' as any }} resizeMode="cover" />
                         ) : (
                           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F4F6F9' }}>
                             <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
