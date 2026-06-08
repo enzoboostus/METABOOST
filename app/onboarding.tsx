@@ -1182,12 +1182,13 @@ const styles = StyleSheet.create({
   s2ProfileTitle: { fontSize: 16, fontWeight: '900', color: '#0D1117', letterSpacing: -0.3 },
   s2ProfileDesc: { fontSize: 13, fontWeight: '500', color: '#6B7280', lineHeight: 19 },
   s2AvatarsRow: {
-    flex: 1, flexDirection: 'row' as any, alignItems: 'flex-end',
-    justifyContent: 'center', gap: 8, paddingHorizontal: 16, paddingBottom: 48,
+    width: '100%' as any, height: '100%' as any,
+    flexDirection: 'row' as any, alignItems: 'flex-end',
+    justifyContent: 'center', gap: 8, paddingHorizontal: 12, paddingBottom: 44,
   },
   s2AvatarSlot: {
-    flex: 1, borderRadius: 16, alignItems: 'center', justifyContent: 'flex-end',
-    paddingBottom: 10, overflow: 'hidden' as any,
+    flex: 1, borderRadius: 14, alignItems: 'center', justifyContent: 'flex-end',
+    paddingBottom: 8, overflow: 'hidden' as any,
     ...(Platform.OS === 'web'
       ? { boxShadow: '0 4px 16px rgba(0,0,0,0.10)' } as any
       : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.10, shadowRadius: 10, elevation: 3 }),
