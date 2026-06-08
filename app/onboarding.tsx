@@ -26,9 +26,9 @@ const PROFILES = [
     desc: "Que votre objectif soit une prise de masse, une perte de poids, de l'entretien ou du renforcement fonctionnel et adapté (APA / Santé), notre système s'ajuste à chaque profil, du débutant absolu à l'athlète exigeant. Cette carte débloque un écosystème unique : bénéficiez de protocoles évolutifs automatisés, connectés directement à une plateforme de suivi personnalisé. Que ce soit avec mes propres programmes ou via votre coach et salle de sport partenaire, chaque professionnel peut piloter, valider et vous envoyer vos séances sur mesure pour un accompagnement à la fois humain, sécurisé et ultra-précis.",
     accent: '#00C8D4', emoji: '💪', tag: 'UNIVERS DE LA MUSCULATION',
     avatars: [
-      { emoji: '🏋️‍♂️', h: 115, bg: '#D6F4F8' },
-      { emoji: '🤸‍♀️',  h: 138, bg: '#C8EFF5' },
-      { emoji: '🧑‍🦳',  h: 108, bg: '#D6F4F8' },
+      { label: 'ATHLÈTE',      h: 112, bg: '#E8F9FB', accent: '#00C8D4' },
+      { label: 'FEMME ACTIVE', h: 134, bg: '#D4F5F8', accent: '#00B8C4' },
+      { label: 'SENIOR',       h: 105, bg: '#E8F9FB', accent: '#00C8D4' },
     ],
   },
   { title: 'SPORTS UNIVERSELS',   subTag: undefined, desc: 'Course à pied, Marche nordique, Natation — programmes adaptés à chaque discipline.',                          accent: '#00C8D4', emoji: '🏃', tag: 'TOUS SPORTS'         },
@@ -438,9 +438,17 @@ export default function Onboarding() {
                       <View style={[styles.s2ProfileImg, { borderTopColor: p.accent }]}>
                         {p.avatars ? (
                           <View style={styles.s2AvatarsRow}>
-                            {p.avatars.map((av: { emoji: string; h: number; bg: string }, j: number) => (
-                              <View key={j} style={[styles.s2AvatarSlot, { height: av.h, backgroundColor: av.bg }]}>
-                                <Text style={{ fontSize: 34 }}>{av.emoji}</Text>
+                            {p.avatars.map((av: { label: string; h: number; bg: string; accent: string }, j: number) => (
+                              <View key={j} style={[styles.s2AvatarSlot, { height: av.h }]}>
+                                <LinearGradient
+                                  colors={[av.bg, av.accent + '55']}
+                                  style={StyleSheet.absoluteFill}
+                                />
+                                {/* Placeholder silhouette — à remplacer par <Image source={require(...)} style={StyleSheet.absoluteFill} resizeMode="cover" /> */}
+                                <Users size={36} color={av.accent} strokeWidth={1.5} style={{ marginBottom: 14, opacity: 0.5 } as any} />
+                                <View style={{ position: 'absolute' as any, bottom: 6, left: 0, right: 0, alignItems: 'center' }}>
+                                  <Text style={{ fontSize: 9, fontWeight: '700', color: av.accent, letterSpacing: 0.5, opacity: 0.8 }}>{av.label}</Text>
+                                </View>
                               </View>
                             ))}
                           </View>
@@ -1184,14 +1192,14 @@ const styles = StyleSheet.create({
   s2AvatarsRow: {
     width: '100%' as any, height: '100%' as any,
     flexDirection: 'row' as any, alignItems: 'flex-end',
-    justifyContent: 'center', gap: 8, paddingHorizontal: 12, paddingBottom: 44,
+    justifyContent: 'center', gap: 6, paddingHorizontal: 10, paddingBottom: 44,
   },
   s2AvatarSlot: {
-    flex: 1, borderRadius: 14, alignItems: 'center', justifyContent: 'flex-end',
-    paddingBottom: 8, overflow: 'hidden' as any,
+    flex: 1, borderRadius: 14, overflow: 'hidden' as any,
+    alignItems: 'center', justifyContent: 'flex-end',
     ...(Platform.OS === 'web'
-      ? { boxShadow: '0 4px 16px rgba(0,0,0,0.10)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.10, shadowRadius: 10, elevation: 3 }),
+      ? { boxShadow: '0 6px 20px rgba(0,0,0,0.14)' } as any
+      : { shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.14, shadowRadius: 12, elevation: 5 }),
   },
   s2NavRow: {
     flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 16,
