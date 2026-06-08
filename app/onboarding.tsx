@@ -26,9 +26,9 @@ const PROFILES = [
     desc: "Que votre objectif soit une prise de masse, une perte de poids, de l'entretien ou du renforcement fonctionnel et adapté (APA / Santé), notre système s'ajuste à chaque profil, du débutant absolu à l'athlète exigeant. Cette carte débloque un écosystème unique : bénéficiez de protocoles évolutifs automatisés, connectés directement à une plateforme de suivi personnalisé. Que ce soit avec mes propres programmes ou via votre coach et salle de sport partenaire, chaque professionnel peut piloter, valider et vous envoyer vos séances sur mesure pour un accompagnement à la fois humain, sécurisé et ultra-précis.",
     accent: '#00C8D4', emoji: '💪', tag: 'UNIVERS DE LA MUSCULATION',
     avatars: [
-      { label: 'ATHLÈTE',      h: 112, img: require('../assets/avatars/athlete.jpeg') },
-      { label: 'FEMME ACTIVE', h: 134, img: require('../assets/avatars/woman.jpeg')   },
-      { label: 'SENIOR',       h: 105, img: require('../assets/avatars/senior.jpeg')  },
+      { label: 'ATHLÈTE',      flex: 1,   img: require('../assets/avatars/athlete.jpeg') },
+      { label: 'FEMME ACTIVE', flex: 1.1, img: require('../assets/avatars/woman.jpeg')   },
+      { label: 'SENIOR',       flex: 1,   img: require('../assets/avatars/senior.jpeg')  },
     ],
   },
   { title: 'SPORTS UNIVERSELS',   subTag: undefined, desc: 'Course à pied, Marche nordique, Natation — programmes adaptés à chaque discipline.',                          accent: '#00C8D4', emoji: '🏃', tag: 'TOUS SPORTS'         },
@@ -437,18 +437,20 @@ export default function Onboarding() {
                     <View key={i} style={[styles.s2ProfileCard, { width: PROFILE_CARD_W }]}>
                       <View style={[styles.s2ProfileImg, { borderTopColor: p.accent }]}>
                         {p.avatars ? (
-                          <View style={styles.s2AvatarsRow}>
-                            {p.avatars.map((av: { label: string; h: number; img: any }, j: number) => (
-                              <View key={j} style={[styles.s2AvatarSlot, { height: av.h }]}>
+                          <>
+                            {p.avatars.map((av: { label: string; img: any; flex?: number }, j: number) => (
+                              <View key={j} style={{ flex: av.flex ?? 1, height: '100%' as any }}>
                                 <Image source={av.img} style={StyleSheet.absoluteFill} resizeMode="cover" />
-                                <View style={{ position: 'absolute' as any, bottom: 0, left: 0, right: 0, alignItems: 'center', paddingBottom: 5, backgroundColor: 'rgba(0,0,0,0.22)' }}>
-                                  <Text style={{ fontSize: 8, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.6 }}>{av.label}</Text>
+                                <View style={{ position: 'absolute' as any, bottom: 0, left: 0, right: 0, paddingVertical: 5, alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.28)' }}>
+                                  <Text style={{ fontSize: 8, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.5 }}>{av.label}</Text>
                                 </View>
                               </View>
                             ))}
-                          </View>
+                          </>
                         ) : (
-                          <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
+                          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F4F6F9' }}>
+                            <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
+                          </View>
                         )}
                         <View style={{ position: 'absolute' as any, bottom: 12, left: 12, gap: 4 }}>
                           <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
@@ -1173,8 +1175,9 @@ const styles = StyleSheet.create({
       : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.07, shadowRadius: 16, elevation: 3 }),
   },
   s2ProfileImg: {
-    height: 170, backgroundColor: '#F4F6F9', borderTopWidth: 4,
-    alignItems: 'center', justifyContent: 'center',
+    height: 220, borderTopWidth: 4,
+    flexDirection: 'row' as any,
+    overflow: 'hidden' as any,
   },
   s2ProfileTag: {
     paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, alignSelf: 'flex-start' as any,
@@ -1184,18 +1187,6 @@ const styles = StyleSheet.create({
   s2ProfileBody: { padding: 16, gap: 6 },
   s2ProfileTitle: { fontSize: 16, fontWeight: '900', color: '#0D1117', letterSpacing: -0.3 },
   s2ProfileDesc: { fontSize: 13, fontWeight: '500', color: '#6B7280', lineHeight: 19 },
-  s2AvatarsRow: {
-    width: '100%' as any, height: '100%' as any,
-    flexDirection: 'row' as any, alignItems: 'flex-end',
-    justifyContent: 'center', gap: 6, paddingHorizontal: 10, paddingBottom: 44,
-  },
-  s2AvatarSlot: {
-    flex: 1, borderRadius: 14, overflow: 'hidden' as any,
-    alignItems: 'center', justifyContent: 'flex-end',
-    ...(Platform.OS === 'web'
-      ? { boxShadow: '0 6px 20px rgba(0,0,0,0.14)' } as any
-      : { shadowColor: '#000', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.14, shadowRadius: 12, elevation: 5 }),
-  },
   s2NavRow: {
     flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 16,
   },
