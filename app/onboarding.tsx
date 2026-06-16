@@ -440,12 +440,12 @@ export default function Onboarding() {
                           </View>
                         )}
                         <View style={{ position: 'absolute' as any, bottom: 12, left: 12, gap: 4 }}>
-                          <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
-                            <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
-                          </View>
                           {p.subTag && (
                             <Text style={styles.s2ProfileSubTag}>{p.subTag}</Text>
                           )}
+                          <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
+                            <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
+                          </View>
                         </View>
                       </View>
                       <View style={styles.s2ProfileBody}>
