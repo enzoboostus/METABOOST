@@ -454,16 +454,16 @@ export default function Onboarding() {
                             ))}
                           </View>
                         )}
-                        <View style={{ position: 'absolute' as any, bottom: 12, left: 12, gap: 4 }}>
-                          {p.subTag && (
-                            <Text style={styles.s2ProfileSubTag}>{p.subTag}</Text>
-                          )}
+                        <View style={{ position: 'absolute' as any, bottom: 12, left: 12 }}>
                           <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
                             <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
                           </View>
                         </View>
                       </View>
                       <View style={styles.s2ProfileBody}>
+                        {p.subTag && (
+                          <Text style={styles.s2ProfileSubTag}>{p.subTag}</Text>
+                        )}
                         <Text style={styles.s2ProfileTitle}>{p.title}</Text>
                         <Text style={styles.s2ProfileDesc}>{p.desc}</Text>
                       </View>
@@ -1185,7 +1185,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, alignSelf: 'flex-start' as any,
   },
   s2ProfileTagTxt: { fontSize: 10, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.8 },
-  s2ProfileSubTag: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.85)', fontStyle: 'italic' as any },
+  s2ProfileSubTag: { fontSize: 11, fontWeight: '500', color: '#6B7280', fontStyle: 'italic' as any },
   s2ProfileBody: { padding: 16, gap: 6 },
   s2ProfileTitle: { fontSize: 16, fontWeight: '900', color: '#0D1117', letterSpacing: -0.3 },
   s2ProfileDesc: { fontSize: 13, fontWeight: '500', color: '#6B7280', lineHeight: 19 },
