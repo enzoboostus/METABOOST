@@ -454,16 +454,16 @@ export default function Onboarding() {
                             ))}
                           </View>
                         )}
-                        <View style={{ position: 'absolute' as any, bottom: 12, left: 12 }}>
+                        <View style={{ position: 'absolute' as any, bottom: 12, left: 12, gap: 5 }}>
                           <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
                             <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
                           </View>
+                          {p.subTag && (
+                            <Text style={styles.s2ProfileSubTag}>{p.subTag}</Text>
+                          )}
                         </View>
                       </View>
                       <View style={styles.s2ProfileBody}>
-                        {p.subTag && (
-                          <Text style={styles.s2ProfileSubTag}>{p.subTag}</Text>
-                        )}
                         <Text style={styles.s2ProfileTitle}>{p.title}</Text>
                         <Text style={styles.s2ProfileDesc}>{p.desc}</Text>
                       </View>
@@ -1177,7 +1177,7 @@ const styles = StyleSheet.create({
       : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.07, shadowRadius: 16, elevation: 3 }),
   },
   s2ProfileImg: {
-    height: 220, borderTopWidth: 4,
+    height: 244, borderTopWidth: 4,
     flexDirection: 'row' as any,
     overflow: 'hidden' as any,
   },
