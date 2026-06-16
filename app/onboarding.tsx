@@ -940,7 +940,7 @@ const styles = StyleSheet.create({
   // ══════════════════════════════════════════════════════════════════════════
   rootLight: { backgroundColor: '#FFFFFF' },
   slide1: {
-    minHeight: H - 72,
+    minHeight: H - 160,
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 8,
