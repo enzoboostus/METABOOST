@@ -30,7 +30,7 @@ const PROFILES = [
   {
     title: 'SPORT GRAND PUBLIC',
     subTag: '(toutes disciplines)',
-    desc: '• Que vous pratiquiez le cyclisme, la course à pied, la natation, ou que vous suiviez un parcours de santé et de renforcement adapté (APA), notre système s\'ajuste à votre réalité.\n\n• Pour nous, chaque pratiquant, du senior dynamique à l\'athlète confirmé mérite la même exigence.\n\n• La plateforme assure une continuité parfaite de votre entraînement : via mon accompagnement, celui de votre entraîneur ou l\'automatisation de vos objectifs, l\'écosystème planifie des blocs de cardio et des séances complémentaires adaptés à votre rythme pour préserver votre capital physique et surclasser vos performances.',
+    desc: 'Que vous pratiquiez le cyclisme, la course à pied, la natation, ou que vous suiviez un parcours de santé et de renforcement adapté (APA), notre système s\'ajuste à votre réalité. Pour nous, chaque pratiquant, du senior dynamique à l\'athlète confirmé mérite la même exigence. La plateforme assure une continuité parfaite de votre entraînement : via mon accompagnement, celui de votre entraîneur ou l\'automatisation de vos objectifs, l\'écosystème planifie des blocs de cardio et des séances complémentaires adaptés à votre rythme pour préserver votre capital physique et surclasser vos performances.',
     accent: '#00C8D4', emoji: undefined, tag: 'TOUS SPORTS',
   },
   { title: 'SUIVI MÉDICAL & APA', subTag: undefined, desc: 'Prise en charge ALD, post-rééducation, handicap — suivi biométrique et interface adaptée.',                   accent: '#E2AA27', emoji: '🩺', tag: 'MÉDICAL & APA'       },
