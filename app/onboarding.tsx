@@ -940,10 +940,10 @@ const styles = StyleSheet.create({
   // ══════════════════════════════════════════════════════════════════════════
   rootLight: { backgroundColor: '#FFFFFF' },
   slide1: {
-    minHeight: H,
+    minHeight: H - 72,
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 28,
+    paddingBottom: 8,
     overflow: 'hidden' as any,
   },
   s1TopBar: { flexDirection: 'row', alignItems: 'center', gap: 10 },
