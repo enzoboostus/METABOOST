@@ -27,7 +27,12 @@ const PROFILES = [
     accent: '#00C8D4', emoji: '💪', tag: 'UNIVERS DE LA MUSCULATION',
     trioImg: require('../assets/avatars/musculation_trio.jpeg'),
   },
-  { title: 'SPORTS UNIVERSELS',   subTag: undefined, desc: 'Course à pied, Marche nordique, Natation — programmes adaptés à chaque discipline.',                          accent: '#00C8D4', emoji: '🏃', tag: 'TOUS SPORTS'         },
+  {
+    title: 'SPORT GRAND PUBLIC',
+    subTag: '(toutes disciplines)',
+    desc: '• Que vous pratiquiez le cyclisme, la course à pied, la natation, ou que vous suiviez un parcours de santé et de renforcement adapté (APA), notre système s\'ajuste à votre réalité.\n\n• Pour nous, chaque pratiquant, du senior dynamique à l\'athlète confirmé mérite la même exigence.\n\n• La plateforme assure une continuité parfaite de votre entraînement : via mon accompagnement, celui de votre entraîneur ou l\'automatisation de vos objectifs, l\'écosystème planifie des blocs de cardio et des séances complémentaires adaptés à votre rythme pour préserver votre capital physique et surclasser vos performances.',
+    accent: '#00C8D4', emoji: undefined, tag: 'TOUS SPORTS',
+  },
   { title: 'SUIVI MÉDICAL & APA', subTag: undefined, desc: 'Prise en charge ALD, post-rééducation, handicap — suivi biométrique et interface adaptée.',                   accent: '#E2AA27', emoji: '🩺', tag: 'MÉDICAL & APA'       },
   { title: 'SYSTÈME DE FRANCHISE',subTag: undefined, desc: 'Déployez sous licence METABOOST — pour coachs indépendants, salles privées et structures institutionnelles.',  accent: '#E2AA27', emoji: '🏢', tag: 'B2B & FRANCHISE'     },
 ];
@@ -434,9 +439,19 @@ export default function Onboarding() {
                       <View style={[styles.s2ProfileImg, { borderTopColor: p.accent }]}>
                         {p.trioImg ? (
                           <Image source={p.trioImg} style={{ flex: 1, height: '100%' as any, width: '100%' as any }} resizeMode="cover" />
-                        ) : (
+                        ) : p.emoji ? (
                           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F4F6F9' }}>
                             <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
+                          </View>
+                        ) : (
+                          <View style={{ flex: 1, flexDirection: 'row' as any, backgroundColor: '#F0F4F8' }}>
+                            {[p.accent, '#E5E7EB', '#D1D5DB'].map((bg, j) => (
+                              <View key={j} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderRightWidth: j < 2 ? 1 : 0, borderColor: '#E2E8F0' }}>
+                                <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: bg + '22', borderWidth: 2, borderColor: bg + '44', alignItems: 'center', justifyContent: 'center' }}>
+                                  <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: bg + '66' }} />
+                                </View>
+                              </View>
+                            ))}
                           </View>
                         )}
                         <View style={{ position: 'absolute' as any, bottom: 12, left: 12, gap: 4 }}>
