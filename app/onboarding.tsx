@@ -1177,7 +1177,7 @@ const styles = StyleSheet.create({
       : { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.07, shadowRadius: 16, elevation: 3 }),
   },
   s2ProfileImg: {
-    height: 190, borderTopWidth: 4,
+    height: 220, borderTopWidth: 4,
     flexDirection: 'row' as any,
     overflow: 'hidden' as any,
   },
