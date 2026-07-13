@@ -446,18 +446,17 @@ export default function Onboarding() {
                     <View key={i} style={[styles.s2ProfileCard, { width: PROFILE_CARD_W }]}>
                       {(p as any).imgSmall ? (
                         <View style={{
-                          height: 220,
+                          height: 300,
                           borderTopWidth: 4,
                           borderTopColor: p.accent,
                           backgroundColor: '#D4A017',
                           overflow: 'hidden' as any,
-                          justifyContent: 'center' as any,
-                          alignItems: 'center' as any,
+                          flexDirection: 'row' as any,
                         }}>
                           <Image
                             source={p.trioImg!}
-                            style={{ width: 196, height: 196 }}
-                            resizeMode="contain"
+                            style={{ flex: 1, height: '100%' as any, width: '100%' as any }}
+                            resizeMode="cover"
                           />
                           <View style={{ position: 'absolute' as any, bottom: 12, left: 12 }}>
                             <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
