@@ -34,7 +34,12 @@ const PROFILES = [
     accent: '#00C8D4', emoji: undefined, tag: 'TOUS SPORTS',
     trioImg: require('../assets/avatars/sports_trio.jpeg'),
   },
-  { title: 'SUIVI MÉDICAL & APA', subTag: undefined, desc: 'Prise en charge ALD, post-rééducation, handicap — suivi biométrique et interface adaptée.',                   accent: '#E2AA27', emoji: '🩺', tag: 'MÉDICAL & APA'       },
+  {
+    title: 'SUIVI MÉDICAL & APA',
+    subTag: undefined,
+    desc: 'Que vous soyez en post-rééducation, en ALD, ou en situation de handicap, notre plateforme concrétise la passerelle entre la médecine et le mouvement. METABOOST s\'adapte aux besoins spécifiques de chaque pathologie grâce à des protocoles sécurisés, des fiches configurables et une interface simplifiée garantissant une accessibilité universelle. En connectant vos données biométriques, le système assure un suivi clinique et rigoureux de votre tolérance à l\'effort. Plus qu\'un carnet de bord, l\'écosystème génère instantanément des rapports scientifiques chiffrés, offrant aux professionnels de santé, médecins et kinésithérapeutes, la preuve incontestable de votre assiduité et de vos progrès.',
+    accent: '#E2AA27', emoji: '🩺', tag: 'MÉDICAL & APA',
+  },
   { title: 'SYSTÈME DE FRANCHISE',subTag: undefined, desc: 'Déployez sous licence METABOOST — pour coachs indépendants, salles privées et structures institutionnelles.',  accent: '#E2AA27', emoji: '🏢', tag: 'B2B & FRANCHISE'     },
 ];
 
