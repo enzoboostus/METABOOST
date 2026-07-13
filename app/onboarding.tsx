@@ -49,6 +49,7 @@ const PROFILES = [
     accent: '#E2AA27',
     emoji: '🏢',
     tag: 'PRO & STRUCTURES',
+    trioImg: require('../assets/avatars/franchise_card.png'),
     imgSmall: true,
   },
 ];
