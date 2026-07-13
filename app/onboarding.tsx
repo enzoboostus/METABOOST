@@ -42,7 +42,15 @@ const PROFILES = [
     trioImg: require('../assets/avatars/medical_apa_card.jpeg'),
     imgSmall: true,
   },
-  { title: 'SYSTÈME DE FRANCHISE',subTag: undefined, desc: 'Déployez sous licence METABOOST — pour coachs indépendants, salles privées et structures institutionnelles.',  accent: '#E2AA27', emoji: '🏢', tag: 'B2B & FRANCHISE'     },
+  {
+    title: 'SYSTÈME DE FRANCHISE',
+    subTag: undefined,
+    desc: "Propulsez votre structure avec une technologie que vous pouvez totalement vous approprier. METABOOST s'adapte à votre vision : utilisez notre méthode pré-intégrée ou programmez vos propres séances et injectez votre propre méthodologie d'entraînement. L'application devient votre outil central pour planifier l'activité, communiquer en direct et offrir à vos adhérents un suivi d'évolution ultra-poussé (nutrition IA, courbes de progression, bilans). Pilotez vos équipes au quotidien et valorisez votre expertise en partageant des rapports cliniques sécurisés avec les professionnels de santé. Une solution clé en main ou en marque blanche, simple et puissante, pour digitaliser votre activité et fidéliser votre communauté sans aucun coût de développement.",
+    accent: '#E2AA27',
+    emoji: '🏢',
+    tag: 'B2B & FRANCHISE',
+    imgSmall: true,
+  },
 ];
 
 type Step = 'login' | 'welcome' | 'goal' | 'measures';
@@ -449,18 +457,24 @@ export default function Onboarding() {
                           height: 220,
                           borderTopWidth: 4,
                           borderTopColor: p.accent,
-                          backgroundColor: '#D4A017',
+                          backgroundColor: p.trioImg ? '#D4A017' : '#F3F4F6',
                           overflow: 'hidden' as any,
                           position: 'relative' as any,
                         }}>
-                          <Image
-                            source={p.trioImg!}
-                            style={{
-                              width: '100%' as any,
-                              height: '100%' as any,
-                              objectFit: 'contain' as any,
-                            }}
-                          />
+                          {p.trioImg ? (
+                            <Image
+                              source={p.trioImg}
+                              style={{
+                                width: '100%' as any,
+                                height: '100%' as any,
+                                objectFit: 'contain' as any,
+                              }}
+                            />
+                          ) : (
+                            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                              <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
+                            </View>
+                          )}
                           <View style={{ position: 'absolute' as any, bottom: 12, left: 12 }}>
                             <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
                               <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
