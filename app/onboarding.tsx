@@ -444,49 +444,56 @@ export default function Onboarding() {
                 >
                   {PROFILES.map((p, i) => (
                     <View key={i} style={[styles.s2ProfileCard, { width: PROFILE_CARD_W }]}>
-                      <View style={[
-                        styles.s2ProfileImg,
-                        { borderTopColor: p.accent },
-                        (p as any).imgSmall ? {
+                      {(p as any).imgSmall ? (
+                        <View style={{
+                          height: 220,
+                          borderTopWidth: 4,
+                          borderTopColor: p.accent,
                           backgroundColor: '#D4A017',
+                          overflow: 'hidden' as any,
                           justifyContent: 'center' as any,
                           alignItems: 'center' as any,
-                        } : {},
-                      ]}>
-                        {p.trioImg ? (
-                          (p as any).imgSmall ? (
-                            <Image
-                              source={p.trioImg}
-                              style={{ width: 188, height: 188, objectFit: 'contain' as any }}
-                              resizeMode="contain"
-                            />
-                          ) : (
-                            <Image source={p.trioImg} style={{ flex: 1, height: '100%' as any, width: '100%' as any }} resizeMode="cover" />
-                          )
-                        ) : p.emoji ? (
-                          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F4F6F9' }}>
-                            <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
+                        }}>
+                          <Image
+                            source={p.trioImg!}
+                            style={{ width: 196, height: 196 }}
+                            resizeMode="contain"
+                          />
+                          <View style={{ position: 'absolute' as any, bottom: 12, left: 12 }}>
+                            <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
+                              <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
+                            </View>
                           </View>
-                        ) : (
-                          <View style={{ flex: 1, flexDirection: 'row' as any, backgroundColor: '#F0F4F8' }}>
-                            {[p.accent, '#E5E7EB', '#D1D5DB'].map((bg, j) => (
-                              <View key={j} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderRightWidth: j < 2 ? 1 : 0, borderColor: '#E2E8F0' }}>
-                                <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: bg + '22', borderWidth: 2, borderColor: bg + '44', alignItems: 'center', justifyContent: 'center' }}>
-                                  <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: bg + '66' }} />
-                                </View>
-                              </View>
-                            ))}
-                          </View>
-                        )}
-                        <View style={{ position: 'absolute' as any, bottom: 12, left: 12, gap: 5 }}>
-                          <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
-                            <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
-                          </View>
-                          {p.subTag && (
-                            <Text style={styles.s2ProfileSubTag}>{p.subTag}</Text>
-                          )}
                         </View>
-                      </View>
+                      ) : (
+                        <View style={[styles.s2ProfileImg, { borderTopColor: p.accent }]}>
+                          {p.trioImg ? (
+                            <Image source={p.trioImg} style={{ flex: 1, height: '100%' as any, width: '100%' as any }} resizeMode="cover" />
+                          ) : p.emoji ? (
+                            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F4F6F9' }}>
+                              <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
+                            </View>
+                          ) : (
+                            <View style={{ flex: 1, flexDirection: 'row' as any, backgroundColor: '#F0F4F8' }}>
+                              {[p.accent, '#E5E7EB', '#D1D5DB'].map((bg, j) => (
+                                <View key={j} style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderRightWidth: j < 2 ? 1 : 0, borderColor: '#E2E8F0' }}>
+                                  <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: bg + '22', borderWidth: 2, borderColor: bg + '44', alignItems: 'center', justifyContent: 'center' }}>
+                                    <View style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: bg + '66' }} />
+                                  </View>
+                                </View>
+                              ))}
+                            </View>
+                          )}
+                          <View style={{ position: 'absolute' as any, bottom: 12, left: 12, gap: 5 }}>
+                            <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
+                              <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
+                            </View>
+                            {p.subTag && (
+                              <Text style={styles.s2ProfileSubTag}>{p.subTag}</Text>
+                            )}
+                          </View>
+                        </View>
+                      )}
                       <View style={styles.s2ProfileBody}>
                         <Text style={styles.s2ProfileTitle}>{p.title}</Text>
                         <Text style={styles.s2ProfileDesc}>{p.desc}</Text>
