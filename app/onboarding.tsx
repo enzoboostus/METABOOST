@@ -44,11 +44,11 @@ const PROFILES = [
   },
   {
     title: 'SYSTÈME DE FRANCHISE',
-    subTag: undefined,
+    subTag: '(pour les professionnels)',
     desc: "Propulsez votre structure avec une technologie que vous pouvez totalement vous approprier. METABOOST s'adapte à votre vision : utilisez notre méthode pré-intégrée ou programmez vos propres séances et injectez votre propre méthodologie d'entraînement. L'application devient votre outil central pour planifier l'activité, communiquer en direct et offrir à vos adhérents un suivi d'évolution ultra-poussé (nutrition IA, courbes de progression, bilans). Pilotez vos équipes au quotidien et valorisez votre expertise en partageant des rapports cliniques sécurisés avec les professionnels de santé. Une solution clé en main ou en marque blanche, simple et puissante, pour digitaliser votre activité et fidéliser votre communauté sans aucun coût de développement.",
     accent: '#E2AA27',
     emoji: '🏢',
-    tag: 'B2B & FRANCHISE',
+    tag: 'PRO & STRUCTURES',
     imgSmall: true,
   },
 ];
@@ -475,10 +475,13 @@ export default function Onboarding() {
                               <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
                             </View>
                           )}
-                          <View style={{ position: 'absolute' as any, bottom: 12, left: 12 }}>
+                          <View style={{ position: 'absolute' as any, bottom: 12, left: 12, gap: 5 }}>
                             <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
                               <Text style={styles.s2ProfileTagTxt}>{p.tag}</Text>
                             </View>
+                            {p.subTag && (
+                              <Text style={styles.s2ProfileSubTag}>{p.subTag}</Text>
+                            )}
                           </View>
                         </View>
                       ) : (
