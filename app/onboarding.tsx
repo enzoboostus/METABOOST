@@ -447,8 +447,8 @@ export default function Onboarding() {
                       <View style={[styles.s2ProfileImg, { borderTopColor: p.accent, backgroundColor: (p as any).imgBg || 'transparent' }]}>
                         {p.trioImg ? (
                           (p as any).imgContain ? (
-                            <View style={{ flex: 1, alignItems: 'center' as any, justifyContent: 'center' as any }}>
-                              <Image source={p.trioImg} style={{ height: 200, aspectRatio: 1 }} resizeMode="contain" />
+                            <View style={{ position: 'absolute' as any, top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center' as any, justifyContent: 'center' as any }}>
+                              <Image source={p.trioImg} style={{ width: 176, height: 176 }} resizeMode="cover" />
                             </View>
                           ) : (
                             <Image source={p.trioImg} style={{ flex: 1, height: '100%' as any, width: '100%' as any }} resizeMode="cover" />
