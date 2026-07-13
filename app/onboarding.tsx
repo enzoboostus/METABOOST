@@ -39,7 +39,7 @@ const PROFILES = [
     subTag: undefined,
     desc: 'Que vous soyez en post-rééducation, en ALD, ou en situation de handicap, notre plateforme concrétise la passerelle entre la médecine et le mouvement. METABOOST s\'adapte aux besoins spécifiques de chaque pathologie grâce à des protocoles sécurisés, des fiches configurables et une interface simplifiée garantissant une accessibilité universelle. En connectant vos données biométriques, le système assure un suivi clinique et rigoureux de votre tolérance à l\'effort. Plus qu\'un carnet de bord, l\'écosystème génère instantanément des rapports scientifiques chiffrés, offrant aux professionnels de santé, médecins et kinésithérapeutes, la preuve incontestable de votre assiduité et de vos progrès.',
     accent: '#E2AA27', emoji: '🩺', tag: 'MÉDICAL & APA',
-    trioImg: require('../assets/avatars/medical_duo_v2.jpeg'),
+    trioImg: require('../assets/avatars/medical_duo_framed.png'),
     imgSmall: true,
   },
   { title: 'SYSTÈME DE FRANCHISE',subTag: undefined, desc: 'Déployez sous licence METABOOST — pour coachs indépendants, salles privées et structures institutionnelles.',  accent: '#E2AA27', emoji: '🏢', tag: 'B2B & FRANCHISE'     },
@@ -451,17 +451,12 @@ export default function Onboarding() {
                           borderTopColor: p.accent,
                           backgroundColor: '#D4A017',
                           overflow: 'hidden' as any,
+                          flexDirection: 'row' as any,
                         }}>
                           <Image
                             source={p.trioImg!}
-                            style={{
-                              position: 'absolute' as any,
-                              top: 16,
-                              bottom: 16,
-                              left: 0,
-                              right: 0,
-                            }}
-                            resizeMode="contain"
+                            style={{ flex: 1, height: '100%' as any, width: '100%' as any }}
+                            resizeMode="cover"
                           />
                           <View style={{ position: 'absolute' as any, bottom: 12, left: 12 }}>
                             <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
