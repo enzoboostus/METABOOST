@@ -451,18 +451,15 @@ export default function Onboarding() {
                           borderTopColor: p.accent,
                           backgroundColor: '#D4A017',
                           overflow: 'hidden' as any,
-                          flexDirection: 'row' as any,
+                          position: 'relative' as any,
                         }}>
                           <Image
                             source={p.trioImg!}
                             style={{
-                              flex: 1,
-                              height: '100%' as any,
                               width: '100%' as any,
-                              objectFit: 'cover' as any,
-                              objectPosition: 'center 20%' as any,
+                              height: '100%' as any,
+                              objectFit: 'contain' as any,
                             }}
-                            resizeMode="cover"
                           />
                           <View style={{ position: 'absolute' as any, bottom: 12, left: 12 }}>
                             <View style={[styles.s2ProfileTag, { backgroundColor: p.accent }]}>
