@@ -446,9 +446,13 @@ export default function Onboarding() {
                     <View key={i} style={[styles.s2ProfileCard, { width: PROFILE_CARD_W }]}>
                       <View style={[styles.s2ProfileImg, { borderTopColor: p.accent, backgroundColor: (p as any).imgBg || 'transparent' }]}>
                         {p.trioImg ? (
-                          <View style={{ flex: 1, padding: (p as any).imgContain ? 10 : 0 }}>
-                            <Image source={p.trioImg} style={{ flex: 1, height: '100%' as any, width: '100%' as any }} resizeMode={(p as any).imgContain ? 'contain' : 'cover'} />
-                          </View>
+                          (p as any).imgContain ? (
+                            <View style={{ flex: 1, alignItems: 'center' as any, justifyContent: 'center' as any }}>
+                              <Image source={p.trioImg} style={{ height: 200, aspectRatio: 1 }} resizeMode="contain" />
+                            </View>
+                          ) : (
+                            <Image source={p.trioImg} style={{ flex: 1, height: '100%' as any, width: '100%' as any }} resizeMode="cover" />
+                          )
                         ) : p.emoji ? (
                           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F4F6F9' }}>
                             <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
