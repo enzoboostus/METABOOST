@@ -447,17 +447,22 @@ export default function Onboarding() {
                       <View style={[
                         styles.s2ProfileImg,
                         { borderTopColor: p.accent },
-                        (p as any).imgSmall ? { backgroundColor: '#D4A017', padding: 10 } : {},
+                        (p as any).imgSmall ? {
+                          backgroundColor: '#D4A017',
+                          justifyContent: 'center' as any,
+                          alignItems: 'center' as any,
+                        } : {},
                       ]}>
                         {p.trioImg ? (
-                          <Image
-                            source={p.trioImg}
-                            style={[
-                              { width: '100%' as any, height: '100%' as any },
-                              (p as any).imgSmall ? { objectFit: 'contain' as any } : {},
-                            ]}
-                            resizeMode={(p as any).imgSmall ? 'contain' : 'cover'}
-                          />
+                          (p as any).imgSmall ? (
+                            <Image
+                              source={p.trioImg}
+                              style={{ width: 188, height: 188, objectFit: 'contain' as any }}
+                              resizeMode="contain"
+                            />
+                          ) : (
+                            <Image source={p.trioImg} style={{ flex: 1, height: '100%' as any, width: '100%' as any }} resizeMode="cover" />
+                          )
                         ) : p.emoji ? (
                           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F4F6F9' }}>
                             <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
