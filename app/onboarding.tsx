@@ -444,15 +444,20 @@ export default function Onboarding() {
                 >
                   {PROFILES.map((p, i) => (
                     <View key={i} style={[styles.s2ProfileCard, { width: PROFILE_CARD_W }]}>
-                      <View style={[styles.s2ProfileImg, { borderTopColor: p.accent, backgroundColor: (p as any).imgSmall ? '#D4A017' : 'transparent' }]}>
+                      <View style={[
+                        styles.s2ProfileImg,
+                        { borderTopColor: p.accent },
+                        (p as any).imgSmall ? { backgroundColor: '#D4A017', padding: 10 } : {},
+                      ]}>
                         {p.trioImg ? (
-                          (p as any).imgSmall ? (
-                            <View style={{ position: 'absolute' as any, top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center' as any, justifyContent: 'center' as any }}>
-                              <Image source={p.trioImg} style={{ width: 196, height: 196 }} resizeMode="cover" />
-                            </View>
-                          ) : (
-                            <Image source={p.trioImg} style={{ flex: 1, height: '100%' as any, width: '100%' as any }} resizeMode="cover" />
-                          )
+                          <Image
+                            source={p.trioImg}
+                            style={[
+                              { width: '100%' as any, height: '100%' as any },
+                              (p as any).imgSmall ? { objectFit: 'contain' as any } : {},
+                            ]}
+                            resizeMode={(p as any).imgSmall ? 'contain' : 'cover'}
+                          />
                         ) : p.emoji ? (
                           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F4F6F9' }}>
                             <Text style={{ fontSize: 52 }}>{p.emoji}</Text>
