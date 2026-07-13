@@ -446,7 +446,7 @@ export default function Onboarding() {
                     <View key={i} style={[styles.s2ProfileCard, { width: PROFILE_CARD_W }]}>
                       {(p as any).imgSmall ? (
                         <View style={{
-                          height: 300,
+                          height: 220,
                           borderTopWidth: 4,
                           borderTopColor: p.accent,
                           backgroundColor: '#D4A017',
@@ -455,7 +455,13 @@ export default function Onboarding() {
                         }}>
                           <Image
                             source={p.trioImg!}
-                            style={{ flex: 1, height: '100%' as any, width: '100%' as any }}
+                            style={{
+                              flex: 1,
+                              height: '100%' as any,
+                              width: '100%' as any,
+                              objectFit: 'cover' as any,
+                              objectPosition: 'center 20%' as any,
+                            }}
                             resizeMode="cover"
                           />
                           <View style={{ position: 'absolute' as any, bottom: 12, left: 12 }}>
