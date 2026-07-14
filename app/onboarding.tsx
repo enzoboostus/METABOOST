@@ -559,14 +559,14 @@ export default function Onboarding() {
               {/* ════════════════════════════════════════════
                   SLIDE 3 — Avatar 3D & Transformation
               ════════════════════════════════════════════ */}
-              <View style={styles.slide3}>
+              <View style={[styles.slide3, { height: H }]}>
                 <Text style={styles.s3AvatarTitle}>
-                  Visualisez votre transformation{'\n'}en temps réel
+                  Votre transformation{'\n'}en temps réel
                 </Text>
                 <Text style={styles.s3AvatarSub}>
-                  Votre Avatar 3D Métabolique évolue séance après séance — masse musculaire, composition corporelle et progression VO2 Max mis à jour en direct.
+                  Votre Avatar 3D Métabolique évolue séance après séance — masse musculaire, composition corporelle et VO2 Max mis à jour en direct.
                 </Text>
-                <View style={styles.s3VideoBlock}>
+                <View style={[styles.s3VideoBlock, { flex: 1 }]}>
                   {Platform.OS === 'web' ? (
                     React.createElement('video', {
                       autoPlay: true,
@@ -1266,10 +1266,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingTop: 48, paddingBottom: 0,
     gap: 16,
+    flexDirection: 'column' as any,
   },
   s3AvatarTitle: {
-    fontSize: 26, fontWeight: '900', color: '#0D1117',
-    letterSpacing: -0.8, lineHeight: 33,
+    fontSize: 30, fontWeight: '900', color: '#0D1117',
+    letterSpacing: -1, lineHeight: 38,
     textAlign: 'center', paddingHorizontal: 24,
   },
   s3AvatarSub: {
@@ -1278,7 +1279,6 @@ const styles = StyleSheet.create({
   },
   s3VideoBlock: {
     width: '100%' as any,
-    height: 240,
     backgroundColor: '#E2AA27',
     overflow: 'hidden' as any,
     marginTop: 8,
