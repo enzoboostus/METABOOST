@@ -78,6 +78,125 @@ const ECG_HEIGHTS = [2, 2, 2, 4, 2, 16, 3, 12, 7, 3, 2, 2, 2, 4, 2, 16, 3, 12, 7
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
+function AvatarBlock() {
+  const glow1 = useRef(new Animated.Value(0.4)).current;
+  const glow2 = useRef(new Animated.Value(0.4)).current;
+  const glow3 = useRef(new Animated.Value(0.4)).current;
+  const glow4 = useRef(new Animated.Value(0.4)).current;
+  const liveDot = useRef(new Animated.Value(1)).current;
+  const [vo2, setVo2] = useState(48);
+  const [mass, setMass] = useState(41.1);
+  const [bpm, setBpm] = useState(128);
+
+  useEffect(() => {
+    const makeGlow = (anim: Animated.Value, delay: number) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(anim, { toValue: 1, duration: 700, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 0.3, duration: 700, useNativeDriver: true }),
+        ])
+      );
+    makeGlow(glow1, 0).start();
+    makeGlow(glow2, 250).start();
+    makeGlow(glow3, 500).start();
+    makeGlow(glow4, 750).start();
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(liveDot, { toValue: 0, duration: 500, useNativeDriver: true }),
+        Animated.timing(liveDot, { toValue: 1, duration: 500, useNativeDriver: true }),
+      ])
+    ).start();
+    const t = setInterval(() => {
+      setVo2(v => (v >= 54 ? 48 : v + 1));
+      setMass(m => parseFloat((m >= 42.8 ? 41.1 : m + 0.1).toFixed(1)));
+      setBpm(b => (b >= 148 ? 128 : b + 2));
+    }, 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const glowZone = (anim: Animated.Value, color: string, w: number, h: number) => (
+    <Animated.View style={{
+      width: w, height: h, borderRadius: h / 2, backgroundColor: color,
+      opacity: anim,
+      transform: [{ scale: anim.interpolate({ inputRange: [0.3, 1], outputRange: [0.92, 1.1] }) }],
+    }} />
+  );
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#0A0F1A' }}>
+      {/* Header */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#1A2332' }}>
+        <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 2 }}>ENZOBOOST CORE AI</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Animated.View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#22C55E', opacity: liveDot }} />
+          <Text style={{ color: '#22C55E', fontSize: 10, fontWeight: '700', letterSpacing: 1 }}>LIVE</Text>
+        </View>
+      </View>
+
+      {/* Body + Metrics */}
+      <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 20, gap: 14, alignItems: 'center' }}>
+
+        {/* Avatar 3D */}
+        <View style={{ alignItems: 'center', width: 88 }}>
+          <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: '#1E3A5F', borderWidth: 2, borderColor: '#3B82F6' }} />
+          <View style={{ width: 14, height: 10, backgroundColor: '#1E3A5F', borderLeftWidth: 1, borderRightWidth: 1, borderColor: '#3B82F6' }} />
+          <View style={{ position: 'relative', alignItems: 'center' }}>
+            <View style={{ position: 'absolute', left: -16, top: 0, width: 16, height: 54, backgroundColor: '#1E3A5F', borderRadius: 8, borderWidth: 1, borderColor: '#3B82F6', overflow: 'hidden', alignItems: 'center', paddingTop: 4 }}>
+              {glowZone(glow1, '#FF6B35', 10, 20)}
+            </View>
+            <View style={{ position: 'absolute', right: -16, top: 0, width: 16, height: 54, backgroundColor: '#1E3A5F', borderRadius: 8, borderWidth: 1, borderColor: '#3B82F6', overflow: 'hidden', alignItems: 'center', paddingTop: 4 }}>
+              {glowZone(glow1, '#FF6B35', 10, 20)}
+            </View>
+            <View style={{ width: 62, height: 72, backgroundColor: '#1E3A5F', borderRadius: 10, borderWidth: 1.5, borderColor: '#3B82F6', overflow: 'hidden', alignItems: 'center', paddingTop: 6, gap: 4 }}>
+              {glowZone(glow2, '#FF6B35', 46, 26)}
+              {glowZone(glow3, '#E2AA27', 34, 22)}
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', gap: 6, marginTop: 3 }}>
+            {[0, 1].map(i => (
+              <View key={i} style={{ width: 26, height: 58, backgroundColor: '#1E3A5F', borderRadius: 8, borderWidth: 1, borderColor: '#3B82F6', overflow: 'hidden', alignItems: 'center', paddingTop: 4 }}>
+                {glowZone(glow4, '#E2AA27', 18, 22)}
+              </View>
+            ))}
+          </View>
+          <Text style={{ color: '#4B5563', fontSize: 8, fontWeight: '700', letterSpacing: 1.2, marginTop: 8, textTransform: 'uppercase' as any }}>Avatar 3D</Text>
+        </View>
+
+        {/* Metrics */}
+        <View style={{ flex: 1, gap: 10 }}>
+          <View style={{ backgroundColor: '#111827', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#1F2937' }}>
+            <Text style={{ color: '#6B7280', fontSize: 9, fontWeight: '800', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 2 }}>VO₂ Max</Text>
+            <Text style={{ color: '#FFFFFF', fontSize: 30, fontWeight: '900', letterSpacing: -1, lineHeight: 34 }}>{vo2}</Text>
+            <Text style={{ color: '#22C55E', fontSize: 9, fontWeight: '700', marginTop: 2 }}>↑ Progression active</Text>
+          </View>
+          <View style={{ backgroundColor: '#111827', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#1F2937' }}>
+            <Text style={{ color: '#6B7280', fontSize: 9, fontWeight: '800', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 2 }}>Masse active</Text>
+            <Text style={{ color: '#E2AA27', fontSize: 24, fontWeight: '900', letterSpacing: -0.5 }}>{mass} <Text style={{ fontSize: 13 }}>kg</Text></Text>
+          </View>
+          <View style={{ backgroundColor: '#111827', borderRadius: 14, padding: 12, borderWidth: 1, borderColor: '#1F2937' }}>
+            <Text style={{ color: '#6B7280', fontSize: 9, fontWeight: '800', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 4 }}>Rythme cardiaque</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4, marginBottom: 6 }}>
+              <Text style={{ color: '#FF6B35', fontSize: 24, fontWeight: '900', letterSpacing: -0.5 }}>{bpm}</Text>
+              <Text style={{ color: '#FF6B35', fontSize: 11, fontWeight: '700' }}>BPM</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, height: 22 }}>
+              {[1,2,4,2,10,2,8,4,1,3,6,2,1,3,10,2,7,3,1,2].map((h, i) => (
+                <View key={i} style={{ width: 3, height: h * 2, backgroundColor: '#FF6B35', borderRadius: 1.5, opacity: i < 10 ? 0.35 : 1 }} />
+              ))}
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Footer */}
+      <View style={{ paddingBottom: 24, alignItems: 'center' }}>
+        <Text style={{ color: '#374151', fontSize: 9, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase' as any }}>ANALYSE EN COURS — HUB MOVE</Text>
+      </View>
+    </View>
+  );
+}
+
 function MacroBlock({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', paddingVertical: 13, borderRadius: 12, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F3F4F6', gap: 3 }}>
@@ -567,33 +686,7 @@ export default function Onboarding() {
                   Votre Avatar 3D Métabolique évolue séance après séance — masse musculaire, composition corporelle et VO2 Max mis à jour en direct.
                 </Text>
                 <View style={[styles.s3VideoBlock, { flex: 1 }]}>
-                  {Platform.OS === 'web' ? (
-                    React.createElement('video', {
-                      autoPlay: true,
-                      loop: true,
-                      muted: true,
-                      playsInline: true,
-                      style: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
-                      src: '',
-                    },
-                      React.createElement('div', {
-                        style: {
-                          width: '100%', height: '100%',
-                          backgroundColor: '#E2AA27',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          flexDirection: 'column', gap: '8px',
-                        },
-                      },
-                        React.createElement('span', { style: { fontSize: '36px' } }, '▶'),
-                        React.createElement('span', { style: { fontSize: '12px', fontWeight: '700', color: '#1A1F26', letterSpacing: '2px' } }, 'VIDÉO AVATAR — BIENTÔT')
-                      )
-                    )
-                  ) : (
-                    <View style={{ flex: 1, backgroundColor: '#E2AA27', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                      <Text style={{ fontSize: 36 }}>▶</Text>
-                      <Text style={{ fontSize: 11, fontWeight: '700', color: '#1A1F26', letterSpacing: 2 }}>VIDÉO AVATAR — BIENTÔT</Text>
-                    </View>
-                  )}
+                  <AvatarBlock />
                 </View>
               </View>
 
