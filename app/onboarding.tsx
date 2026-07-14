@@ -51,6 +51,7 @@ const PROFILES = [
     tag: 'PRO & STRUCTURES',
     trioImg: require('../assets/avatars/franchise_card.png'),
     imgSmall: true,
+    imgCover: true,
   },
 ];
 
@@ -468,7 +469,8 @@ export default function Onboarding() {
                               style={{
                                 width: '100%' as any,
                                 height: '100%' as any,
-                                objectFit: 'contain' as any,
+                                objectFit: (p as any).imgCover ? 'cover' as any : 'contain' as any,
+                                objectPosition: (p as any).imgCover ? 'top' as any : undefined,
                               }}
                             />
                           ) : (
