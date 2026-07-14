@@ -79,120 +79,89 @@ const ECG_HEIGHTS = [2, 2, 2, 4, 2, 16, 3, 12, 7, 3, 2, 2, 2, 4, 2, 16, 3, 12, 7
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 function AvatarBlock() {
-  const glow1 = useRef(new Animated.Value(0.4)).current;
-  const glow2 = useRef(new Animated.Value(0.4)).current;
-  const glow3 = useRef(new Animated.Value(0.4)).current;
-  const glow4 = useRef(new Animated.Value(0.4)).current;
   const liveDot = useRef(new Animated.Value(1)).current;
+  const float1 = useRef(new Animated.Value(0)).current;
+  const float2 = useRef(new Animated.Value(6)).current;
+  const [bpm, setBpm] = useState(72);
   const [vo2, setVo2] = useState(48);
+  const [steps, setSteps] = useState(8432);
   const [mass, setMass] = useState(41.1);
-  const [bpm, setBpm] = useState(128);
 
   useEffect(() => {
-    const makeGlow = (anim: Animated.Value, delay: number) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.delay(delay),
-          Animated.timing(anim, { toValue: 1, duration: 700, useNativeDriver: true }),
-          Animated.timing(anim, { toValue: 0.3, duration: 700, useNativeDriver: true }),
-        ])
-      );
-    makeGlow(glow1, 0).start();
-    makeGlow(glow2, 250).start();
-    makeGlow(glow3, 500).start();
-    makeGlow(glow4, 750).start();
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(liveDot, { toValue: 0, duration: 500, useNativeDriver: true }),
-        Animated.timing(liveDot, { toValue: 1, duration: 500, useNativeDriver: true }),
-      ])
-    ).start();
+    Animated.loop(Animated.sequence([
+      Animated.timing(liveDot, { toValue: 0, duration: 600, useNativeDriver: true }),
+      Animated.timing(liveDot, { toValue: 1, duration: 600, useNativeDriver: true }),
+    ])).start();
+    Animated.loop(Animated.sequence([
+      Animated.timing(float1, { toValue: -10, duration: 2000, useNativeDriver: true }),
+      Animated.timing(float1, { toValue: 0, duration: 2000, useNativeDriver: true }),
+    ])).start();
+    Animated.loop(Animated.sequence([
+      Animated.timing(float2, { toValue: -4, duration: 2200, useNativeDriver: true }),
+      Animated.timing(float2, { toValue: 6, duration: 2200, useNativeDriver: true }),
+    ])).start();
     const t = setInterval(() => {
-      setVo2(v => (v >= 54 ? 48 : v + 1));
+      setBpm(b => b >= 148 ? 72 : b + 2);
+      setVo2(v => v >= 54 ? 48 : v + 1);
+      setSteps(s => s >= 10000 ? 8432 : s + 68);
       setMass(m => parseFloat((m >= 42.8 ? 41.1 : m + 0.1).toFixed(1)));
-      setBpm(b => (b >= 148 ? 128 : b + 2));
     }, 1000);
     return () => clearInterval(t);
   }, []);
 
-  const glowZone = (anim: Animated.Value, color: string, w: number, h: number) => (
-    <Animated.View style={{
-      width: w, height: h, borderRadius: h / 2, backgroundColor: color,
-      opacity: anim,
-      transform: [{ scale: anim.interpolate({ inputRange: [0.3, 1], outputRange: [0.92, 1.1] }) }],
-    }} />
-  );
-
   return (
-    <View style={{ flex: 1, backgroundColor: '#0A0F1A' }}>
-      {/* Header */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#1A2332' }}>
-        <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 2 }}>ENZOBOOST CORE AI</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <Animated.View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#22C55E', opacity: liveDot }} />
-          <Text style={{ color: '#22C55E', fontSize: 10, fontWeight: '700', letterSpacing: 1 }}>LIVE</Text>
-        </View>
+    <View style={{ flex: 1, backgroundColor: '#E2AA27', alignItems: 'center', justifyContent: 'center', gap: 24, paddingHorizontal: 20 }}>
+
+      {/* Live badge */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFFFFF', opacity: liveDot }} />
+        <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 2 }}>ENZOBOOST CORE AI — LIVE</Text>
       </View>
 
-      {/* Body + Metrics */}
-      <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 20, gap: 14, alignItems: 'center' }}>
-
-        {/* Avatar 3D */}
-        <View style={{ alignItems: 'center', width: 88 }}>
-          <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: '#1E3A5F', borderWidth: 2, borderColor: '#3B82F6' }} />
-          <View style={{ width: 14, height: 10, backgroundColor: '#1E3A5F', borderLeftWidth: 1, borderRightWidth: 1, borderColor: '#3B82F6' }} />
-          <View style={{ position: 'relative', alignItems: 'center' }}>
-            <View style={{ position: 'absolute', left: -16, top: 0, width: 16, height: 54, backgroundColor: '#1E3A5F', borderRadius: 8, borderWidth: 1, borderColor: '#3B82F6', overflow: 'hidden', alignItems: 'center', paddingTop: 4 }}>
-              {glowZone(glow1, '#FF6B35', 10, 20)}
-            </View>
-            <View style={{ position: 'absolute', right: -16, top: 0, width: 16, height: 54, backgroundColor: '#1E3A5F', borderRadius: 8, borderWidth: 1, borderColor: '#3B82F6', overflow: 'hidden', alignItems: 'center', paddingTop: 4 }}>
-              {glowZone(glow1, '#FF6B35', 10, 20)}
-            </View>
-            <View style={{ width: 62, height: 72, backgroundColor: '#1E3A5F', borderRadius: 10, borderWidth: 1.5, borderColor: '#3B82F6', overflow: 'hidden', alignItems: 'center', paddingTop: 6, gap: 4 }}>
-              {glowZone(glow2, '#FF6B35', 46, 26)}
-              {glowZone(glow3, '#E2AA27', 34, 22)}
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row', gap: 6, marginTop: 3 }}>
-            {[0, 1].map(i => (
-              <View key={i} style={{ width: 26, height: 58, backgroundColor: '#1E3A5F', borderRadius: 8, borderWidth: 1, borderColor: '#3B82F6', overflow: 'hidden', alignItems: 'center', paddingTop: 4 }}>
-                {glowZone(glow4, '#E2AA27', 18, 22)}
-              </View>
-            ))}
-          </View>
-          <Text style={{ color: '#4B5563', fontSize: 8, fontWeight: '700', letterSpacing: 1.2, marginTop: 8, textTransform: 'uppercase' as any }}>Avatar 3D</Text>
+      {/* Carte 1 — Rythme cardiaque */}
+      <Animated.View style={[{
+        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 20, width: '90%',
+        alignSelf: 'flex-start', marginLeft: 8,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
+        transform: [{ rotate: '-3deg' }],
+      }, { transform: [{ translateY: float1 }, { rotate: '-3deg' }] }]}>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 6 }}>Rythme cardiaque</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6, marginBottom: 10 }}>
+          <Text style={{ fontSize: 44, fontWeight: '900', color: '#EF4444', letterSpacing: -1 }}>{bpm}</Text>
+          <Text style={{ fontSize: 14, fontWeight: '700', color: '#EF4444' }}>BPM</Text>
         </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, height: 36 }}>
+          {[1,2,2,1,2,14,3,10,3,1,2,1,2,12,3,9,2,1,2,1,2,10,3].map((h, i) => (
+            <View key={i} style={{ width: 3.5, height: Math.max(2, h * 2.3), backgroundColor: '#EF4444', borderRadius: 2, opacity: i < 11 ? 0.25 + i * 0.06 : 1 }} />
+          ))}
+        </View>
+      </Animated.View>
 
-        {/* Metrics */}
-        <View style={{ flex: 1, gap: 10 }}>
-          <View style={{ backgroundColor: '#111827', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#1F2937' }}>
-            <Text style={{ color: '#6B7280', fontSize: 9, fontWeight: '800', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 2 }}>VO₂ Max</Text>
-            <Text style={{ color: '#FFFFFF', fontSize: 30, fontWeight: '900', letterSpacing: -1, lineHeight: 34 }}>{vo2}</Text>
-            <Text style={{ color: '#22C55E', fontSize: 9, fontWeight: '700', marginTop: 2 }}>↑ Progression active</Text>
+      {/* Carte 2 — Steps + VO2 */}
+      <Animated.View style={[{
+        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 20, width: '90%',
+        alignSelf: 'flex-end', marginRight: 8,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
+        transform: [{ rotate: '2deg' }],
+      }, { transform: [{ translateY: float2 }, { rotate: '2deg' }] }]}>
+        <View style={{ flexDirection: 'row', gap: 0 }}>
+          <View style={{ flex: 1, paddingRight: 16 }}>
+            <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 6 }}>Pas</Text>
+            <Text style={{ fontSize: 28, fontWeight: '900', color: '#111827', letterSpacing: -0.5 }}>{steps.toLocaleString('fr-FR')}</Text>
           </View>
-          <View style={{ backgroundColor: '#111827', borderRadius: 14, padding: 14, borderWidth: 1, borderColor: '#1F2937' }}>
-            <Text style={{ color: '#6B7280', fontSize: 9, fontWeight: '800', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 2 }}>Masse active</Text>
-            <Text style={{ color: '#E2AA27', fontSize: 24, fontWeight: '900', letterSpacing: -0.5 }}>{mass} <Text style={{ fontSize: 13 }}>kg</Text></Text>
-          </View>
-          <View style={{ backgroundColor: '#111827', borderRadius: 14, padding: 12, borderWidth: 1, borderColor: '#1F2937' }}>
-            <Text style={{ color: '#6B7280', fontSize: 9, fontWeight: '800', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 4 }}>Rythme cardiaque</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4, marginBottom: 6 }}>
-              <Text style={{ color: '#FF6B35', fontSize: 24, fontWeight: '900', letterSpacing: -0.5 }}>{bpm}</Text>
-              <Text style={{ color: '#FF6B35', fontSize: 11, fontWeight: '700' }}>BPM</Text>
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, height: 22 }}>
-              {[1,2,4,2,10,2,8,4,1,3,6,2,1,3,10,2,7,3,1,2].map((h, i) => (
-                <View key={i} style={{ width: 3, height: h * 2, backgroundColor: '#FF6B35', borderRadius: 1.5, opacity: i < 10 ? 0.35 : 1 }} />
-              ))}
-            </View>
+          <View style={{ width: 1, backgroundColor: '#F3F4F6', marginVertical: 4 }} />
+          <View style={{ flex: 1, paddingLeft: 16 }}>
+            <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 6 }}>VO₂ Max</Text>
+            <Text style={{ fontSize: 28, fontWeight: '900', color: '#E2AA27', letterSpacing: -0.5 }}>{vo2}</Text>
           </View>
         </View>
-      </View>
-
-      {/* Footer */}
-      <View style={{ paddingBottom: 24, alignItems: 'center' }}>
-        <Text style={{ color: '#374151', fontSize: 9, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase' as any }}>ANALYSE EN COURS — HUB MOVE</Text>
-      </View>
+        <View style={{ marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
+          <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 4 }}>Masse active</Text>
+          <Text style={{ fontSize: 22, fontWeight: '900', color: '#111827' }}>{mass} <Text style={{ fontSize: 13, color: '#6B7280' }}>kg</Text></Text>
+        </View>
+      </Animated.View>
     </View>
   );
 }
