@@ -557,74 +557,43 @@ export default function Onboarding() {
               </View>
 
               {/* ════════════════════════════════════════════
-                  SLIDE 3 — Moteur EnzoBoost & Clinique
+                  SLIDE 3 — Avatar 3D & Transformation
               ════════════════════════════════════════════ */}
               <View style={styles.slide3}>
-                <LinearGradient colors={['#0B132B', '#060E1C', '#0B132B']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
-
-                <View style={styles.s3Tag}>
-                  <Activity size={11} color={Colors.teal} strokeWidth={2} />
-                  <Text style={styles.s3TagTxt}>MOTEUR ENZOBOOST — IA CORE</Text>
-                </View>
-                <Text style={styles.s3Title}>PRÉCISION CLINIQUE{'\n'}& PASSEPORT SANTÉ</Text>
-                <Text style={styles.s3Desc}>
-                  Méthode algorithmique EnzoBoost — IA Core répliquant vos protocoles même en votre absence. Synchronisation avec Apple Santé, Google Fit et ceintures cardio (VFC).
+                <Text style={styles.s3AvatarTitle}>
+                  Visualisez votre transformation{'\n'}en temps réel
                 </Text>
-
-                {/* Dashboard MedTech */}
-                <View style={styles.s3Dashboard}>
-
-                  {/* ECG */}
-                  <View style={styles.s3EcgBox}>
-                    <Text style={styles.s3EcgLabel}>FC EN DIRECT</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 2, paddingTop: 6 }}>
-                      {ECG_HEIGHTS.map((h, i) => {
-                        const opacity = h >= 12 ? 1 : h >= 6 ? 0.65 : h >= 3 ? 0.38 : 0.18;
-                        return <View key={i} style={{ width: 4, height: h, borderRadius: 2, backgroundColor: Colors.teal, opacity }} />;
-                      })}
+                <Text style={styles.s3AvatarSub}>
+                  Votre Avatar 3D Métabolique évolue séance après séance — masse musculaire, composition corporelle et progression VO2 Max mis à jour en direct.
+                </Text>
+                <View style={styles.s3VideoBlock}>
+                  {Platform.OS === 'web' ? (
+                    React.createElement('video', {
+                      autoPlay: true,
+                      loop: true,
+                      muted: true,
+                      playsInline: true,
+                      style: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' },
+                      src: '',
+                    },
+                      React.createElement('div', {
+                        style: {
+                          width: '100%', height: '100%',
+                          backgroundColor: '#E2AA27',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          flexDirection: 'column', gap: '8px',
+                        },
+                      },
+                        React.createElement('span', { style: { fontSize: '36px' } }, '▶'),
+                        React.createElement('span', { style: { fontSize: '12px', fontWeight: '700', color: '#1A1F26', letterSpacing: '2px' } }, 'VIDÉO AVATAR — BIENTÔT')
+                      )
+                    )
+                  ) : (
+                    <View style={{ flex: 1, backgroundColor: '#E2AA27', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                      <Text style={{ fontSize: 36 }}>▶</Text>
+                      <Text style={{ fontSize: 11, fontWeight: '700', color: '#1A1F26', letterSpacing: 2 }}>VIDÉO AVATAR — BIENTÔT</Text>
                     </View>
-                    <Text style={styles.s3Bpm}>68 <Text style={styles.s3BpmUnit}>bpm  •  VFC 52 ms</Text></Text>
-                  </View>
-
-                  {/* IA Core disciplines */}
-                  <View style={styles.s3IACore}>
-                    <Text style={styles.s3IACoreLabel}>IA CORE — CLONAGE MÉTHODE ENZOBOOST</Text>
-                    <View style={styles.s3IACorePills}>
-                      {['💪 Musculation', '🏋️ Haltérophilie', '🏊 Natation', '🏃 Course'].map((d) => (
-                        <View key={d} style={styles.s3IACoreItem}>
-                          <Text style={styles.s3IACoreItemTxt}>{d}</Text>
-                        </View>
-                      ))}
-                    </View>
-                    <View style={styles.s3HandicapNote}>
-                      <Text style={styles.s3HandicapTxt}>♿  Fiches spécifiques fauteuil roulant & programmes APA disponibles</Text>
-                    </View>
-                  </View>
-                </View>
-
-                {/* Rapport Caméléon */}
-                <View style={styles.s3RapportSection}>
-                  <Text style={styles.s3RapportHeader}>MOTEUR CAMÉLÉON — 3 RAPPORTS EN 1 CLIC</Text>
-                  <View style={styles.s3RapportList}>
-                    <RapportCard emoji="👤" title="Rapport Client"        desc="Évolution visuelle Avatar 3D & courbes de progression" />
-                    <RapportCard emoji="🎽" title="Rapport Coach"         desc="Charges, charges nettes, densité d'entraînement & macros" />
-                    <RapportCard emoji="🏥" title="Rapport Institutionnel" desc="Tolérance à l'effort, VFC — validé ARS, médecins, kinés & subventions d'État" />
-                  </View>
-                </View>
-
-                {/* Public badges */}
-                <View style={styles.s3BadgesRow}>
-                  {[
-                    'Athlètes Élite',
-                    'Seniors (Anti-Sarcopénie)',
-                    'Post-Rééducation & ALD',
-                    'PMR (Fauteuil)',
-                    'Handicap Mental (UX Simplifiée)',
-                  ].map((p) => (
-                    <View key={p} style={styles.s3Badge}>
-                      <Text style={styles.s3BadgeTxt}>{p}</Text>
-                    </View>
-                  ))}
+                  )}
                 </View>
               </View>
 
@@ -1291,63 +1260,29 @@ const styles = StyleSheet.create({
   s2PillTxt: { fontSize: 12, fontWeight: '700', color: '#FFFFFF', letterSpacing: 0.3 },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 3 — Fond Sombre #0B132B
+  // SLIDE 3 — Avatar 3D & Transformation (fond blanc)
   // ══════════════════════════════════════════════════════════════════════════
   slide3: {
-    minHeight: H, paddingHorizontal: 24, paddingVertical: 52, gap: 18,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 48, paddingBottom: 0,
+    gap: 16,
   },
-  s3Tag: {
-    flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start',
-    paddingHorizontal: 12, paddingVertical: 5, borderRadius: Radius.full,
-    backgroundColor: 'rgba(0,200,212,0.1)', borderWidth: 1, borderColor: 'rgba(0,200,212,0.25)',
+  s3AvatarTitle: {
+    fontSize: 26, fontWeight: '900', color: '#0D1117',
+    letterSpacing: -0.8, lineHeight: 33,
+    textAlign: 'center', paddingHorizontal: 24,
   },
-  s3TagTxt: { fontSize: 10, fontWeight: '800', color: Colors.teal, letterSpacing: 1.5 },
-  s3Title: { fontSize: 26, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.8, lineHeight: 32 },
-  s3Desc: { fontSize: 13, color: 'rgba(255,255,255,0.48)', lineHeight: 20 },
-  s3Dashboard: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderRadius: 18, padding: 14, gap: 10,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+  s3AvatarSub: {
+    fontSize: 14, color: '#4B5563', lineHeight: 22,
+    textAlign: 'center', paddingHorizontal: 28,
   },
-  s3EcgBox: { backgroundColor: 'rgba(0,200,212,0.06)', borderRadius: 12, padding: 12 },
-  s3EcgLabel: { fontSize: 9, fontWeight: '800', color: Colors.teal, letterSpacing: 2, textTransform: 'uppercase' },
-  s3Bpm: { fontSize: 19, fontWeight: '900', color: '#FFFFFF', marginTop: 8, letterSpacing: -0.5 },
-  s3BpmUnit: { fontSize: 11, fontWeight: '400', color: 'rgba(255,255,255,0.35)' },
-  s3IACore: {
-    backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 12, gap: 8,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+  s3VideoBlock: {
+    width: '100%' as any,
+    height: 240,
+    backgroundColor: '#E2AA27',
+    overflow: 'hidden' as any,
+    marginTop: 8,
   },
-  s3IACoreLabel: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.32)', letterSpacing: 1.5, textTransform: 'uppercase' },
-  s3IACorePills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  s3IACoreItem: {
-    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8,
-    backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.09)',
-  },
-  s3IACoreItemTxt: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.7)' },
-  s3HandicapNote: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    paddingVertical: 6, paddingHorizontal: 8, borderRadius: 8,
-    backgroundColor: 'rgba(0,200,212,0.07)', borderWidth: 1, borderColor: 'rgba(0,200,212,0.2)',
-  },
-  s3HandicapTxt: { fontSize: 11, color: Colors.teal, fontWeight: '600' },
-  s3RapportSection: { gap: 8 },
-  s3RapportHeader: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.28)', letterSpacing: 1.5, textTransform: 'uppercase' },
-  s3RapportList: { gap: 6 },
-  s3RapportCard: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 13, padding: 11,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
-  },
-  s3RapportInner: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
-  s3RapportTitle: { fontSize: 13, fontWeight: '700', color: '#FFFFFF', marginBottom: 1 },
-  s3RapportDesc: { fontSize: 10, color: 'rgba(255,255,255,0.38)', lineHeight: 14 },
-  s3BadgesRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
-  s3Badge: {
-    paddingHorizontal: 11, paddingVertical: 6, borderRadius: Radius.full,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
-    backgroundColor: 'rgba(255,255,255,0.04)',
-  },
-  s3BadgeTxt: { fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.6)' },
 
   // ══════════════════════════════════════════════════════════════════════════
   // SLIDE 4 — Fond Blanc
