@@ -815,10 +815,10 @@ export default function Onboarding() {
               ════════════════════════════════════════════ */}
               <View style={[styles.slide4, { height: H }]}>
                 <Text style={styles.s4EatTitle}>
-                  Nutrition augmentée :{'\n'}Votre écosystème alimentaire.
+                  Votre nutrition,{'\n'}enfin simplifiée.
                 </Text>
                 <Text style={styles.s4EatSub}>
-                  De l'analyse instantanée à la planification personnalisée. Notre système adapte vos repas et vos listes de courses à vos objectifs, simplement et efficacement.
+                  Une programmation sur-mesure calibrée selon votre objectif — perte de gras, prise de muscle ou forme active. Repas planifiés, courses optimisées au meilleur prix, rythme respecté. Sans frustration.
                 </Text>
                 <View style={{ flex: 1 }}>
                   <NutritionBlock />
