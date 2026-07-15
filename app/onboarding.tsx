@@ -352,7 +352,7 @@ function LogistiqueBlock() {
   ];
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#E2AA27', alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16 }}>
+    <View style={{ flex: 1, backgroundColor: 'transparent', alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16 }}>
 
       {/* Badge EN DIRECT */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 }}>
@@ -920,7 +920,7 @@ export default function Onboarding() {
               {/* ════════════════════════════════════════════
                   SLIDE 4 — Hub EAT & Nutrition Augmentée
               ════════════════════════════════════════════ */}
-              <View style={[styles.slide4, { height: H }]}>
+              <View style={[styles.slide4, { height: H, zIndex: 2 }]}>
                 <Text style={styles.s4EatTitle}>
                   Votre nutrition,{'\n'}enfin simplifiée.
                 </Text>
@@ -935,13 +935,26 @@ export default function Onboarding() {
               {/* ════════════════════════════════════════════
                   SLIDE 5 — Hub Logistique Terrain
               ════════════════════════════════════════════ */}
-              <View style={[styles.slideLog, { height: H }]}>
-                <Text style={styles.logTitle}>La logistique terrain,{'\n'}sans l'effort.</Text>
-                <Text style={styles.logSub}>
-                  Plus de groupes WhatsApp ni de trajets improvisés. Notre système coordonne automatiquement les navettes, optimise les itinéraires des chauffeurs et prévient chaque adhérent de son heure de passage exacte. Tout le monde arrive à l'heure, l'esprit tranquille.
-                </Text>
-                <View style={{ flex: 1 }}>
-                  <LogistiqueBlock />
+              <View style={{ height: H + 28, marginTop: -28, backgroundColor: '#FFFFFF', paddingHorizontal: 16, zIndex: 1 }}>
+                {/* Grande carte arrondie style TSE — dégradé crème → amber */}
+                <View style={{
+                  borderRadius: 36, overflow: 'hidden', flex: 1,
+                  shadowColor: '#C8890A', shadowOffset: { width: 0, height: 16 },
+                  shadowOpacity: 0.22, shadowRadius: 32, elevation: 12,
+                }}>
+                  <LinearGradient
+                    colors={['#FFFDF5', '#FEF3C7', '#F5C340', '#E2AA27']}
+                    locations={[0, 0.14, 0.38, 1]}
+                    style={{ flex: 1, paddingTop: 52, gap: 14, flexDirection: 'column' as any }}
+                  >
+                    <Text style={styles.logTitle}>La logistique terrain,{'\n'}sans l'effort.</Text>
+                    <Text style={styles.logSub}>
+                      Plus de groupes WhatsApp ni de trajets improvisés. Notre système coordonne automatiquement les navettes, optimise les itinéraires des chauffeurs et prévient chaque adhérent de son heure de passage exacte. Tout le monde arrive à l'heure, l'esprit tranquille.
+                    </Text>
+                    <View style={{ flex: 1 }}>
+                      <LogistiqueBlock />
+                    </View>
+                  </LinearGradient>
                 </View>
               </View>
 
@@ -1641,18 +1654,17 @@ const styles = StyleSheet.create({
   // SLIDE 5 — Hub Logistique Terrain
   // ══════════════════════════════════════════════════════════════════════════
   slideLog: {
-    backgroundColor: '#E2AA27',
-    paddingTop: 48, paddingBottom: 0,
-    gap: 16,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 0, paddingBottom: 0,
     flexDirection: 'column' as any,
   },
   logTitle: {
-    fontSize: 30, fontWeight: '900' as any, color: '#FFFFFF',
+    fontSize: 30, fontWeight: '900' as any, color: '#1C0A00',
     letterSpacing: -1, lineHeight: 38,
     textAlign: 'center' as any, paddingHorizontal: 24,
   },
   logSub: {
-    fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 21,
+    fontSize: 13, color: 'rgba(45,22,0,0.65)', lineHeight: 21,
     textAlign: 'center' as any, paddingHorizontal: 28,
   },
   s4Badge: {
