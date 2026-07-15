@@ -250,10 +250,15 @@ function NutritionBlock() {
           shadowColor: '#10B981', shadowOffset: { width: 0, height: 16 },
           shadowOpacity: 0.16, shadowRadius: 36, elevation: 18,
         }}>
-          {/* Food area — full height minus bottom bar */}
-          <View style={{ flex: 1, backgroundColor: '#F0FDF4', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <View style={{ width: phoneW * 0.74, height: phoneW * 0.74, borderRadius: phoneW * 0.37, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#A7F3D0' }}>
-              <Text style={{ fontSize: phoneW * 0.27 }}>🥗</Text>
+          {/* Status bar */}
+          <View style={{ height: 28, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ fontSize: 8, fontWeight: '800', color: '#059669', letterSpacing: 1.5 }}>METABOOST EAT</Text>
+          </View>
+
+          {/* Food area */}
+          <View style={{ height: foodH, backgroundColor: '#F0FDF4', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <View style={{ width: phoneW * 0.82, height: phoneW * 0.82, borderRadius: phoneW * 0.41, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#A7F3D0' }}>
+              <Text style={{ fontSize: phoneW * 0.30 }}>🥗</Text>
             </View>
             {/* Laser line */}
             <Animated.View style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 2, backgroundColor: '#10B981', opacity: 0.9, shadowColor: '#10B981', shadowOpacity: 1, shadowRadius: 6, shadowOffset: { width: 0, height: 0 }, transform: [{ translateY: laserAnim }] }} />
