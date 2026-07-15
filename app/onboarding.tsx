@@ -232,10 +232,10 @@ function NutritionBlock() {
   return (
     <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
 
-      {/* Badge ANALYSE IA */}
+      {/* Badge SCAN EN COURS */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 16 }}>
         <Animated.View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: '#10B981', opacity: dotAnim }} />
-        <Text style={{ color: '#10B981', fontSize: 10, fontWeight: '800', letterSpacing: 2.5 }}>ANALYSE IA...</Text>
+        <Text style={{ color: '#10B981', fontSize: 10, fontWeight: '800', letterSpacing: 2.5 }}>SCAN EN COURS</Text>
       </View>
 
       {/* Phone + floating cards container */}
@@ -250,16 +250,16 @@ function NutritionBlock() {
           shadowColor: '#10B981', shadowOffset: { width: 0, height: 16 },
           shadowOpacity: 0.16, shadowRadius: 36, elevation: 18,
         }}>
-          {/* Status bar */}
-          <View style={{ height: 28, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 8, fontWeight: '800', color: '#059669', letterSpacing: 1.5 }}>METABOOST EAT</Text>
-          </View>
-
-          {/* Food area */}
-          <View style={{ height: foodH, backgroundColor: '#F0FDF4', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          {/* Food area — full height minus bottom bar */}
+          <View style={{ flex: 1, backgroundColor: '#F0FDF4', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             <View style={{ width: phoneW * 0.66, height: phoneW * 0.66, borderRadius: phoneW * 0.33, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#A7F3D0' }}>
               <Text style={{ fontSize: phoneW * 0.24 }}>🥗</Text>
             </View>
+            {/* Viewfinder corners */}
+            <View style={{ position: 'absolute', top: 14, left: 14, width: 18, height: 18, borderTopWidth: 2, borderLeftWidth: 2, borderColor: '#10B981' }} />
+            <View style={{ position: 'absolute', top: 14, right: 14, width: 18, height: 18, borderTopWidth: 2, borderRightWidth: 2, borderColor: '#10B981' }} />
+            <View style={{ position: 'absolute', bottom: 14, left: 14, width: 18, height: 18, borderBottomWidth: 2, borderLeftWidth: 2, borderColor: '#10B981' }} />
+            <View style={{ position: 'absolute', bottom: 14, right: 14, width: 18, height: 18, borderBottomWidth: 2, borderRightWidth: 2, borderColor: '#10B981' }} />
             {/* Laser line */}
             <Animated.View style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 2, backgroundColor: '#10B981', opacity: 0.9, shadowColor: '#10B981', shadowOpacity: 1, shadowRadius: 6, shadowOffset: { width: 0, height: 0 }, transform: [{ translateY: laserAnim }] }} />
             {/* Laser glow */}
@@ -305,7 +305,7 @@ function NutritionBlock() {
           shadowOpacity: 0.10, shadowRadius: 18, elevation: 10,
           borderWidth: 1, borderColor: '#F3F4F6',
         }, { transform: [{ translateY: floatB }, { rotate: '3deg' }] }]}>
-          <Text style={{ fontSize: 7, fontWeight: '800', color: '#9CA3AF', letterSpacing: 1.5, marginBottom: 6 }}>PANIER IA OPTIMISÉ</Text>
+          <Text style={{ fontSize: 7, fontWeight: '800', color: '#9CA3AF', letterSpacing: 1.5, marginBottom: 6 }}>LISTE DE COURSES</Text>
           <Text style={{ fontSize: 15, fontWeight: '900', color: '#111827' }}>3,80 €<Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '500' }}> / portion</Text></Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 5 }}>
             <View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: '#10B981' }} />
@@ -815,10 +815,10 @@ export default function Onboarding() {
               ════════════════════════════════════════════ */}
               <View style={[styles.slide4, { height: H }]}>
                 <Text style={styles.s4EatTitle}>
-                  La nutrition.{'\n'}Sans la charge mentale.
+                  Scannez votre plat.{'\n'}On fait le reste.
                 </Text>
                 <Text style={styles.s4EatSub}>
-                  L'IA scanne votre plat, extrait les macros en temps réel et génère votre liste de courses selon votre budget — en un clic.
+                  Photographiez n'importe quel repas : macros, calories et liste de courses adaptée à votre budget, générées en quelques secondes.
                 </Text>
                 <View style={{ flex: 1 }}>
                   <NutritionBlock />
