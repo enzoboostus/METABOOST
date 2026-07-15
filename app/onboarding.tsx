@@ -252,14 +252,9 @@ function NutritionBlock() {
         }}>
           {/* Food area — full height minus bottom bar */}
           <View style={{ flex: 1, backgroundColor: '#F0FDF4', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <View style={{ width: phoneW * 0.66, height: phoneW * 0.66, borderRadius: phoneW * 0.33, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#A7F3D0' }}>
-              <Text style={{ fontSize: phoneW * 0.24 }}>🥗</Text>
+            <View style={{ width: phoneW * 0.74, height: phoneW * 0.74, borderRadius: phoneW * 0.37, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#A7F3D0' }}>
+              <Text style={{ fontSize: phoneW * 0.27 }}>🥗</Text>
             </View>
-            {/* Viewfinder corners */}
-            <View style={{ position: 'absolute', top: 14, left: 14, width: 18, height: 18, borderTopWidth: 2, borderLeftWidth: 2, borderColor: '#10B981' }} />
-            <View style={{ position: 'absolute', top: 14, right: 14, width: 18, height: 18, borderTopWidth: 2, borderRightWidth: 2, borderColor: '#10B981' }} />
-            <View style={{ position: 'absolute', bottom: 14, left: 14, width: 18, height: 18, borderBottomWidth: 2, borderLeftWidth: 2, borderColor: '#10B981' }} />
-            <View style={{ position: 'absolute', bottom: 14, right: 14, width: 18, height: 18, borderBottomWidth: 2, borderRightWidth: 2, borderColor: '#10B981' }} />
             {/* Laser line */}
             <Animated.View style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 2, backgroundColor: '#10B981', opacity: 0.9, shadowColor: '#10B981', shadowOpacity: 1, shadowRadius: 6, shadowOffset: { width: 0, height: 0 }, transform: [{ translateY: laserAnim }] }} />
             {/* Laser glow */}
