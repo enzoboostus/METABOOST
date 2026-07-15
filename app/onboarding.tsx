@@ -352,20 +352,21 @@ function LogistiqueBlock() {
   ];
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'transparent', alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16 }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16 }}>
 
       {/* Badge EN DIRECT */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-        <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFFFFF', opacity: liveDot }} />
-        <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 3 }}>EN DIRECT</Text>
+        <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#E2AA27', opacity: liveDot }} />
+        <Text style={{ color: '#374151', fontSize: 11, fontWeight: '800', letterSpacing: 3 }}>EN DIRECT</Text>
       </View>
 
       {/* Carte 1 — Trajet adhérent */}
       <Animated.View style={[{
         backgroundColor: '#FFFFFF', borderRadius: 22, padding: 14, width: '90%',
         alignSelf: 'flex-start', marginLeft: 8,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
-        shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
+        borderWidth: 1, borderColor: '#F3F4F6',
+        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.04, shadowRadius: 30, elevation: 3,
       }, { transform: [{ translateY: float1 }, { rotate: '-3deg' }] }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
           <Text style={{ fontSize: 14 }}>🚌</Text>
@@ -382,15 +383,16 @@ function LogistiqueBlock() {
       <Animated.View style={[{
         backgroundColor: '#FFFFFF', borderRadius: 22, padding: 14, width: '90%',
         alignSelf: 'flex-end', marginRight: 8,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
-        shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
+        borderWidth: 1, borderColor: '#F3F4F6',
+        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.04, shadowRadius: 30, elevation: 3,
       }, { transform: [{ translateY: float2 }, { rotate: '2deg' }] }]}>
         <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 10 }}>Feuille de route — Navette A</Text>
         <View style={{ gap: 5 }}>
           {steps.map((step, i) => (
             <View key={i} style={{
               paddingVertical: 6, paddingHorizontal: 8, borderRadius: 10,
-              backgroundColor: i === activeStep ? '#FEF3C7' : 'transparent',
+              backgroundColor: i === activeStep ? '#FFFBEB' : 'transparent',
               borderWidth: i === activeStep ? 1 : 0, borderColor: '#E2AA27',
             }}>
               <Text style={{ fontSize: 8, fontWeight: '800', color: i === activeStep ? '#92400E' : '#9CA3AF', letterSpacing: 0.4 }}>{step.time}</Text>
@@ -404,8 +406,9 @@ function LogistiqueBlock() {
       <Animated.View style={[{
         backgroundColor: '#FFFFFF', borderRadius: 22, padding: 14, width: '90%',
         alignSelf: 'flex-start', marginLeft: 16,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
-        shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
+        borderWidth: 1, borderColor: '#F3F4F6',
+        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.04, shadowRadius: 30, elevation: 3,
       }, { transform: [{ translateY: float3 }, { rotate: '-2deg' }] }]}>
         <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 8 }}>Navettes automatisées</Text>
         <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -920,7 +923,7 @@ export default function Onboarding() {
               {/* ════════════════════════════════════════════
                   SLIDE 4 — Hub EAT & Nutrition Augmentée
               ════════════════════════════════════════════ */}
-              <View style={[styles.slide4, { height: H, zIndex: 2 }]}>
+              <View style={[styles.slide4, { height: H }]}>
                 <Text style={styles.s4EatTitle}>
                   Votre nutrition,{'\n'}enfin simplifiée.
                 </Text>
@@ -935,26 +938,13 @@ export default function Onboarding() {
               {/* ════════════════════════════════════════════
                   SLIDE 5 — Hub Logistique Terrain
               ════════════════════════════════════════════ */}
-              <View style={{ height: H + 28, marginTop: -28, backgroundColor: '#FFFFFF', paddingHorizontal: 16, zIndex: 1 }}>
-                {/* Grande carte arrondie style TSE — dégradé crème → amber */}
-                <View style={{
-                  borderRadius: 36, overflow: 'hidden', flex: 1,
-                  shadowColor: '#C8890A', shadowOffset: { width: 0, height: 16 },
-                  shadowOpacity: 0.22, shadowRadius: 32, elevation: 12,
-                }}>
-                  <LinearGradient
-                    colors={['#FFFDF5', '#FEF3C7', '#F5C340', '#E2AA27']}
-                    locations={[0, 0.14, 0.38, 1]}
-                    style={{ flex: 1, paddingTop: 52, gap: 14, flexDirection: 'column' as any }}
-                  >
-                    <Text style={styles.logTitle}>La logistique terrain,{'\n'}sans l'effort.</Text>
-                    <Text style={styles.logSub}>
-                      Plus de groupes WhatsApp ni de trajets improvisés. Notre système coordonne automatiquement les navettes, optimise les itinéraires des chauffeurs et prévient chaque adhérent de son heure de passage exacte. Tout le monde arrive à l'heure, l'esprit tranquille.
-                    </Text>
-                    <View style={{ flex: 1 }}>
-                      <LogistiqueBlock />
-                    </View>
-                  </LinearGradient>
+              <View style={[styles.slideLog, { height: H }]}>
+                <Text style={styles.logTitle}>La logistique terrain,{'\n'}sans l'effort.</Text>
+                <Text style={styles.logSub}>
+                  Plus de groupes WhatsApp ni de trajets improvisés. Notre système coordonne automatiquement les navettes, optimise les itinéraires des chauffeurs et prévient chaque adhérent de son heure de passage exacte. Tout le monde arrive à l'heure, l'esprit tranquille.
+                </Text>
+                <View style={{ flex: 1 }}>
+                  <LogistiqueBlock />
                 </View>
               </View>
 
@@ -1655,16 +1645,17 @@ const styles = StyleSheet.create({
   // ══════════════════════════════════════════════════════════════════════════
   slideLog: {
     backgroundColor: '#FFFFFF',
-    paddingTop: 0, paddingBottom: 0,
+    paddingTop: 48, paddingBottom: 0,
+    gap: 16,
     flexDirection: 'column' as any,
   },
   logTitle: {
-    fontSize: 30, fontWeight: '900' as any, color: '#1C0A00',
+    fontSize: 30, fontWeight: '900' as any, color: '#0D1117',
     letterSpacing: -1, lineHeight: 38,
     textAlign: 'center' as any, paddingHorizontal: 24,
   },
   logSub: {
-    fontSize: 13, color: 'rgba(45,22,0,0.65)', lineHeight: 21,
+    fontSize: 13, color: '#4B5563', lineHeight: 21,
     textAlign: 'center' as any, paddingHorizontal: 28,
   },
   s4Badge: {
