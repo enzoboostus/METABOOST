@@ -317,6 +317,80 @@ function NutritionBlock() {
   );
 }
 
+function LogistiqueBlock() {
+  const dotAnim = useRef(new Animated.Value(1)).current;
+  const [activeStep, setActiveStep] = useState(1);
+
+  useEffect(() => {
+    Animated.loop(Animated.sequence([
+      Animated.timing(dotAnim, { toValue: 0, duration: 800, useNativeDriver: true }),
+      Animated.timing(dotAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+    ])).start();
+    const t = setInterval(() => setActiveStep(s => s >= 2 ? 0 : s + 1), 2200);
+    return () => clearInterval(t);
+  }, []);
+
+  const steps = [
+    { time: '14:00', label: 'Récupération de Marie' },
+    { time: '14:15', label: 'Récupération de Jean' },
+    { time: '14:30', label: 'Arrivée Maison Sport-Santé' },
+  ];
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#f5f5f7', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 24, justifyContent: 'center', gap: 14 }}>
+
+      {/* Deux cartes côte à côte */}
+      <View style={{ flexDirection: 'row', gap: 12 }}>
+
+        {/* Carte 1 — Adhérent */}
+        <View style={{ flex: 1, backgroundColor: '#FFFFFF', borderRadius: 24, padding: 14,
+          shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 12, elevation: 3 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 12 }}>
+            <Animated.View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: '#10B981', opacity: dotAnim }} />
+            <Text style={{ fontSize: 8, fontWeight: '600', color: '#6B7280' }}>Votre trajet aujourd'hui</Text>
+          </View>
+          <Text style={{ fontSize: 38, fontWeight: '900', color: '#0D1117', letterSpacing: -2, lineHeight: 40 }}>14:15</Text>
+          <View style={{ marginTop: 14, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#E5E7EB', gap: 3 }}>
+            <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '500' }}>Départ</Text>
+            <Text style={{ fontSize: 9, color: '#6B7280', fontWeight: '500' }}>↳ Navette (Marc)</Text>
+            <Text style={{ fontSize: 9, color: '#0D1117', fontWeight: '800' }}>↳ Maison Sport-Santé</Text>
+          </View>
+        </View>
+
+        {/* Carte 2 — Chauffeur */}
+        <View style={{ flex: 1, backgroundColor: '#FFFFFF', borderRadius: 24, padding: 14,
+          shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 12, elevation: 3 }}>
+          <Text style={{ fontSize: 9, fontWeight: '800', color: '#0D1117', lineHeight: 14, marginBottom: 14 }}>
+            Feuille de route{'\n'}Navette A
+          </Text>
+          <View style={{ gap: 6 }}>
+            {steps.map((step, i) => (
+              <View key={i} style={{
+                paddingVertical: 7, paddingHorizontal: 8, borderRadius: 10,
+                backgroundColor: i === activeStep ? '#F0FDF4' : 'transparent',
+                borderWidth: i === activeStep ? 1 : 0, borderColor: '#10B981',
+              }}>
+                <Text style={{ fontSize: 8, fontWeight: '800', color: i === activeStep ? '#059669' : '#9CA3AF', letterSpacing: 0.4 }}>{step.time}</Text>
+                <Text style={{ fontSize: 9, fontWeight: i === activeStep ? '700' : '400' as any, color: i === activeStep ? '#0D1117' : '#6B7280', marginTop: 1, lineHeight: 13 }}>{step.label}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </View>
+
+      {/* Badges bas */}
+      <View style={{ flexDirection: 'row', gap: 8 }}>
+        {['Navette\nautomatisée', 'Alertes\ntemps réel', 'Zéro\nWhatsApp'].map(b => (
+          <View key={b} style={{ flex: 1, alignItems: 'center', paddingVertical: 10, backgroundColor: '#FFFFFF', borderRadius: 14,
+            shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 }}>
+            <Text style={{ fontSize: 8, fontWeight: '700', color: '#374151', textAlign: 'center', lineHeight: 12 }}>{b}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function MacroBlock({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', paddingVertical: 13, borderRadius: 12, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F3F4F6', gap: 3 }}>
@@ -826,7 +900,20 @@ export default function Onboarding() {
               </View>
 
               {/* ════════════════════════════════════════════
-                  SLIDE 5 — Infrastructure B2B & Capture
+                  SLIDE 5 — Hub Logistique Terrain
+              ════════════════════════════════════════════ */}
+              <View style={[styles.slideLog, { height: H }]}>
+                <Text style={styles.logTitle}>La logistique,{'\n'}sans l'effort.</Text>
+                <Text style={styles.logSub}>
+                  Plus de groupes WhatsApp ni de trajets improvisés. Notre système coordonne automatiquement les navettes, optimise les itinéraires des chauffeurs et prévient chaque adhérent de son heure de passage exacte. Tout le monde arrive à l'heure, l'esprit tranquille.
+                </Text>
+                <View style={{ flex: 1 }}>
+                  <LogistiqueBlock />
+                </View>
+              </View>
+
+              {/* ════════════════════════════════════════════
+                  SLIDE 6 — Infrastructure B2B & Capture
               ════════════════════════════════════════════ */}
               <View style={styles.slide5}>
                 <LinearGradient colors={['#050A12', '#0A0F1E', '#050A12']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
@@ -1516,6 +1603,25 @@ const styles = StyleSheet.create({
   s4PushBadgeTxt: { fontSize: 9, fontWeight: '900', color: '#D97706', letterSpacing: 1 },
   s4AdminNote: { fontSize: 11, color: '#9CA3AF', letterSpacing: 0.2, lineHeight: 17, fontStyle: 'italic', paddingHorizontal: 2 },
   s4Badges: { gap: 8 },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // SLIDE 5 — Hub Logistique Terrain
+  // ══════════════════════════════════════════════════════════════════════════
+  slideLog: {
+    backgroundColor: '#f5f5f7',
+    paddingTop: 48, paddingBottom: 0,
+    gap: 16,
+    flexDirection: 'column' as any,
+  },
+  logTitle: {
+    fontSize: 30, fontWeight: '900' as any, color: '#0D1117',
+    letterSpacing: -1, lineHeight: 38,
+    textAlign: 'center' as any, paddingHorizontal: 24,
+  },
+  logSub: {
+    fontSize: 13, color: '#4B5563', lineHeight: 21,
+    textAlign: 'center' as any, paddingHorizontal: 28,
+  },
   s4Badge: {
     paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12,
     backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#E5E7EB',
