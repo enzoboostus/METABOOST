@@ -317,10 +317,9 @@ function NutritionBlock() {
   );
 }
 
-// Image à placer dans : assets/images/logistique_hero.jpeg (générée via Bing Image Creator)
-const LOGISTIQUE_HERO = (() => {
-  try { return require('../assets/images/logistique_hero.jpeg'); } catch { return null; }
-})();
+// Décommenter quand assets/images/logistique_hero.jpeg est ajouté :
+// const LOGISTIQUE_HERO = require('../assets/images/logistique_hero.jpeg');
+const LOGISTIQUE_HERO: any = null;
 
 const LOG_STEPS = [
   { emoji: '📋', label: 'Feuille de route', sub: 'Validée par la structure' },
