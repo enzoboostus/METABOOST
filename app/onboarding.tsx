@@ -82,7 +82,7 @@ function AvatarBlock() {
   const liveDot = useRef(new Animated.Value(1)).current;
   const float1  = useRef(new Animated.Value(0)).current;
   const float2  = useRef(new Animated.Value(6)).current;
-  const float3  = useRef(new Animated.Value(3)).current;
+  const float3  = useRef(new Animated.Value(0)).current;
   const [bpm,   setBpm]   = useState(72);
   const [vo2,   setVo2]   = useState(48);
   const [steps, setSteps] = useState(8432);
@@ -102,8 +102,8 @@ function AvatarBlock() {
       Animated.timing(float2, { toValue: 6,  duration: 2200, useNativeDriver: true }),
     ])).start();
     Animated.loop(Animated.sequence([
-      Animated.timing(float3, { toValue: -6, duration: 1900, useNativeDriver: true }),
-      Animated.timing(float3, { toValue: 3,  duration: 1900, useNativeDriver: true }),
+      Animated.timing(float3, { toValue: -8, duration: 1900, useNativeDriver: true }),
+      Animated.timing(float3, { toValue: 0,  duration: 1900, useNativeDriver: true }),
     ])).start();
     const t = setInterval(() => {
       setBpm(b   => b   >= 148   ? 72   : b + 2);
@@ -115,7 +115,7 @@ function AvatarBlock() {
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#E2AA27', alignItems: 'center', justifyContent: 'flex-start', gap: 16, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 20 }}>
+    <View style={{ flex: 1, backgroundColor: '#E2AA27', alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16 }}>
 
       {/* Live badge */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -125,61 +125,61 @@ function AvatarBlock() {
 
       {/* Carte 1 — Rythme cardiaque */}
       <Animated.View style={[{
-        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 20, width: '90%',
+        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 12, width: '90%',
         alignSelf: 'flex-start', marginLeft: 8,
         shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
         shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
       }, { transform: [{ translateY: float1 }, { rotate: '-3deg' }] }]}>
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 6 }}>Rythme cardiaque</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6, marginBottom: 10 }}>
-          <Text style={{ fontSize: 44, fontWeight: '900', color: '#EF4444', letterSpacing: -1 }}>{bpm}</Text>
-          <Text style={{ fontSize: 14, fontWeight: '700', color: '#EF4444' }}>BPM</Text>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 4 }}>Rythme cardiaque</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
+          <Text style={{ fontSize: 36, fontWeight: '900', color: '#EF4444', letterSpacing: -1 }}>{bpm}</Text>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: '#EF4444' }}>BPM</Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, height: 36 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2, height: 22 }}>
           {[1,2,2,1,2,14,3,10,3,1,2,1,2,12,3,9,2,1,2,1,2,10,3].map((h, i) => (
-            <View key={i} style={{ width: 3.5, height: Math.max(2, h * 2.3), backgroundColor: '#EF4444', borderRadius: 2, opacity: i < 11 ? 0.25 + i * 0.06 : 1 }} />
+            <View key={i} style={{ width: 3.5, height: Math.max(2, h * 1.5), backgroundColor: '#EF4444', borderRadius: 2, opacity: i < 11 ? 0.25 + i * 0.06 : 1 }} />
           ))}
         </View>
       </Animated.View>
 
       {/* Carte 2 — Steps + VO2 */}
       <Animated.View style={[{
-        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 20, width: '90%',
+        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 12, width: '90%',
         alignSelf: 'flex-end', marginRight: 8,
         shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
         shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
       }, { transform: [{ translateY: float2 }, { rotate: '2deg' }] }]}>
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ flex: 1, paddingRight: 16 }}>
-            <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 6 }}>Pas</Text>
-            <Text style={{ fontSize: 28, fontWeight: '900', color: '#111827', letterSpacing: -0.5 }}>{steps.toLocaleString('fr-FR')}</Text>
+          <View style={{ flex: 1, paddingRight: 12 }}>
+            <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 4 }}>Pas</Text>
+            <Text style={{ fontSize: 22, fontWeight: '900', color: '#111827', letterSpacing: -0.5 }}>{steps.toLocaleString('fr-FR')}</Text>
           </View>
           <View style={{ width: 1, backgroundColor: '#F3F4F6', marginVertical: 4 }} />
-          <View style={{ flex: 1, paddingLeft: 16 }}>
-            <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 6 }}>VO₂ Max</Text>
-            <Text style={{ fontSize: 28, fontWeight: '900', color: '#E2AA27', letterSpacing: -0.5 }}>{vo2}</Text>
+          <View style={{ flex: 1, paddingLeft: 12 }}>
+            <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 4 }}>VO₂ Max</Text>
+            <Text style={{ fontSize: 22, fontWeight: '900', color: '#E2AA27', letterSpacing: -0.5 }}>{vo2}</Text>
           </View>
         </View>
-        <View style={{ marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
-          <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 4 }}>Masse active</Text>
-          <Text style={{ fontSize: 22, fontWeight: '900', color: '#111827' }}>{mass} <Text style={{ fontSize: 13, color: '#6B7280' }}>kg</Text></Text>
+        <View style={{ marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
+          <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 3 }}>Masse active</Text>
+          <Text style={{ fontSize: 18, fontWeight: '900', color: '#111827' }}>{mass} <Text style={{ fontSize: 12, color: '#6B7280' }}>kg</Text></Text>
         </View>
       </Animated.View>
 
       {/* Carte 3 — Objectif semaine */}
       <Animated.View style={[{
-        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 20, width: '90%',
+        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 12, width: '90%',
         alignSelf: 'flex-start', marginLeft: 16,
         shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
         shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
       }, { transform: [{ translateY: float3 }, { rotate: '-2deg' }] }]}>
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 6 }}>Objectif semaine</Text>
-        <Text style={{ fontSize: 36, fontWeight: '900', color: '#111827', letterSpacing: -1 }}>-1.0 <Text style={{ fontSize: 18, color: '#6B7280' }}>kg</Text></Text>
-        <View style={{ marginTop: 10 }}>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 4 }}>Objectif semaine</Text>
+        <Text style={{ fontSize: 28, fontWeight: '900', color: '#111827', letterSpacing: -1 }}>-1.0 <Text style={{ fontSize: 15, color: '#6B7280' }}>kg</Text></Text>
+        <View style={{ marginTop: 8 }}>
           <View style={{ height: 3, backgroundColor: '#F3F4F6', borderRadius: 2, overflow: 'hidden' as any }}>
             <View style={{ width: '75%', height: '100%', backgroundColor: '#E2AA27', borderRadius: 2 }} />
           </View>
-          <Text style={{ fontSize: 10, fontWeight: '600', color: '#9CA3AF', marginTop: 5 }}>75% complété</Text>
+          <Text style={{ fontSize: 10, fontWeight: '600', color: '#9CA3AF', marginTop: 4 }}>75% complété</Text>
         </View>
       </Animated.View>
     </View>
