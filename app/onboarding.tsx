@@ -941,7 +941,7 @@ export default function Onboarding() {
               <View style={[styles.slideLog, { height: H }]}>
                 <Text style={styles.logTitle}>La logistique terrain,{'\n'}sans l'effort.</Text>
                 <Text style={styles.logSub}>
-                  Plus de groupes WhatsApp ni de trajets improvisés. Notre système coordonne automatiquement les navettes, optimise les itinéraires des chauffeurs et prévient chaque adhérent de son heure de passage exacte. Tout le monde arrive à l'heure, l'esprit tranquille.
+                  Centralisez la validation et la planification des trajets de chaque adhérent en un seul endroit. Notre plateforme connecte directement la structure sportive, l'adhérent et le chauffeur pour valider chaque prise en charge et automatiser les tournées, sans aucun canal de messagerie externe.
                 </Text>
                 <View style={{ flex: 1 }}>
                   <LogistiqueBlock />
