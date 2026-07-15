@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Flame, TrendingUp, Shield, ChevronRight, ChevronLeft, ScanLine,
-  Activity, Users, ChevronDown, Bot, ClipboardList, Navigation, Smartphone, Dumbbell,
+  Activity, Users, ChevronDown, Bot,
 } from 'lucide-react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, Gender, Goal } from '@/store/userStore';
@@ -320,10 +320,10 @@ function NutritionBlock() {
 const LOGISTIQUE_HERO = require('../assets/images/logistique_hero.jpeg');
 
 const LOG_STEPS = [
-  { Icon: ClipboardList, label: 'Feuille de route',    sub: 'Validée par la structure'   },
-  { Icon: Navigation,    label: 'Itinéraire optimisé', sub: 'Multi-arrêts calculés'       },
-  { Icon: Smartphone,    label: 'Prise en contact',    sub: 'SMS / Alerte automatique'    },
-  { Icon: Dumbbell,      label: 'Arrivée validée',     sub: 'Musculation démarrée'        },
+  { emoji: '📋',  label: 'Feuille de route',    sub: 'Validée par la structure' },
+  { emoji: '🗺️', label: 'Itinéraire optimisé', sub: 'Multi-arrêts calculés'    },
+  { emoji: '📲',  label: 'Prise en contact',    sub: 'SMS / Alerte automatique' },
+  { emoji: '🏋️', label: 'Arrivée validée',     sub: 'Musculation démarrée'    },
 ];
 
 function LogistiqueBlock() {
@@ -367,7 +367,7 @@ function LogistiqueBlock() {
         <View style={{ position: 'absolute' as any, top: 36 + 20, left: 20 + 20, right: 20 + 20, height: 1, backgroundColor: '#E5E7EB' }} />
 
         <View style={{ flexDirection: 'row' as any, justifyContent: 'space-between' as any }}>
-          {LOG_STEPS.map(({ Icon, label, sub }, i) => {
+          {LOG_STEPS.map(({ emoji, label, sub }, i) => {
             const active = i === activeStep;
             return (
               <View key={i} style={{ alignItems: 'center' as any, width: Math.round((W - 40) / 4) }}>
@@ -385,7 +385,7 @@ function LogistiqueBlock() {
                   marginBottom: 8,
                   ...(Platform.OS === 'web' ? { transition: 'all 0.45s ease' } as any : {}),
                 }}>
-                  <Icon size={18} color={active ? '#E2AA27' : '#9CA3AF'} strokeWidth={1.6} />
+                  <Text style={{ fontSize: 20 }}>{emoji}</Text>
                 </View>
                 <Text style={{
                   fontSize: 9,
