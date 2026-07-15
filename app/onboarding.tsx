@@ -327,7 +327,7 @@ const LOG_STEPS = [
 ];
 
 function LogistiqueBlock() {
-  const imgSize = Math.round(W * 0.92);
+  const imgSize = Math.round(Math.min(W * 0.88, H * 0.40));
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center' }}>
