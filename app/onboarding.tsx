@@ -186,6 +186,137 @@ function AvatarBlock() {
   );
 }
 
+function NutritionBlock() {
+  const dotAnim   = useRef(new Animated.Value(1)).current;
+  const laserAnim = useRef(new Animated.Value(0)).current;
+  const floatA    = useRef(new Animated.Value(0)).current;
+  const floatB    = useRef(new Animated.Value(4)).current;
+  const [protein, setProtein] = useState(28);
+  const [carbs,   setCarbs]   = useState(42);
+  const [lipids,  setLipids]  = useState(12);
+  const [kcal,    setKcal]    = useState(384);
+
+  const phoneW = Math.round(W * 0.48);
+  const phoneH = Math.round(phoneW * 2.02);
+  const foodH  = phoneH - 28 - 54;
+  const cW     = W - 24;
+
+  useEffect(() => {
+    Animated.loop(Animated.sequence([
+      Animated.timing(dotAnim,   { toValue: 0, duration: 700, useNativeDriver: true }),
+      Animated.timing(dotAnim,   { toValue: 1, duration: 700, useNativeDriver: true }),
+    ])).start();
+    Animated.loop(Animated.sequence([
+      Animated.timing(laserAnim, { toValue: foodH - 4, duration: 2000, useNativeDriver: true }),
+      Animated.timing(laserAnim, { toValue: 0,          duration: 80,   useNativeDriver: true }),
+    ])).start();
+    Animated.loop(Animated.sequence([
+      Animated.timing(floatA, { toValue: -9, duration: 2200, useNativeDriver: true }),
+      Animated.timing(floatA, { toValue: 0,  duration: 2200, useNativeDriver: true }),
+    ])).start();
+    Animated.loop(Animated.sequence([
+      Animated.timing(floatB, { toValue: -5, duration: 2000, useNativeDriver: true }),
+      Animated.timing(floatB, { toValue: 4,  duration: 2000, useNativeDriver: true }),
+    ])).start();
+    const t = setInterval(() => {
+      setProtein(p => p >= 34 ? 28 : p + 1);
+      setCarbs(c   => c >= 50 ? 42 : c + 1);
+      setLipids(l  => l >= 16 ? 12 : l + 1);
+      setKcal(k    => k >= 422 ? 384 : k + 6);
+    }, 1200);
+    return () => clearInterval(t);
+  }, []);
+
+  const cardW = Math.round(cW * 0.38);
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+
+      {/* Badge ANALYSE IA */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 16 }}>
+        <Animated.View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: '#10B981', opacity: dotAnim }} />
+        <Text style={{ color: '#10B981', fontSize: 10, fontWeight: '800', letterSpacing: 2.5 }}>ANALYSE IA...</Text>
+      </View>
+
+      {/* Phone + floating cards container */}
+      <View style={{ width: cW, height: phoneH, alignItems: 'center' }}>
+
+        {/* Phone frame */}
+        <View style={{
+          width: phoneW, height: phoneH, borderRadius: 32,
+          backgroundColor: '#ECFDF5',
+          borderWidth: 2, borderColor: '#A7F3D0',
+          overflow: 'hidden',
+          shadowColor: '#10B981', shadowOffset: { width: 0, height: 16 },
+          shadowOpacity: 0.16, shadowRadius: 36, elevation: 18,
+        }}>
+          {/* Status bar */}
+          <View style={{ height: 28, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ fontSize: 8, fontWeight: '800', color: '#059669', letterSpacing: 1.5 }}>METABOOST EAT</Text>
+          </View>
+
+          {/* Food area */}
+          <View style={{ height: foodH, backgroundColor: '#F0FDF4', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <View style={{ width: phoneW * 0.66, height: phoneW * 0.66, borderRadius: phoneW * 0.33, backgroundColor: '#D1FAE5', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#A7F3D0' }}>
+              <Text style={{ fontSize: phoneW * 0.24 }}>🥗</Text>
+            </View>
+            {/* Laser line */}
+            <Animated.View style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 2, backgroundColor: '#10B981', opacity: 0.9, shadowColor: '#10B981', shadowOpacity: 1, shadowRadius: 6, shadowOffset: { width: 0, height: 0 }, transform: [{ translateY: laserAnim }] }} />
+            {/* Laser glow */}
+            <Animated.View style={{ position: 'absolute', left: 0, right: 0, top: -4, height: 10, backgroundColor: '#10B981', opacity: 0.15, transform: [{ translateY: laserAnim }] }} />
+          </View>
+
+          {/* Bottom kcal */}
+          <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#D1FAE5', justifyContent: 'center' }}>
+            <Text style={{ fontSize: 8, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, marginBottom: 2 }}>CALORIES</Text>
+            <Text style={{ fontSize: 20, fontWeight: '900', color: '#111827' }}>{kcal}<Text style={{ fontSize: 10, color: '#9CA3AF', fontWeight: '500' }}> kcal</Text></Text>
+          </View>
+        </View>
+
+        {/* Floating card: MACROS */}
+        <Animated.View style={[{
+          position: 'absolute', left: 0, top: Math.round(phoneH * 0.13),
+          backgroundColor: '#FFFFFF', borderRadius: 16, padding: 11, width: cardW,
+          shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.10, shadowRadius: 18, elevation: 10,
+          borderWidth: 1, borderColor: '#F3F4F6',
+        }, { transform: [{ translateY: floatA }, { rotate: '-3deg' }] }]}>
+          <Text style={{ fontSize: 7, fontWeight: '800', color: '#9CA3AF', letterSpacing: 1.5, marginBottom: 7 }}>MACROS DÉTECTÉES</Text>
+          {[
+            { label: 'Protéines', val: `${protein}g`, color: '#F59E0B' },
+            { label: 'Glucides',  val: `${carbs}g`,   color: '#10B981' },
+            { label: 'Lipides',   val: `${lipids}g`,  color: '#94A3B8' },
+          ].map(({ label, val, color }) => (
+            <View key={label} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: color }} />
+                <Text style={{ fontSize: 9, color: '#6B7280', fontWeight: '600' }}>{label}</Text>
+              </View>
+              <Text style={{ fontSize: 10, fontWeight: '900', color: '#111827' }}>{val}</Text>
+            </View>
+          ))}
+        </Animated.View>
+
+        {/* Floating card: PANIER */}
+        <Animated.View style={[{
+          position: 'absolute', right: 0, top: Math.round(phoneH * 0.53),
+          backgroundColor: '#FFFFFF', borderRadius: 16, padding: 11, width: cardW,
+          shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.10, shadowRadius: 18, elevation: 10,
+          borderWidth: 1, borderColor: '#F3F4F6',
+        }, { transform: [{ translateY: floatB }, { rotate: '3deg' }] }]}>
+          <Text style={{ fontSize: 7, fontWeight: '800', color: '#9CA3AF', letterSpacing: 1.5, marginBottom: 6 }}>PANIER IA OPTIMISÉ</Text>
+          <Text style={{ fontSize: 15, fontWeight: '900', color: '#111827' }}>3,80 €<Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '500' }}> / portion</Text></Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 5 }}>
+            <View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: '#10B981' }} />
+            <Text style={{ fontSize: 9, fontWeight: '700', color: '#10B981' }}>Budget optimisé ✓</Text>
+          </View>
+        </Animated.View>
+      </View>
+    </View>
+  );
+}
+
 function MacroBlock({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', paddingVertical: 13, borderRadius: 12, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F3F4F6', gap: 3 }}>
@@ -680,62 +811,17 @@ export default function Onboarding() {
               </View>
 
               {/* ════════════════════════════════════════════
-                  SLIDE 4 — Logistique & Transports
+                  SLIDE 4 — Hub EAT & Nutrition Augmentée
               ════════════════════════════════════════════ */}
-              <View style={styles.slide4}>
-
-                <View style={styles.s4Tag}>
-                  <Text style={styles.s4TagTxt}>MAISON SPORT-SANTÉ</Text>
-                </View>
-                <Text style={styles.s4Title}>ZÉRO ÉPARPILLEMENT.{'\n'}LOGISTIQUE CENTRALISÉE.</Text>
-                <Text style={styles.s4Desc}>
-                  Éradication totale des groupes WhatsApp. Module logistique intégré pour les structures disposant d'un service de ramassage — navette adaptée pour seniors, personnes isolées ou PMR.
+              <View style={[styles.slide4, { height: H }]}>
+                <Text style={styles.s4EatTitle}>
+                  La nutrition.{'\n'}Sans la charge mentale.
                 </Text>
-
-                {/* Prochain RDV */}
-                <View style={styles.s4RdvCard}>
-                  <View style={styles.s4RdvLeft}>
-                    <Text style={styles.s4RdvEmoji}>📅</Text>
-                    <View style={{ gap: 2 }}>
-                      <Text style={styles.s4RdvLabel}>MON PROCHAIN RDV</Text>
-                      <Text style={styles.s4RdvTime}>Mercredi — 08h30</Text>
-                    </View>
-                  </View>
-                  <View style={styles.s4RdvConfirmed}>
-                    <Text style={styles.s4RdvConfirmedTxt}>Navette ✓</Text>
-                  </View>
-                </View>
-
-                {/* Timeline */}
-                <View style={styles.s4Card}>
-                  <Text style={styles.s4CardTitle}>VOTRE JOURNÉE AUTOMATISÉE</Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-                    <LogisticsStep icon="🏠" label="Domicile" time="08h30" />
-                    <View style={styles.s4Connector} />
-                    <LogisticsStep icon="🚍" label={"Navette\nMETABOOST"} time="08h45" highlight />
-                    <View style={styles.s4Connector} />
-                    <LogisticsStep icon="🏋️" label={"10 Bornes\nTactiles"} time="09h00" />
-                    <View style={styles.s4Connector} />
-                    <LogisticsStep icon="📱" label={"Suivi\nClinique"} time="Live" />
-                  </View>
-                </View>
-
-                {/* iOS-style push notification */}
-                <PushNotif
-                  title="🔔  Votre chauffeur arrive dans 12 min"
-                  sub="Ahmed • Navette METABOOST • 📍 Rue de la Paix, en route"
-                />
-
-                <Text style={styles.s4AdminNote}>
-                  ⚙️  Feuille de route chauffeur générée automatiquement via le God Mode Admin.
+                <Text style={styles.s4EatSub}>
+                  L'IA scanne votre plat, extrait les macros en temps réel et génère votre liste de courses selon votre budget — en un clic.
                 </Text>
-
-                <View style={styles.s4Badges}>
-                  {['10 bornes tactiles en salle', 'Navette adaptée domicile', 'Alertes push temps réel'].map((b) => (
-                    <View key={b} style={styles.s4Badge}>
-                      <Text style={styles.s4BadgeTxt}>✓  {b}</Text>
-                    </View>
-                  ))}
+                <View style={{ flex: 1 }}>
+                  <NutritionBlock />
                 </View>
               </View>
 
@@ -1367,13 +1453,22 @@ const styles = StyleSheet.create({
   },
 
   // ══════════════════════════════════════════════════════════════════════════
-  // SLIDE 4 — Fond Blanc
+  // SLIDE 4 — Hub EAT & Nutrition Augmentée
   // ══════════════════════════════════════════════════════════════════════════
   slide4: {
-    minHeight: H, marginTop: -1,
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 24, paddingTop: 52, paddingBottom: 52,
-    gap: 18,
+    paddingTop: 48, paddingBottom: 0,
+    gap: 16,
+    flexDirection: 'column' as any,
+  },
+  s4EatTitle: {
+    fontSize: 30, fontWeight: '900' as any, color: '#0D1117',
+    letterSpacing: -1, lineHeight: 38,
+    textAlign: 'center' as any, paddingHorizontal: 24,
+  },
+  s4EatSub: {
+    fontSize: 14, color: '#4B5563', lineHeight: 22,
+    textAlign: 'center' as any, paddingHorizontal: 28,
   },
   s4Tag: {
     alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 5,
