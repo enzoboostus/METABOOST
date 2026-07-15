@@ -803,7 +803,7 @@ export default function Onboarding() {
                   Votre transformation{'\n'}en temps réel
                 </Text>
                 <Text style={styles.s3AvatarSub}>
-                  Votre Avatar 3D Métabolique évolue séance après séance — masse musculaire, composition corporelle et VO2 Max mis à jour en direct.
+                  Votre Avatar 3D Métabolique évolue séance après séance (masse musculaire, composition corporelle et VO2 Max mis à jour en direct).
                 </Text>
                 <View style={[styles.s3VideoBlock, { flex: 1 }]}>
                   <AvatarBlock />
