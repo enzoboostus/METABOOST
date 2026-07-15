@@ -317,112 +317,70 @@ function NutritionBlock() {
   );
 }
 
+// Image à placer dans : assets/images/logistique_hero.jpeg (générée via Bing Image Creator)
+const LOGISTIQUE_HERO = (() => {
+  try { return require('../assets/images/logistique_hero.jpeg'); } catch { return null; }
+})();
+
+const LOG_STEPS = [
+  { emoji: '📋', label: 'Feuille de route', sub: 'Validée par la structure' },
+  { emoji: '🗺️', label: 'Itinéraire optimisé', sub: 'Multi-arrêts calculés' },
+  { emoji: '🤝', label: 'Prise en charge', sub: 'Confirmation en direct' },
+  { emoji: '🏠', label: 'Arrivée sécurisée', sub: 'Rapport automatique' },
+];
+
 function LogistiqueBlock() {
-  const liveDot = useRef(new Animated.Value(1)).current;
-  const float1  = useRef(new Animated.Value(0)).current;
-  const float2  = useRef(new Animated.Value(6)).current;
-  const float3  = useRef(new Animated.Value(0)).current;
-  const [activeStep, setActiveStep] = useState(1);
-
-  useEffect(() => {
-    Animated.loop(Animated.sequence([
-      Animated.timing(liveDot, { toValue: 0, duration: 600, useNativeDriver: true }),
-      Animated.timing(liveDot, { toValue: 1, duration: 600, useNativeDriver: true }),
-    ])).start();
-    Animated.loop(Animated.sequence([
-      Animated.timing(float1, { toValue: -10, duration: 2000, useNativeDriver: true }),
-      Animated.timing(float1, { toValue: 0,   duration: 2000, useNativeDriver: true }),
-    ])).start();
-    Animated.loop(Animated.sequence([
-      Animated.timing(float2, { toValue: -4, duration: 2200, useNativeDriver: true }),
-      Animated.timing(float2, { toValue: 6,  duration: 2200, useNativeDriver: true }),
-    ])).start();
-    Animated.loop(Animated.sequence([
-      Animated.timing(float3, { toValue: -8, duration: 1900, useNativeDriver: true }),
-      Animated.timing(float3, { toValue: 0,  duration: 1900, useNativeDriver: true }),
-    ])).start();
-    const t = setInterval(() => setActiveStep(s => s >= 2 ? 0 : s + 1), 2200);
-    return () => clearInterval(t);
-  }, []);
-
-  const steps = [
-    { time: '14:00', label: 'Récupération de Marie' },
-    { time: '14:15', label: 'Récupération de Jean' },
-    { time: '14:30', label: 'Arrivée Maison Sport-Santé' },
-  ];
+  const imgH = Math.round(H * 0.38);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16 }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
 
-      {/* Badge EN DIRECT */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-        <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#E2AA27', opacity: liveDot }} />
-        <Text style={{ color: '#374151', fontSize: 11, fontWeight: '800', letterSpacing: 3 }}>EN DIRECT</Text>
+      {/* ── Zone image hero ── */}
+      <View style={{ width: W, height: imgH, marginBottom: -24, overflow: 'hidden' as any }}>
+        {LOGISTIQUE_HERO ? (
+          <Image
+            source={LOGISTIQUE_HERO}
+            style={{ width: '100%' as any, height: '100%' as any }}
+            resizeMode="cover"
+          />
+        ) : (
+          /* Placeholder jusqu'à l'ajout de l'image */
+          <View style={{ flex: 1, backgroundColor: '#F3F4F6', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <Text style={{ fontSize: 48 }}>🚌</Text>
+            <Text style={{ fontSize: 11, color: '#9CA3AF', fontWeight: '600', textAlign: 'center' as any, paddingHorizontal: 24 }}>
+              Déposez l'image dans{'\n'}assets/images/logistique_hero.jpeg
+            </Text>
+          </View>
+        )}
       </View>
 
-      {/* Carte 1 — Trajet adhérent */}
-      <Animated.View style={[{
-        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 14, width: '90%',
-        alignSelf: 'flex-start', marginLeft: 8,
-        borderWidth: 1, borderColor: '#F3F4F6',
-        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.04, shadowRadius: 30, elevation: 3,
-      }, { transform: [{ translateY: float1 }, { rotate: '-3deg' }] }]}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-          <Text style={{ fontSize: 14 }}>🚌</Text>
-          <Text style={{ fontSize: 9, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any }}>Votre trajet aujourd'hui</Text>
-        </View>
-        <Text style={{ fontSize: 36, fontWeight: '900', color: '#0D1117', letterSpacing: -2, lineHeight: 40 }}>14:15</Text>
-        <View style={{ marginTop: 8, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#E5E7EB', gap: 3 }}>
-          <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '500' }}>Navette (Marc)</Text>
-          <Text style={{ fontSize: 9, color: '#0D1117', fontWeight: '800' }}>↳ Maison Sport-Santé</Text>
-        </View>
-      </Animated.View>
+      {/* ── Timeline 4 étapes ── */}
+      <View style={{ paddingHorizontal: 20, paddingTop: 36, paddingBottom: 16 }}>
 
-      {/* Carte 2 — Feuille de route chauffeur */}
-      <Animated.View style={[{
-        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 14, width: '90%',
-        alignSelf: 'flex-end', marginRight: 8,
-        borderWidth: 1, borderColor: '#F3F4F6',
-        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.04, shadowRadius: 30, elevation: 3,
-      }, { transform: [{ translateY: float2 }, { rotate: '2deg' }] }]}>
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 10 }}>Feuille de route — Navette A</Text>
-        <View style={{ gap: 5 }}>
-          {steps.map((step, i) => (
-            <View key={i} style={{
-              paddingVertical: 6, paddingHorizontal: 8, borderRadius: 10,
-              backgroundColor: i === activeStep ? '#FFFBEB' : 'transparent',
-              borderWidth: i === activeStep ? 1 : 0, borderColor: '#E2AA27',
-            }}>
-              <Text style={{ fontSize: 8, fontWeight: '800', color: i === activeStep ? '#92400E' : '#9CA3AF', letterSpacing: 0.4 }}>{step.time}</Text>
-              <Text style={{ fontSize: 9, fontWeight: i === activeStep ? '700' : '400' as any, color: i === activeStep ? '#0D1117' : '#6B7280', marginTop: 1 }}>{step.label}</Text>
+        {/* Ligne de connexion horizontale */}
+        <View style={{ position: 'absolute' as any, top: 36 + 20, left: 20 + 20, right: 20 + 20, height: 1, backgroundColor: '#E5E7EB' }} />
+
+        <View style={{ flexDirection: 'row' as any, justifyContent: 'space-between' as any }}>
+          {LOG_STEPS.map((s, i) => (
+            <View key={i} style={{ alignItems: 'center' as any, width: Math.round((W - 40) / 4) }}>
+              {/* Carré icône */}
+              <View style={{
+                width: 40, height: 40, borderRadius: 12,
+                backgroundColor: '#FFFFFF',
+                borderWidth: 1.5, borderColor: i === 0 ? '#E2AA27' : '#E5E7EB',
+                alignItems: 'center' as any, justifyContent: 'center' as any,
+                shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
+                marginBottom: 10,
+              }}>
+                <Text style={{ fontSize: 18 }}>{s.emoji}</Text>
+              </View>
+              <Text style={{ fontSize: 9, fontWeight: '800' as any, color: '#0D1117', textAlign: 'center' as any, lineHeight: 13 }}>{s.label}</Text>
+              <Text style={{ fontSize: 8, color: '#9CA3AF', textAlign: 'center' as any, marginTop: 2, lineHeight: 12 }}>{s.sub}</Text>
             </View>
           ))}
         </View>
-      </Animated.View>
-
-      {/* Carte 3 — Stats navettes */}
-      <Animated.View style={[{
-        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 14, width: '90%',
-        alignSelf: 'flex-start', marginLeft: 16,
-        borderWidth: 1, borderColor: '#F3F4F6',
-        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.04, shadowRadius: 30, elevation: 3,
-      }, { transform: [{ translateY: float3 }, { rotate: '-2deg' }] }]}>
-        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 8 }}>Navettes automatisées</Text>
-        <View style={{ flexDirection: 'row', gap: 12 }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', color: '#0D1117' }}>100%</Text>
-            <Text style={{ fontSize: 9, color: '#6B7280', fontWeight: '500', marginTop: 2 }}>Alertes temps réel</Text>
-          </View>
-          <View style={{ width: 1, backgroundColor: '#F3F4F6', marginVertical: 4 }} />
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', color: '#E2AA27' }}>0</Text>
-            <Text style={{ fontSize: 9, color: '#6B7280', fontWeight: '500', marginTop: 2 }}>WhatsApp</Text>
-          </View>
-        </View>
-      </Animated.View>
+      </View>
     </View>
   );
 }
@@ -1646,7 +1604,7 @@ const styles = StyleSheet.create({
   slideLog: {
     backgroundColor: '#FFFFFF',
     paddingTop: 48, paddingBottom: 0,
-    gap: 16,
+    gap: 12,
     flexDirection: 'column' as any,
   },
   logTitle: {
