@@ -82,6 +82,7 @@ function AvatarBlock() {
   const liveDot = useRef(new Animated.Value(1)).current;
   const float1  = useRef(new Animated.Value(0)).current;
   const float2  = useRef(new Animated.Value(6)).current;
+  const float3  = useRef(new Animated.Value(3)).current;
   const [bpm,   setBpm]   = useState(72);
   const [vo2,   setVo2]   = useState(48);
   const [steps, setSteps] = useState(8432);
@@ -100,6 +101,10 @@ function AvatarBlock() {
       Animated.timing(float2, { toValue: -4, duration: 2200, useNativeDriver: true }),
       Animated.timing(float2, { toValue: 6,  duration: 2200, useNativeDriver: true }),
     ])).start();
+    Animated.loop(Animated.sequence([
+      Animated.timing(float3, { toValue: -6, duration: 1900, useNativeDriver: true }),
+      Animated.timing(float3, { toValue: 3,  duration: 1900, useNativeDriver: true }),
+    ])).start();
     const t = setInterval(() => {
       setBpm(b   => b   >= 148   ? 72   : b + 2);
       setVo2(v   => v   >= 54    ? 48   : v + 1);
@@ -115,7 +120,7 @@ function AvatarBlock() {
       {/* Live badge */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFFFFF', opacity: liveDot }} />
-        <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 2 }}>METABOLIC AI — LIVE</Text>
+        <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 3 }}>LIVE</Text>
       </View>
 
       {/* Carte 1 — Rythme cardiaque */}
@@ -158,6 +163,23 @@ function AvatarBlock() {
         <View style={{ marginTop: 14, paddingTop: 14, borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
           <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 4 }}>Masse active</Text>
           <Text style={{ fontSize: 22, fontWeight: '900', color: '#111827' }}>{mass} <Text style={{ fontSize: 13, color: '#6B7280' }}>kg</Text></Text>
+        </View>
+      </Animated.View>
+
+      {/* Carte 3 — Objectif semaine */}
+      <Animated.View style={[{
+        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 20, width: '90%',
+        alignSelf: 'flex-start', marginLeft: 16,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
+      }, { transform: [{ translateY: float3 }, { rotate: '-2deg' }] }]}>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 6 }}>Objectif semaine</Text>
+        <Text style={{ fontSize: 36, fontWeight: '900', color: '#111827', letterSpacing: -1 }}>-1.0 <Text style={{ fontSize: 18, color: '#6B7280' }}>kg</Text></Text>
+        <View style={{ marginTop: 10 }}>
+          <View style={{ height: 3, backgroundColor: '#F3F4F6', borderRadius: 2, overflow: 'hidden' as any }}>
+            <View style={{ width: '75%', height: '100%', backgroundColor: '#E2AA27', borderRadius: 2 }} />
+          </View>
+          <Text style={{ fontSize: 10, fontWeight: '600', color: '#9CA3AF', marginTop: 5 }}>75% complété</Text>
         </View>
       </Animated.View>
     </View>
