@@ -318,13 +318,28 @@ function NutritionBlock() {
 }
 
 function LogistiqueBlock() {
-  const dotAnim = useRef(new Animated.Value(1)).current;
+  const liveDot = useRef(new Animated.Value(1)).current;
+  const float1  = useRef(new Animated.Value(0)).current;
+  const float2  = useRef(new Animated.Value(6)).current;
+  const float3  = useRef(new Animated.Value(0)).current;
   const [activeStep, setActiveStep] = useState(1);
 
   useEffect(() => {
     Animated.loop(Animated.sequence([
-      Animated.timing(dotAnim, { toValue: 0, duration: 800, useNativeDriver: true }),
-      Animated.timing(dotAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+      Animated.timing(liveDot, { toValue: 0, duration: 600, useNativeDriver: true }),
+      Animated.timing(liveDot, { toValue: 1, duration: 600, useNativeDriver: true }),
+    ])).start();
+    Animated.loop(Animated.sequence([
+      Animated.timing(float1, { toValue: -10, duration: 2000, useNativeDriver: true }),
+      Animated.timing(float1, { toValue: 0,   duration: 2000, useNativeDriver: true }),
+    ])).start();
+    Animated.loop(Animated.sequence([
+      Animated.timing(float2, { toValue: -4, duration: 2200, useNativeDriver: true }),
+      Animated.timing(float2, { toValue: 6,  duration: 2200, useNativeDriver: true }),
+    ])).start();
+    Animated.loop(Animated.sequence([
+      Animated.timing(float3, { toValue: -8, duration: 1900, useNativeDriver: true }),
+      Animated.timing(float3, { toValue: 0,  duration: 1900, useNativeDriver: true }),
     ])).start();
     const t = setInterval(() => setActiveStep(s => s >= 2 ? 0 : s + 1), 2200);
     return () => clearInterval(t);
@@ -337,56 +352,74 @@ function LogistiqueBlock() {
   ];
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f5f5f7', paddingHorizontal: 20, paddingTop: 24, paddingBottom: 24, justifyContent: 'center', gap: 14 }}>
+    <View style={{ flex: 1, backgroundColor: '#E2AA27', alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16 }}>
 
-      {/* Deux cartes côte à côte */}
-      <View style={{ flexDirection: 'row', gap: 12 }}>
-
-        {/* Carte 1 — Adhérent */}
-        <View style={{ flex: 1, backgroundColor: '#FFFFFF', borderRadius: 24, padding: 14,
-          shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 12, elevation: 3 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 12 }}>
-            <Animated.View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: '#10B981', opacity: dotAnim }} />
-            <Text style={{ fontSize: 8, fontWeight: '600', color: '#6B7280' }}>Votre trajet aujourd'hui</Text>
-          </View>
-          <Text style={{ fontSize: 38, fontWeight: '900', color: '#0D1117', letterSpacing: -2, lineHeight: 40 }}>14:15</Text>
-          <View style={{ marginTop: 14, paddingTop: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#E5E7EB', gap: 3 }}>
-            <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '500' }}>Départ</Text>
-            <Text style={{ fontSize: 9, color: '#6B7280', fontWeight: '500' }}>↳ Navette (Marc)</Text>
-            <Text style={{ fontSize: 9, color: '#0D1117', fontWeight: '800' }}>↳ Maison Sport-Santé</Text>
-          </View>
-        </View>
-
-        {/* Carte 2 — Chauffeur */}
-        <View style={{ flex: 1, backgroundColor: '#FFFFFF', borderRadius: 24, padding: 14,
-          shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 12, elevation: 3 }}>
-          <Text style={{ fontSize: 9, fontWeight: '800', color: '#0D1117', lineHeight: 14, marginBottom: 14 }}>
-            Feuille de route{'\n'}Navette A
-          </Text>
-          <View style={{ gap: 6 }}>
-            {steps.map((step, i) => (
-              <View key={i} style={{
-                paddingVertical: 7, paddingHorizontal: 8, borderRadius: 10,
-                backgroundColor: i === activeStep ? '#F0FDF4' : 'transparent',
-                borderWidth: i === activeStep ? 1 : 0, borderColor: '#10B981',
-              }}>
-                <Text style={{ fontSize: 8, fontWeight: '800', color: i === activeStep ? '#059669' : '#9CA3AF', letterSpacing: 0.4 }}>{step.time}</Text>
-                <Text style={{ fontSize: 9, fontWeight: i === activeStep ? '700' : '400' as any, color: i === activeStep ? '#0D1117' : '#6B7280', marginTop: 1, lineHeight: 13 }}>{step.label}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
+      {/* Badge EN DIRECT */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFFFFF', opacity: liveDot }} />
+        <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 3 }}>EN DIRECT</Text>
       </View>
 
-      {/* Badges bas */}
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        {['Navette\nautomatisée', 'Alertes\ntemps réel', 'Zéro\nWhatsApp'].map(b => (
-          <View key={b} style={{ flex: 1, alignItems: 'center', paddingVertical: 10, backgroundColor: '#FFFFFF', borderRadius: 14,
-            shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 }}>
-            <Text style={{ fontSize: 8, fontWeight: '700', color: '#374151', textAlign: 'center', lineHeight: 12 }}>{b}</Text>
+      {/* Carte 1 — Trajet adhérent */}
+      <Animated.View style={[{
+        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 14, width: '90%',
+        alignSelf: 'flex-start', marginLeft: 8,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
+      }, { transform: [{ translateY: float1 }, { rotate: '-3deg' }] }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+          <Text style={{ fontSize: 14 }}>🚌</Text>
+          <Text style={{ fontSize: 9, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any }}>Votre trajet aujourd'hui</Text>
+        </View>
+        <Text style={{ fontSize: 36, fontWeight: '900', color: '#0D1117', letterSpacing: -2, lineHeight: 40 }}>14:15</Text>
+        <View style={{ marginTop: 8, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#E5E7EB', gap: 3 }}>
+          <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '500' }}>Navette (Marc)</Text>
+          <Text style={{ fontSize: 9, color: '#0D1117', fontWeight: '800' }}>↳ Maison Sport-Santé</Text>
+        </View>
+      </Animated.View>
+
+      {/* Carte 2 — Feuille de route chauffeur */}
+      <Animated.View style={[{
+        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 14, width: '90%',
+        alignSelf: 'flex-end', marginRight: 8,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
+      }, { transform: [{ translateY: float2 }, { rotate: '2deg' }] }]}>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 10 }}>Feuille de route — Navette A</Text>
+        <View style={{ gap: 5 }}>
+          {steps.map((step, i) => (
+            <View key={i} style={{
+              paddingVertical: 6, paddingHorizontal: 8, borderRadius: 10,
+              backgroundColor: i === activeStep ? '#FEF3C7' : 'transparent',
+              borderWidth: i === activeStep ? 1 : 0, borderColor: '#E2AA27',
+            }}>
+              <Text style={{ fontSize: 8, fontWeight: '800', color: i === activeStep ? '#92400E' : '#9CA3AF', letterSpacing: 0.4 }}>{step.time}</Text>
+              <Text style={{ fontSize: 9, fontWeight: i === activeStep ? '700' : '400' as any, color: i === activeStep ? '#0D1117' : '#6B7280', marginTop: 1 }}>{step.label}</Text>
+            </View>
+          ))}
+        </View>
+      </Animated.View>
+
+      {/* Carte 3 — Stats navettes */}
+      <Animated.View style={[{
+        backgroundColor: '#FFFFFF', borderRadius: 22, padding: 14, width: '90%',
+        alignSelf: 'flex-start', marginLeft: 16,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.18, shadowRadius: 24, elevation: 12,
+      }, { transform: [{ translateY: float3 }, { rotate: '-2deg' }] }]}>
+        <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 8 }}>Navettes automatisées</Text>
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 22, fontWeight: '900', color: '#0D1117' }}>100%</Text>
+            <Text style={{ fontSize: 9, color: '#6B7280', fontWeight: '500', marginTop: 2 }}>Alertes temps réel</Text>
           </View>
-        ))}
-      </View>
+          <View style={{ width: 1, backgroundColor: '#F3F4F6', marginVertical: 4 }} />
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 22, fontWeight: '900', color: '#E2AA27' }}>0</Text>
+            <Text style={{ fontSize: 9, color: '#6B7280', fontWeight: '500', marginTop: 2 }}>WhatsApp</Text>
+          </View>
+        </View>
+      </Animated.View>
     </View>
   );
 }
@@ -903,7 +936,7 @@ export default function Onboarding() {
                   SLIDE 5 — Hub Logistique Terrain
               ════════════════════════════════════════════ */}
               <View style={[styles.slideLog, { height: H }]}>
-                <Text style={styles.logTitle}>La logistique,{'\n'}sans l'effort.</Text>
+                <Text style={styles.logTitle}>La logistique terrain,{'\n'}sans l'effort.</Text>
                 <Text style={styles.logSub}>
                   Plus de groupes WhatsApp ni de trajets improvisés. Notre système coordonne automatiquement les navettes, optimise les itinéraires des chauffeurs et prévient chaque adhérent de son heure de passage exacte. Tout le monde arrive à l'heure, l'esprit tranquille.
                 </Text>
@@ -1608,18 +1641,18 @@ const styles = StyleSheet.create({
   // SLIDE 5 — Hub Logistique Terrain
   // ══════════════════════════════════════════════════════════════════════════
   slideLog: {
-    backgroundColor: '#f5f5f7',
+    backgroundColor: '#E2AA27',
     paddingTop: 48, paddingBottom: 0,
     gap: 16,
     flexDirection: 'column' as any,
   },
   logTitle: {
-    fontSize: 30, fontWeight: '900' as any, color: '#0D1117',
+    fontSize: 30, fontWeight: '900' as any, color: '#FFFFFF',
     letterSpacing: -1, lineHeight: 38,
     textAlign: 'center' as any, paddingHorizontal: 24,
   },
   logSub: {
-    fontSize: 13, color: '#4B5563', lineHeight: 21,
+    fontSize: 13, color: 'rgba(255,255,255,0.85)', lineHeight: 21,
     textAlign: 'center' as any, paddingHorizontal: 28,
   },
   s4Badge: {
