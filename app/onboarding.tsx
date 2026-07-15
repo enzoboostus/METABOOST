@@ -118,7 +118,7 @@ function AvatarBlock() {
     <View style={{ flex: 1, backgroundColor: '#E2AA27', alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16 }}>
 
       {/* Live badge */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 }}>
         <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFFFFF', opacity: liveDot }} />
         <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 3 }}>LIVE</Text>
       </View>
