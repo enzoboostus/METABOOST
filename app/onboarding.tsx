@@ -327,26 +327,29 @@ const LOG_STEPS = [
 ];
 
 function LogistiqueBlock() {
-  const imgH = Math.round(H * 0.38);
+  const imgSize = Math.round(W * 0.92);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center' }}>
 
-      {/* ── Zone image hero ── */}
-      <View style={{ width: W, height: imgH, marginBottom: -24, overflow: 'hidden' as any }}>
+      {/* ── Zone image hero — taille carrée naturelle, aucun recadrage ── */}
+      <View style={{
+        width: imgSize, height: imgSize,
+        borderRadius: 24, overflow: 'hidden' as any,
+        backgroundColor: '#E2AA27',
+        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.10, shadowRadius: 20, elevation: 6,
+        marginBottom: 8,
+      }}>
         {LOGISTIQUE_HERO ? (
           <Image
             source={LOGISTIQUE_HERO}
-            style={{ width: '100%' as any, height: '100%' as any }}
-            resizeMode="cover"
+            style={{ width: imgSize, height: imgSize }}
+            resizeMode="contain"
           />
         ) : (
-          /* Placeholder jusqu'à l'ajout de l'image */
-          <View style={{ flex: 1, backgroundColor: '#F3F4F6', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8 }}>
             <Text style={{ fontSize: 48 }}>🚌</Text>
-            <Text style={{ fontSize: 11, color: '#9CA3AF', fontWeight: '600', textAlign: 'center' as any, paddingHorizontal: 24 }}>
-              Déposez l'image dans{'\n'}assets/images/logistique_hero.jpeg
-            </Text>
           </View>
         )}
       </View>
