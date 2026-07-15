@@ -818,7 +818,7 @@ export default function Onboarding() {
                   Votre nutrition,{'\n'}enfin simplifiée.
                 </Text>
                 <Text style={styles.s4EatSub}>
-                  Une programmation sur-mesure calibrée selon votre objectif — perte de gras, prise de muscle ou forme active. Repas planifiés, courses optimisées au meilleur prix, rythme respecté. Sans frustration.
+                  Découvrez une programmation nutritionnelle sur-mesure, calibrée selon votre objectif (perte de gras, prise de muscle ou forme active). Notre système planifie vos repas en un clic, génère votre liste de courses optimisée au meilleur prix et s'adapte à votre rythme, sans aucune frustration.
                 </Text>
                 <View style={{ flex: 1 }}>
                   <NutritionBlock />
