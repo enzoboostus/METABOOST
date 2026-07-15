@@ -235,7 +235,7 @@ function NutritionBlock() {
       {/* Badge SCAN EN COURS */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 16 }}>
         <Animated.View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: '#10B981', opacity: dotAnim }} />
-        <Text style={{ color: '#10B981', fontSize: 10, fontWeight: '800', letterSpacing: 2.5 }}>SCAN EN COURS</Text>
+        <Text style={{ color: '#10B981', fontSize: 10, fontWeight: '800', letterSpacing: 2.5 }}>ANALYSE EN COURS...</Text>
       </View>
 
       {/* Phone + floating cards container */}
@@ -305,7 +305,7 @@ function NutritionBlock() {
           shadowOpacity: 0.10, shadowRadius: 18, elevation: 10,
           borderWidth: 1, borderColor: '#F3F4F6',
         }, { transform: [{ translateY: floatB }, { rotate: '3deg' }] }]}>
-          <Text style={{ fontSize: 7, fontWeight: '800', color: '#9CA3AF', letterSpacing: 1.5, marginBottom: 6 }}>LISTE DE COURSES</Text>
+          <Text style={{ fontSize: 7, fontWeight: '800', color: '#9CA3AF', letterSpacing: 1.5, marginBottom: 6 }}>PANIER OPTIMISÉ</Text>
           <Text style={{ fontSize: 15, fontWeight: '900', color: '#111827' }}>3,80 €<Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '500' }}> / portion</Text></Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 5 }}>
             <View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: '#10B981' }} />
@@ -815,10 +815,10 @@ export default function Onboarding() {
               ════════════════════════════════════════════ */}
               <View style={[styles.slide4, { height: H }]}>
                 <Text style={styles.s4EatTitle}>
-                  Scannez votre plat.{'\n'}On fait le reste.
+                  Nutrition augmentée :{'\n'}Votre écosystème alimentaire.
                 </Text>
                 <Text style={styles.s4EatSub}>
-                  Photographiez n'importe quel repas : macros, calories et liste de courses adaptée à votre budget, générées en quelques secondes.
+                  De l'analyse instantanée à la planification personnalisée. Notre système adapte vos repas et vos listes de courses à vos objectifs, simplement et efficacement.
                 </Text>
                 <View style={{ flex: 1 }}>
                   <NutritionBlock />
