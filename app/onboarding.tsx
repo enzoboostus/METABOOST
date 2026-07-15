@@ -115,7 +115,7 @@ function AvatarBlock() {
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#E2AA27', alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16 }}>
+    <View style={{ flex: 1, backgroundColor: '#E2AA27', alignItems: 'center', justifyContent: 'flex-start', gap: 8, paddingHorizontal: 20, paddingTop: 24, paddingBottom: 16 }}>
 
       {/* Live badge */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 }}>
