@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Flame, TrendingUp, Shield, ChevronRight, ChevronLeft, ScanLine,
-  Activity, Users, ChevronDown, Bot,
+  Activity, Users, ChevronDown, Bot, ClipboardList, Navigation, Smartphone, Dumbbell,
 } from 'lucide-react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, Gender, Goal } from '@/store/userStore';
@@ -320,14 +320,20 @@ function NutritionBlock() {
 const LOGISTIQUE_HERO = require('../assets/images/logistique_hero.jpeg');
 
 const LOG_STEPS = [
-  { emoji: '📋', label: 'Feuille de route', sub: 'Validée par la structure' },
-  { emoji: '🗺️', label: 'Itinéraire optimisé', sub: 'Multi-arrêts calculés' },
-  { emoji: '🤝', label: 'Prise en charge', sub: 'Confirmation en direct' },
-  { emoji: '🏠', label: 'Arrivée sécurisée', sub: 'Rapport automatique' },
+  { Icon: ClipboardList, label: 'Feuille de route',    sub: 'Validée par la structure'   },
+  { Icon: Navigation,    label: 'Itinéraire optimisé', sub: 'Multi-arrêts calculés'       },
+  { Icon: Smartphone,    label: 'Prise en contact',    sub: 'SMS / Alerte automatique'    },
+  { Icon: Dumbbell,      label: 'Arrivée validée',     sub: 'Musculation démarrée'        },
 ];
 
 function LogistiqueBlock() {
   const imgSize = Math.round(Math.min(W * 0.88, H * 0.40));
+  const [activeStep, setActiveStep] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setActiveStep(s => (s + 1) % 4), 2500);
+    return () => clearInterval(t);
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center' }}>
@@ -361,24 +367,37 @@ function LogistiqueBlock() {
         <View style={{ position: 'absolute' as any, top: 36 + 20, left: 20 + 20, right: 20 + 20, height: 1, backgroundColor: '#E5E7EB' }} />
 
         <View style={{ flexDirection: 'row' as any, justifyContent: 'space-between' as any }}>
-          {LOG_STEPS.map((s, i) => (
-            <View key={i} style={{ alignItems: 'center' as any, width: Math.round((W - 40) / 4) }}>
-              {/* Carré icône */}
-              <View style={{
-                width: 40, height: 40, borderRadius: 12,
-                backgroundColor: '#FFFFFF',
-                borderWidth: 1.5, borderColor: i === 0 ? '#E2AA27' : '#E5E7EB',
-                alignItems: 'center' as any, justifyContent: 'center' as any,
-                shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
-                marginBottom: 10,
-              }}>
-                <Text style={{ fontSize: 18 }}>{s.emoji}</Text>
+          {LOG_STEPS.map(({ Icon, label, sub }, i) => {
+            const active = i === activeStep;
+            return (
+              <View key={i} style={{ alignItems: 'center' as any, width: Math.round((W - 40) / 4) }}>
+                <View style={{
+                  width: 44, height: 44, borderRadius: 14,
+                  backgroundColor: active ? '#FFFBEB' : '#FAFAFA',
+                  borderWidth: 1.5,
+                  borderColor: active ? '#E2AA27' : '#E5E7EB',
+                  alignItems: 'center' as any, justifyContent: 'center' as any,
+                  shadowColor: active ? '#E2AA27' : '#000',
+                  shadowOffset: { width: 0, height: active ? 4 : 2 },
+                  shadowOpacity: active ? 0.18 : 0.04,
+                  shadowRadius: active ? 12 : 6,
+                  elevation: active ? 4 : 1,
+                  marginBottom: 8,
+                  ...(Platform.OS === 'web' ? { transition: 'all 0.45s ease' } as any : {}),
+                }}>
+                  <Icon size={18} color={active ? '#E2AA27' : '#9CA3AF'} strokeWidth={1.6} />
+                </View>
+                <Text style={{
+                  fontSize: 9,
+                  fontWeight: active ? '800' : '500' as any,
+                  color: active ? '#0D1117' : '#9CA3AF',
+                  textAlign: 'center' as any, lineHeight: 13,
+                  ...(Platform.OS === 'web' ? { transition: 'all 0.45s ease' } as any : {}),
+                }}>{label}</Text>
+                <Text style={{ fontSize: 8, color: '#B0B8C4', textAlign: 'center' as any, marginTop: 2, lineHeight: 12 }}>{sub}</Text>
               </View>
-              <Text style={{ fontSize: 9, fontWeight: '800' as any, color: '#0D1117', textAlign: 'center' as any, lineHeight: 13 }}>{s.label}</Text>
-              <Text style={{ fontSize: 8, color: '#9CA3AF', textAlign: 'center' as any, marginTop: 2, lineHeight: 12 }}>{s.sub}</Text>
-            </View>
-          ))}
+            );
+          })}
         </View>
       </View>
     </View>
