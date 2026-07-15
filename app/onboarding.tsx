@@ -115,7 +115,7 @@ function AvatarBlock() {
       {/* Live badge */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <Animated.View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFFFFF', opacity: liveDot }} />
-        <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 2 }}>ENZOBOOST CORE AI — LIVE</Text>
+        <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 2 }}>METABOLIC AI — LIVE</Text>
       </View>
 
       {/* Carte 1 — Rythme cardiaque */}
