@@ -86,7 +86,7 @@ function AvatarBlock() {
   const [bpm,   setBpm]   = useState(72);
   const [vo2,   setVo2]   = useState(48);
   const [steps, setSteps] = useState(8432);
-  const [mass,  setMass]  = useState(41.1);
+  const [fat,   setFat]   = useState(22.4);
 
   useEffect(() => {
     Animated.loop(Animated.sequence([
@@ -109,7 +109,7 @@ function AvatarBlock() {
       setBpm(b   => b   >= 148   ? 72   : b + 2);
       setVo2(v   => v   >= 54    ? 48   : v + 1);
       setSteps(s => s   >= 10000 ? 8432 : s + 68);
-      setMass(m  => parseFloat((m >= 42.8 ? 41.1 : m + 0.1).toFixed(1)));
+      setFat(f   => parseFloat((f <= 20.8 ? 22.4 : f - 0.1).toFixed(1)));
     }, 1000);
     return () => clearInterval(t);
   }, []);
@@ -161,8 +161,8 @@ function AvatarBlock() {
           </View>
         </View>
         <View style={{ marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
-          <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 3 }}>Masse active</Text>
-          <Text style={{ fontSize: 18, fontWeight: '900', color: '#111827' }}>{mass} <Text style={{ fontSize: 12, color: '#6B7280' }}>kg</Text></Text>
+          <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 1.5, textTransform: 'uppercase' as any, marginBottom: 3 }}>Masse grasse</Text>
+          <Text style={{ fontSize: 18, fontWeight: '900', color: '#111827' }}>{fat}<Text style={{ fontSize: 12, color: '#6B7280' }}>%</Text></Text>
         </View>
       </Animated.View>
 
