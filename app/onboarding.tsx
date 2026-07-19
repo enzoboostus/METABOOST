@@ -444,7 +444,7 @@ const REPORT_TABS = [
       { label: 'Pathologie suivie', value: 'Diabète T2', accent: false },
       { label: 'Tolérance à l\'effort', value: 'Grade B', accent: true },
       { label: 'Protocole APA certifié', value: '✓ Validé', accent: true },
-      { label: 'Rapport transmis à', value: 'Médecin + ARS', accent: false },
+      { label: 'Rapport transmis à', value: 'Médecin + Kiné', accent: false },
     ],
     badge: 'FORMAT CLINIQUE',
   },
@@ -458,6 +458,8 @@ const STAT_TILES = [
 
 function ReportingBlock() {
   const [activeTab, setActiveTab] = useState(0);
+  const underlineX = useRef(new Animated.Value(0)).current;
+  const tabW = Math.round((W - 48) / 3);
   const heroH = Math.round(H * 0.36);
 
   useEffect(() => {
@@ -465,8 +467,19 @@ function ReportingBlock() {
     return () => clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    Animated.spring(underlineX, {
+      toValue: activeTab * tabW,
+      useNativeDriver: true,
+      tension: 140,
+      friction: 12,
+    }).start();
+  }, [activeTab]);
+
+  const tab = REPORT_TABS[activeTab];
+
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: 8, paddingBottom: 20 }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: 8, paddingBottom: 16 }}>
 
       {/* Hero image */}
       <View style={{
@@ -474,7 +487,7 @@ function ReportingBlock() {
         overflow: 'hidden' as any, alignSelf: 'center' as any,
         shadowColor: '#000', shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.10, shadowRadius: 16, elevation: 5,
-        marginBottom: 20,
+        marginBottom: 18,
       }}>
         <Image
           source={REPORTING_HERO}
@@ -483,69 +496,86 @@ function ReportingBlock() {
         />
       </View>
 
-      {/* 3 stat tiles */}
-      <View style={{ flexDirection: 'row' as any, paddingHorizontal: 24, gap: 10, alignItems: 'flex-end' as any }}>
-        {STAT_TILES.map((tile, i) => {
-          const active = i === activeTab;
-          return (
-            <TouchableOpacity
-              key={tile.label}
-              onPress={() => setActiveTab(i)}
-              activeOpacity={0.88}
-              style={{
-                flex: 1,
-                height: active ? 148 : 116,
-                borderRadius: 20,
-                backgroundColor: active ? tile.color : '#F7F7F7',
-                borderWidth: active ? 0 : 1,
-                borderColor: '#EBEBEB',
-                alignItems: 'center' as any,
-                justifyContent: 'center' as any,
-                gap: 6,
-                shadowColor: active ? tile.color : '#000',
-                shadowOffset: { width: 0, height: active ? 12 : 2 },
-                shadowOpacity: active ? 0.30 : 0.04,
-                shadowRadius: active ? 20 : 6,
-                elevation: active ? 8 : 1,
-                ...(Platform.OS === 'web' ? { transition: 'all 0.45s cubic-bezier(0.34,1.56,0.64,1)' } as any : {}),
-              }}
-            >
-              <Text style={{ fontSize: active ? 28 : 22 }}>{tile.icon}</Text>
-              <Text style={{
-                fontSize: active ? 22 : 17,
-                fontWeight: '900' as any,
-                color: active ? '#FFFFFF' : '#0D1117',
-                letterSpacing: -0.5,
-                ...(Platform.OS === 'web' ? { transition: 'all 0.35s ease' } as any : {}),
-              }}>{tile.stat}</Text>
-              <Text style={{
-                fontSize: 9,
-                fontWeight: '600' as any,
-                color: active ? 'rgba(255,255,255,0.75)' : '#9CA3AF',
-                textAlign: 'center' as any,
-                lineHeight: 13,
-                ...(Platform.OS === 'web' ? { transition: 'all 0.35s ease' } as any : {}),
-              }}>{tile.desc}</Text>
-              {active && (
-                <View style={{
-                  position: 'absolute' as any, bottom: 12,
-                  paddingHorizontal: 8, paddingVertical: 3,
-                  borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.22)',
-                }}>
-                  <Text style={{ fontSize: 7, fontWeight: '900' as any, color: '#FFFFFF', letterSpacing: 1 }}>
-                    {tile.label}
-                  </Text>
+      {/* Underline selector */}
+      <View style={{ paddingHorizontal: 24, marginBottom: 14 }}>
+        <View style={{ flexDirection: 'row' as any }}>
+          {REPORT_TABS.map((t, i) => {
+            const active = i === activeTab;
+            return (
+              <TouchableOpacity key={t.key} onPress={() => setActiveTab(i)} activeOpacity={0.7}
+                style={{ flex: 1, alignItems: 'center' as any, paddingVertical: 10 }}>
+                <View style={{ flexDirection: 'row' as any, alignItems: 'center' as any, gap: 6 }}>
+                  <View style={{
+                    width: 7, height: 7, borderRadius: 4,
+                    backgroundColor: active ? t.color : '#D1D5DB',
+                    ...(Platform.OS === 'web' ? { transition: 'background-color 0.35s ease' } as any : {}),
+                  }} />
+                  <Text style={{
+                    fontSize: 13, fontWeight: active ? '800' : '500' as any,
+                    color: active ? '#0D1117' : '#9CA3AF',
+                    ...(Platform.OS === 'web' ? { transition: 'all 0.35s ease' } as any : {}),
+                  }}>{t.label}</Text>
                 </View>
-              )}
-            </TouchableOpacity>
-          );
-        })}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        <View style={{ height: 1, backgroundColor: '#F0F0F0' }}>
+          <Animated.View style={{
+            width: tabW, height: 2, borderRadius: 1,
+            backgroundColor: tab.color, marginTop: -0.5,
+            transform: [{ translateX: underlineX }],
+            ...(Platform.OS === 'web' ? { transition: 'background-color 0.35s ease' } as any : {}),
+          }} />
+        </View>
       </View>
 
-      {/* Footer */}
-      <View style={{ flexDirection: 'row' as any, alignItems: 'center' as any, justifyContent: 'center' as any, gap: 6, marginTop: 16 }}>
-        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' }} />
-        <Text style={{ fontSize: 10, color: '#B0B8C4' }}>PDF · RGPD · Signé électroniquement</Text>
+      {/* Document card */}
+      <View style={{
+        marginHorizontal: 24, borderRadius: 18,
+        backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#EBEBEB',
+        overflow: 'hidden' as any,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.06, shadowRadius: 16, elevation: 3,
+      }}>
+        <View style={{
+          backgroundColor: '#0D1117', paddingHorizontal: 16, paddingVertical: 14,
+          flexDirection: 'row' as any, alignItems: 'center' as any, gap: 12,
+        }}>
+          <View style={{ width: 3, alignSelf: 'stretch' as any, borderRadius: 2, backgroundColor: tab.color }} />
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 9, fontWeight: '700' as any, color: tab.color, letterSpacing: 1.4, textTransform: 'uppercase' as any, marginBottom: 3 }}>{tab.badge}</Text>
+            <Text style={{ fontSize: 13, fontWeight: '800' as any, color: '#FFFFFF', lineHeight: 17 }}>{tab.title}</Text>
+          </View>
+          <Text style={{ fontSize: 22 }}>{tab.icon}</Text>
+        </View>
+
+        <View style={{ padding: 12, gap: 8 }}>
+          <View style={{ flexDirection: 'row' as any, gap: 8 }}>
+            {tab.lines.slice(0, 2).map((line, i) => (
+              <View key={i} style={{ flex: 1, backgroundColor: '#FAFAFA', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F3F4F6' }}>
+                <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '600' as any, marginBottom: 5, letterSpacing: 0.3 }}>{line.label}</Text>
+                <Text style={{ fontSize: 15, fontWeight: '900' as any, color: line.accent ? tab.color : '#0D1117' }}>{line.value}</Text>
+              </View>
+            ))}
+          </View>
+          <View style={{ flexDirection: 'row' as any, gap: 8 }}>
+            {tab.lines.slice(2, 4).map((line, i) => (
+              <View key={i} style={{ flex: 1, backgroundColor: '#FAFAFA', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F3F4F6' }}>
+                <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '600' as any, marginBottom: 5, letterSpacing: 0.3 }}>{line.label}</Text>
+                <Text style={{ fontSize: 15, fontWeight: '900' as any, color: line.accent ? tab.color : '#0D1117' }}>{line.value}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View style={{ flexDirection: 'row' as any, alignItems: 'center' as any, justifyContent: 'space-between' as any, paddingHorizontal: 16, paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
+          <View style={{ flexDirection: 'row' as any, alignItems: 'center' as any, gap: 6 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' }} />
+            <Text style={{ fontSize: 10, color: '#9CA3AF' }}>PDF · RGPD · Signé</Text>
+          </View>
+          <Text style={{ fontSize: 11, fontWeight: '800' as any, color: tab.color }}>Exporter →</Text>
+        </View>
       </View>
     </View>
   );
