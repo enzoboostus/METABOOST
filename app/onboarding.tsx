@@ -434,16 +434,16 @@ const REPORT_TABS = [
     badge: 'SUIVI PERFORMANCE',
   },
   {
-    key: 'medical',
-    label: 'Médical',
+    key: 'institutionnel',
+    label: 'Institutionnel',
     color: '#10B981',
-    icon: '🩺',
-    title: 'Rapport Clinique — ARS',
+    icon: '🏛️',
+    title: 'Bilan Clinique — Partenaire',
     lines: [
-      { label: 'Fréquence cardiaque', value: '58 bpm', accent: false },
+      { label: 'Pathologie suivie', value: 'Diabète T2', accent: false },
       { label: 'Tolérance à l\'effort', value: 'Grade B', accent: true },
-      { label: 'Pathologie ALD', value: 'Diabète T2', accent: false },
-      { label: 'Protocole certifié', value: '✓ APA validé', accent: true },
+      { label: 'Protocole APA certifié', value: '✓ Validé', accent: true },
+      { label: 'Rapport transmis à', value: 'Médecin + ARS', accent: false },
     ],
     badge: 'FORMAT CLINIQUE',
   },
@@ -1076,7 +1076,7 @@ export default function Onboarding() {
               {/* ════════════════════════════════════════════
                   SLIDE 6 — Reporting Intelligent
               ════════════════════════════════════════════ */}
-              <View style={{ width: W, height: H, backgroundColor: '#FFFFFF', paddingTop: 48, gap: 12, flexDirection: 'column' as any }}>
+              <View style={{ width: W, height: H, backgroundColor: '#FFFFFF', paddingTop: 20, gap: 8, flexDirection: 'column' as any }}>
                 <Text style={{
                   fontSize: 30, fontWeight: '900' as any, color: '#0D1117',
                   letterSpacing: -1, lineHeight: 38,
@@ -1088,7 +1088,7 @@ export default function Onboarding() {
                   fontSize: 13, color: '#4B5563', lineHeight: 21,
                   textAlign: 'center' as any, paddingHorizontal: 28,
                 }}>
-                  Générez instantanément des bilans d'activité automatisés et adaptés à chaque interlocuteur. Notre technologie ajuste l'export PDF selon le lecteur : un format visuel et motivant pour l'adhérent, un suivi de performance précis pour le coach, et un rapport clinique ultra-rigoureux pour les médecins et l'ARS.
+                  Résumez et écrivez le parcours de chaque utilisateur pour chaque étape de sa progression. D'un simple clic, notre plateforme retranscrit l'évolution exacte de chacun dans un rapport qui adapte instantanément son langage : un résumé visuel et motivant pour l'adhérent, un suivi de performance technique pour le coach, et un bilan clinique rigoureux pour vos partenaires médicaux et institutionnels.
                 </Text>
                 <View style={{ flex: 1 }}>
                   <ReportingBlock />
