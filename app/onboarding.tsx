@@ -318,6 +318,7 @@ function NutritionBlock() {
 }
 
 const LOGISTIQUE_HERO = require('../assets/images/logistique_hero.jpeg');
+const REPORTING_HERO = require('../assets/images/reporting_hero.jpeg');
 
 const LOG_STEPS = [
   { emoji: '📋',  label: 'Feuille de route',    sub: 'Validée par la structure' },
@@ -459,13 +460,26 @@ function ReportingBlock() {
 
   const tab = REPORT_TABS[activeTab];
 
+  const heroH = Math.round(H * 0.26);
+
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', paddingTop: 12, justifyContent: 'space-between' as any, paddingBottom: 24 }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', paddingTop: 8, justifyContent: 'space-between' as any, paddingBottom: 20 }}>
+
+      {/* Hero image */}
+      <View style={{
+        width: W - 48, height: heroH, borderRadius: 20,
+        overflow: 'hidden' as any,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.10, shadowRadius: 16, elevation: 5,
+        marginBottom: 14,
+      }}>
+        <Image source={REPORTING_HERO} style={{ width: '100%' as any, height: '100%' as any }} resizeMode="cover" />
+      </View>
 
       {/* Tab switcher */}
       <View style={{
         flexDirection: 'row' as any, backgroundColor: '#F3F4F6',
-        borderRadius: 16, padding: 4, marginBottom: 16,
+        borderRadius: 16, padding: 4, marginBottom: 14,
       }}>
         {REPORT_TABS.map((t, i) => {
           const active = i === activeTab;
@@ -549,23 +563,6 @@ function ReportingBlock() {
         </View>
       </View>
 
-      {/* Stats row */}
-      <View style={{ flexDirection: 'row' as any, gap: 10, paddingHorizontal: 24, marginTop: 20 }}>
-        {[
-          { icon: '📄', value: '3', label: 'formats\ndisponibles' },
-          { icon: '⚡', value: '1 clic', label: 'pour générer\nle rapport' },
-          { icon: '🔒', value: 'RGPD', label: 'données\nsécurisées' },
-        ].map((s, i) => (
-          <View key={i} style={{
-            flex: 1, alignItems: 'center' as any, paddingVertical: 14, borderRadius: 16,
-            backgroundColor: '#FAFAFA', borderWidth: 1, borderColor: '#F0F0F0', gap: 4,
-          }}>
-            <Text style={{ fontSize: 18 }}>{s.icon}</Text>
-            <Text style={{ fontSize: 14, fontWeight: '900' as any, color: '#0D1117' }}>{s.value}</Text>
-            <Text style={{ fontSize: 9, color: '#9CA3AF', textAlign: 'center' as any, lineHeight: 13 }}>{s.label}</Text>
-          </View>
-        ))}
-      </View>
     </View>
   );
 }
