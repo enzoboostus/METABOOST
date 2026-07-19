@@ -473,7 +473,14 @@ function ReportingBlock() {
         shadowOpacity: 0.10, shadowRadius: 16, elevation: 5,
         marginBottom: 14,
       }}>
-        <Image source={REPORTING_HERO} style={{ width: '100%' as any, height: '100%' as any }} resizeMode="cover" />
+        <Image
+          source={REPORTING_HERO}
+          style={{
+            width: '100%' as any, height: '100%' as any,
+            ...(Platform.OS === 'web' ? { objectFit: 'cover', objectPosition: 'top center' } as any : {}),
+          }}
+          resizeMode="cover"
+        />
       </View>
 
       {/* Tab switcher */}
