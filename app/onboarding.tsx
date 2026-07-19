@@ -469,16 +469,19 @@ function ReportingBlock() {
       <View style={{
         width: W - 48, height: heroH, borderRadius: 20,
         overflow: 'hidden' as any,
-        backgroundColor: '#F5F3EE',
         shadowColor: '#000', shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.10, shadowRadius: 16, elevation: 5,
         marginBottom: 14,
-        alignItems: 'center' as any, justifyContent: 'center' as any,
       }}>
         <Image
           source={REPORTING_HERO}
-          style={{ width: '100%' as any, height: '100%' as any }}
-          resizeMode="contain"
+          style={{
+            width: W - 48,
+            height: W - 48,
+            position: 'absolute' as any,
+            top: 0,
+          }}
+          resizeMode="cover"
         />
       </View>
 
