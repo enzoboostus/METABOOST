@@ -450,22 +450,27 @@ const REPORT_TABS = [
   },
 ];
 
-const WALLET_CARDS = [
-  { color: '#E2AA27', bg: '#FFFBEB', label: 'ADHÉRENT', icon: '🏅', stat: '18 / 20', statLabel: 'séances réalisées', sub: '+14 pts · IMC 23.1 · En bonne voie' },
-  { color: '#3B82F6', bg: '#EFF6FF', label: 'COACH', icon: '📈', stat: '+8.2 %', statLabel: 'progression volume', sub: 'Charge 2 340 kg · Assiduité 90 %' },
-  { color: '#10B981', bg: '#ECFDF5', label: 'INSTITUTIONNEL', icon: '🏛️', stat: 'APA ✓', statLabel: 'protocole validé', sub: 'Grade B · Médecin + ARS notifiés' },
-];
-
 function ReportingBlock() {
-  const [active, setActive] = useState(0);
+  const [activeTab, setActiveTab] = useState(0);
+  const underlineX = useRef(new Animated.Value(0)).current;
+  const tabW = Math.round((W - 48) / 3);
   const heroH = Math.round(H * 0.36);
-  const CARD_H = 118;
-  const PEEK   = 14;
 
   useEffect(() => {
-    const t = setInterval(() => setActive(s => (s + 1) % 3), 2800);
+    const t = setInterval(() => setActiveTab(s => (s + 1) % 3), 2800);
     return () => clearInterval(t);
   }, []);
+
+  useEffect(() => {
+    Animated.spring(underlineX, {
+      toValue: activeTab * tabW,
+      useNativeDriver: true,
+      tension: 140,
+      friction: 12,
+    }).start();
+  }, [activeTab]);
+
+  const tab = REPORT_TABS[activeTab];
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: 8, paddingBottom: 16 }}>
@@ -476,7 +481,7 @@ function ReportingBlock() {
         overflow: 'hidden' as any, alignSelf: 'center' as any,
         shadowColor: '#000', shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.10, shadowRadius: 16, elevation: 5,
-        marginBottom: 20,
+        marginBottom: 18,
       }}>
         <Image
           source={REPORTING_HERO}
@@ -485,82 +490,110 @@ function ReportingBlock() {
         />
       </View>
 
-      {/* Wallet stack */}
-      <View style={{
-        marginHorizontal: 24,
-        height: CARD_H + PEEK * 2,
-        position: 'relative' as any,
-      }}>
-        {/* Cards rendered back-to-front so active is on top */}
-        {[2, 1, 0].map(i => {
-          const card   = WALLET_CARDS[i];
-          const isTop  = i === active;
-          const offset = isTop ? 0 : i > active ? (i - active) * PEEK : (3 + i - active) * PEEK;
-          const scale  = isTop ? 1 : 0.97 - (offset / PEEK) * 0.01;
-          const opacity = isTop ? 1 : 0.85 - (offset / PEEK) * 0.1;
-
-          return (
-            <TouchableOpacity
-              key={i}
-              onPress={() => setActive(i)}
-              activeOpacity={0.92}
-              style={{
-                position: 'absolute' as any,
-                left: 0, right: 0,
-                top: isTop ? 0 : PEEK,
-                zIndex: isTop ? 10 : 5 - offset,
-              }}
-            >
-              <View style={{
-                height: CARD_H,
-                borderRadius: 20,
-                backgroundColor: isTop ? card.bg : '#F8F8F8',
-                borderWidth: isTop ? 1.5 : 1,
-                borderColor: isTop ? card.color + '55' : '#EBEBEB',
-                shadowColor: isTop ? card.color : '#000',
-                shadowOffset: { width: 0, height: isTop ? 10 : 3 },
-                shadowOpacity: isTop ? 0.18 : 0.04,
-                shadowRadius: isTop ? 20 : 6,
-                elevation: isTop ? 8 : 2,
-                opacity,
-                overflow: 'hidden' as any,
-                ...(Platform.OS === 'web' ? { transition: 'all 0.45s ease' } as any : {}),
-              }}>
-                {/* Colored top strip */}
-                <View style={{ height: 4, backgroundColor: card.color, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
-
-                <View style={{ flex: 1, paddingHorizontal: 18, paddingVertical: 12, flexDirection: 'row' as any, alignItems: 'center' as any, gap: 14 }}>
-                  {/* Left: stat block */}
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 9, fontWeight: '700' as any, color: card.color, letterSpacing: 1.4, marginBottom: 4 }}>{card.label}</Text>
-                    <Text style={{ fontSize: 28, fontWeight: '900' as any, color: '#0D1117', letterSpacing: -1, lineHeight: 32 }}>{card.stat}</Text>
-                    <Text style={{ fontSize: 10, color: '#6B7280', fontWeight: '500' as any, marginTop: 2 }}>{card.statLabel}</Text>
-                    <Text style={{ fontSize: 9, color: '#B0B8C4', marginTop: 6, lineHeight: 13 }}>{card.sub}</Text>
-                  </View>
-
-                  {/* Right: icon + badge */}
-                  <View style={{ alignItems: 'center' as any, gap: 10 }}>
-                    <Text style={{ fontSize: 32 }}>{card.icon}</Text>
-                    <View style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: card.color }}>
-                      <Text style={{ fontSize: 7, fontWeight: '900' as any, color: '#FFFFFF', letterSpacing: 0.8 }}>PDF</Text>
-                    </View>
-                  </View>
+      {/* Underline selector */}
+      <View style={{ paddingHorizontal: 24, marginBottom: 14 }}>
+        <View style={{ flexDirection: 'row' as any }}>
+          {REPORT_TABS.map((t, i) => {
+            const active = i === activeTab;
+            return (
+              <TouchableOpacity
+                key={t.key}
+                onPress={() => setActiveTab(i)}
+                activeOpacity={0.7}
+                style={{ flex: 1, alignItems: 'center' as any, paddingVertical: 10 }}
+              >
+                <View style={{ flexDirection: 'row' as any, alignItems: 'center' as any, gap: 6 }}>
+                  <View style={{
+                    width: 7, height: 7, borderRadius: 4,
+                    backgroundColor: active ? t.color : '#D1D5DB',
+                    ...(Platform.OS === 'web' ? { transition: 'background-color 0.35s ease' } as any : {}),
+                  }} />
+                  <Text style={{
+                    fontSize: 13, fontWeight: active ? '800' : '500' as any,
+                    color: active ? '#0D1117' : '#9CA3AF',
+                    ...(Platform.OS === 'web' ? { transition: 'all 0.35s ease' } as any : {}),
+                  }}>{t.label}</Text>
                 </View>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        <View style={{ height: 1, backgroundColor: '#F0F0F0' }}>
+          <Animated.View style={{
+            width: tabW, height: 2, borderRadius: 1,
+            backgroundColor: tab.color,
+            marginTop: -0.5,
+            transform: [{ translateX: underlineX }],
+            ...(Platform.OS === 'web' ? { transition: 'background-color 0.35s ease' } as any : {}),
+          }} />
+        </View>
       </View>
 
-      {/* Dot indicators */}
-      <View style={{ flexDirection: 'row' as any, justifyContent: 'center' as any, gap: 6, marginTop: PEEK * 2 + 12 }}>
-        {WALLET_CARDS.map((c, i) => (
-          <View key={i} style={{
-            width: active === i ? 18 : 6, height: 6, borderRadius: 3,
-            backgroundColor: active === i ? c.color : '#D1D5DB',
-            ...(Platform.OS === 'web' ? { transition: 'all 0.4s ease' } as any : {}),
-          }} />
-        ))}
+      {/* Document card */}
+      <View style={{
+        marginHorizontal: 24, borderRadius: 18,
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1, borderColor: '#EBEBEB',
+        overflow: 'hidden' as any,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.06, shadowRadius: 16, elevation: 3,
+      }}>
+        {/* Dark header */}
+        <View style={{
+          backgroundColor: '#0D1117',
+          paddingHorizontal: 16, paddingVertical: 14,
+          flexDirection: 'row' as any, alignItems: 'center' as any, gap: 12,
+        }}>
+          <View style={{ width: 3, alignSelf: 'stretch' as any, borderRadius: 2, backgroundColor: tab.color }} />
+          <View style={{ flex: 1 }}>
+            <Text style={{
+              fontSize: 9, fontWeight: '700' as any, color: tab.color,
+              letterSpacing: 1.4, textTransform: 'uppercase' as any, marginBottom: 3,
+            }}>{tab.badge}</Text>
+            <Text style={{ fontSize: 13, fontWeight: '800' as any, color: '#FFFFFF', lineHeight: 17 }}>{tab.title}</Text>
+          </View>
+          <Text style={{ fontSize: 22 }}>{tab.icon}</Text>
+        </View>
+
+        {/* 2×2 metrics grid */}
+        <View style={{ padding: 12, gap: 8 }}>
+          <View style={{ flexDirection: 'row' as any, gap: 8 }}>
+            {tab.lines.slice(0, 2).map((line, i) => (
+              <View key={i} style={{
+                flex: 1, backgroundColor: '#FAFAFA', borderRadius: 12,
+                padding: 12, borderWidth: 1, borderColor: '#F3F4F6',
+              }}>
+                <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '600' as any, marginBottom: 5, letterSpacing: 0.3 }}>{line.label}</Text>
+                <Text style={{ fontSize: 15, fontWeight: '900' as any, color: line.accent ? tab.color : '#0D1117' }}>{line.value}</Text>
+              </View>
+            ))}
+          </View>
+          <View style={{ flexDirection: 'row' as any, gap: 8 }}>
+            {tab.lines.slice(2, 4).map((line, i) => (
+              <View key={i} style={{
+                flex: 1, backgroundColor: '#FAFAFA', borderRadius: 12,
+                padding: 12, borderWidth: 1, borderColor: '#F3F4F6',
+              }}>
+                <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '600' as any, marginBottom: 5, letterSpacing: 0.3 }}>{line.label}</Text>
+                <Text style={{ fontSize: 15, fontWeight: '900' as any, color: line.accent ? tab.color : '#0D1117' }}>{line.value}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Footer */}
+        <View style={{
+          flexDirection: 'row' as any, alignItems: 'center' as any,
+          justifyContent: 'space-between' as any,
+          paddingHorizontal: 16, paddingVertical: 10,
+          borderTopWidth: 1, borderTopColor: '#F3F4F6',
+        }}>
+          <View style={{ flexDirection: 'row' as any, alignItems: 'center' as any, gap: 6 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' }} />
+            <Text style={{ fontSize: 10, color: '#9CA3AF' }}>PDF · RGPD · Signé</Text>
+          </View>
+          <Text style={{ fontSize: 11, fontWeight: '800' as any, color: tab.color }}>Exporter →</Text>
+        </View>
       </View>
     </View>
   );
