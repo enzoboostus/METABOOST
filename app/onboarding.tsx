@@ -460,12 +460,12 @@ function ReportingBlock() {
   const tab = REPORT_TABS[activeTab];
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', paddingTop: 12 }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', paddingTop: 12, justifyContent: 'space-between' as any, paddingBottom: 24 }}>
 
       {/* Tab switcher */}
       <View style={{
         flexDirection: 'row' as any, backgroundColor: '#F3F4F6',
-        borderRadius: 16, padding: 4, marginBottom: 20,
+        borderRadius: 16, padding: 4, marginBottom: 16,
       }}>
         {REPORT_TABS.map((t, i) => {
           const active = i === activeTab;
@@ -547,6 +547,24 @@ function ReportingBlock() {
           <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' }} />
           <Text style={{ fontSize: 10, color: '#9CA3AF' }}>PDF généré · Signé électroniquement · RGPD</Text>
         </View>
+      </View>
+
+      {/* Stats row */}
+      <View style={{ flexDirection: 'row' as any, gap: 10, paddingHorizontal: 24, marginTop: 20 }}>
+        {[
+          { icon: '📄', value: '3', label: 'formats\ndisponibles' },
+          { icon: '⚡', value: '1 clic', label: 'pour générer\nle rapport' },
+          { icon: '🔒', value: 'RGPD', label: 'données\nsécurisées' },
+        ].map((s, i) => (
+          <View key={i} style={{
+            flex: 1, alignItems: 'center' as any, paddingVertical: 14, borderRadius: 16,
+            backgroundColor: '#FAFAFA', borderWidth: 1, borderColor: '#F0F0F0', gap: 4,
+          }}>
+            <Text style={{ fontSize: 18 }}>{s.icon}</Text>
+            <Text style={{ fontSize: 14, fontWeight: '900' as any, color: '#0D1117' }}>{s.value}</Text>
+            <Text style={{ fontSize: 9, color: '#9CA3AF', textAlign: 'center' as any, lineHeight: 13 }}>{s.label}</Text>
+          </View>
+        ))}
       </View>
     </View>
   );
