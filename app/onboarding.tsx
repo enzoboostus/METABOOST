@@ -404,6 +404,154 @@ function LogistiqueBlock() {
   );
 }
 
+const REPORT_TABS = [
+  {
+    key: 'adherent',
+    label: 'Adhérent',
+    color: '#E2AA27',
+    icon: '🏅',
+    title: 'Bilan Mensuel — Mai 2025',
+    lines: [
+      { label: 'Séances réalisées', value: '18 / 20', accent: true },
+      { label: 'Score progression', value: '+14 pts', accent: true },
+      { label: 'IMC estimé', value: '23.1', accent: false },
+      { label: 'Objectif atteint', value: '✓ En bonne voie', accent: false },
+    ],
+    badge: 'FORMAT MOTIVANT',
+  },
+  {
+    key: 'coach',
+    label: 'Coach',
+    color: '#3B82F6',
+    icon: '📈',
+    title: 'Rapport de Performance',
+    lines: [
+      { label: 'Charge hebdo moy.', value: '2 340 kg', accent: true },
+      { label: 'Volume progressif', value: '+8.2 %', accent: true },
+      { label: 'FC de repos', value: '58 bpm', accent: false },
+      { label: 'Assiduité', value: '90 %', accent: false },
+    ],
+    badge: 'SUIVI PERFORMANCE',
+  },
+  {
+    key: 'medical',
+    label: 'Médical',
+    color: '#10B981',
+    icon: '🩺',
+    title: 'Rapport Clinique — ARS',
+    lines: [
+      { label: 'Fréquence cardiaque', value: '58 bpm', accent: false },
+      { label: 'Tolérance à l\'effort', value: 'Grade B', accent: true },
+      { label: 'Pathologie ALD', value: 'Diabète T2', accent: false },
+      { label: 'Protocole certifié', value: '✓ APA validé', accent: true },
+    ],
+    badge: 'FORMAT CLINIQUE',
+  },
+];
+
+function ReportingBlock() {
+  const [activeTab, setActiveTab] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setActiveTab(s => (s + 1) % 3), 2800);
+    return () => clearInterval(t);
+  }, []);
+
+  const tab = REPORT_TABS[activeTab];
+
+  return (
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', paddingTop: 12 }}>
+
+      {/* Tab switcher */}
+      <View style={{
+        flexDirection: 'row' as any, backgroundColor: '#F3F4F6',
+        borderRadius: 16, padding: 4, marginBottom: 20,
+      }}>
+        {REPORT_TABS.map((t, i) => {
+          const active = i === activeTab;
+          return (
+            <TouchableOpacity
+              key={t.key}
+              onPress={() => setActiveTab(i)}
+              activeOpacity={0.85}
+              style={{
+                paddingHorizontal: 18, paddingVertical: 8, borderRadius: 12,
+                backgroundColor: active ? '#FFFFFF' : 'transparent',
+                shadowColor: active ? '#000' : 'transparent',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: active ? 0.08 : 0,
+                shadowRadius: 6,
+                elevation: active ? 3 : 0,
+                ...(Platform.OS === 'web' ? { transition: 'all 0.35s ease' } as any : {}),
+              }}
+            >
+              <Text style={{
+                fontSize: 12, fontWeight: active ? '800' : '600' as any,
+                color: active ? tab.color : '#9CA3AF',
+                ...(Platform.OS === 'web' ? { transition: 'all 0.35s ease' } as any : {}),
+              }}>{t.label}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      {/* PDF Card */}
+      <View style={{
+        width: W - 48, borderRadius: 20, backgroundColor: '#FAFAFA',
+        borderWidth: 1.5, borderColor: '#F0F0F0',
+        shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.07, shadowRadius: 20, elevation: 4,
+        overflow: 'hidden' as any,
+      }}>
+        {/* Card header */}
+        <View style={{
+          flexDirection: 'row' as any, alignItems: 'center' as any,
+          paddingHorizontal: 20, paddingVertical: 14,
+          backgroundColor: tab.color + '15',
+          borderBottomWidth: 1, borderBottomColor: tab.color + '25',
+          gap: 10,
+          ...(Platform.OS === 'web' ? { transition: 'background-color 0.45s ease' } as any : {}),
+        }}>
+          <Text style={{ fontSize: 22 }}>{tab.icon}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 11, fontWeight: '900' as any, color: tab.color, letterSpacing: 0.8 }}>{tab.title}</Text>
+            <Text style={{ fontSize: 9, color: '#9CA3AF', marginTop: 2 }}>Exporté automatiquement · METABOOST</Text>
+          </View>
+          <View style={{
+            paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8,
+            backgroundColor: tab.color,
+          }}>
+            <Text style={{ fontSize: 7, fontWeight: '900' as any, color: '#FFFFFF', letterSpacing: 0.8 }}>{tab.badge}</Text>
+          </View>
+        </View>
+
+        {/* Data rows */}
+        <View style={{ paddingHorizontal: 20, paddingVertical: 16, gap: 12 }}>
+          {tab.lines.map((line, i) => (
+            <View key={i} style={{ flexDirection: 'row' as any, justifyContent: 'space-between' as any, alignItems: 'center' as any }}>
+              <Text style={{ fontSize: 12, color: '#6B7280', fontWeight: '500' as any }}>{line.label}</Text>
+              <Text style={{
+                fontSize: 13, fontWeight: '800' as any,
+                color: line.accent ? tab.color : '#0D1117',
+              }}>{line.value}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Footer */}
+        <View style={{
+          paddingHorizontal: 20, paddingVertical: 12,
+          borderTopWidth: 1, borderTopColor: '#F0F0F0',
+          flexDirection: 'row' as any, alignItems: 'center' as any, gap: 8,
+        }}>
+          <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' }} />
+          <Text style={{ fontSize: 10, color: '#9CA3AF' }}>PDF généré · Signé électroniquement · RGPD</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 function MacroBlock({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', paddingVertical: 13, borderRadius: 12, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#F3F4F6', gap: 3 }}>
@@ -926,7 +1074,29 @@ export default function Onboarding() {
               </View>
 
               {/* ════════════════════════════════════════════
-                  SLIDE 6 — Infrastructure B2B & Capture
+                  SLIDE 6 — Reporting Intelligent
+              ════════════════════════════════════════════ */}
+              <View style={{ width: W, height: H, backgroundColor: '#FFFFFF', paddingTop: 48, gap: 12, flexDirection: 'column' as any }}>
+                <Text style={{
+                  fontSize: 30, fontWeight: '900' as any, color: '#0D1117',
+                  letterSpacing: -1, lineHeight: 38,
+                  textAlign: 'center' as any, paddingHorizontal: 24,
+                }}>
+                  Le bilan en un clic,{'\n'}pour tous.
+                </Text>
+                <Text style={{
+                  fontSize: 13, color: '#4B5563', lineHeight: 21,
+                  textAlign: 'center' as any, paddingHorizontal: 28,
+                }}>
+                  Générez instantanément des bilans d'activité automatisés et adaptés à chaque interlocuteur. Notre technologie ajuste l'export PDF selon le lecteur : un format visuel et motivant pour l'adhérent, un suivi de performance précis pour le coach, et un rapport clinique ultra-rigoureux pour les médecins et l'ARS.
+                </Text>
+                <View style={{ flex: 1 }}>
+                  <ReportingBlock />
+                </View>
+              </View>
+
+              {/* ════════════════════════════════════════════
+                  SLIDE 7 — Infrastructure B2B & Capture
               ════════════════════════════════════════════ */}
               <View style={styles.slide5}>
                 <LinearGradient colors={['#050A12', '#0A0F1E', '#050A12']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
@@ -959,22 +1129,6 @@ export default function Onboarding() {
                       <Text style={styles.s5TargetTxt}>{t}</Text>
                     </View>
                   ))}
-                </View>
-
-                {/* Copilote IA Chatbot */}
-                <View style={styles.s5CopiloteCard}>
-                  <View style={styles.s5CopiloteHeader}>
-                    <Bot size={18} color={Colors.teal} strokeWidth={1.8} />
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.s5CopiloteTitle}>COPILOTE IA CHATBOT</Text>
-                      <Text style={styles.s5CopiloteDesc}>
-                        Répond à vos questions nutrition, entraînement et logistique — disponible 24h/24, 7j/7, sans délai.
-                      </Text>
-                    </View>
-                    <View style={styles.s5CopiloteBadge}>
-                      <Text style={styles.s5CopiloteBadgeTxt}>24H/24</Text>
-                    </View>
-                  </View>
                 </View>
 
                 {/* Trust badges */}
