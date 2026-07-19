@@ -460,7 +460,7 @@ function ReportingBlock() {
 
   const tab = REPORT_TABS[activeTab];
 
-  const heroH = Math.round(H * 0.26);
+  const heroH = Math.round(H * 0.36);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FFFFFF', alignItems: 'center', paddingTop: 8, justifyContent: 'space-between' as any, paddingBottom: 20 }}>
@@ -634,24 +634,6 @@ function PushNotif({ title, sub }: { title: string; sub: string }) {
   );
 }
 
-function B2BOption({ emoji, title, desc, dark }: { emoji: string; title: string; desc: string; dark?: boolean }) {
-  return (
-    <View style={[styles.s5OptionCard, dark && styles.s5OptionCardDark]}>
-      <Text style={{ fontSize: 24 }}>{emoji}</Text>
-      <Text style={[styles.s5OptionTitle, dark && { color: '#FFFFFF' }]}>{title}</Text>
-      <Text style={[styles.s5OptionDesc, dark && { color: 'rgba(255,255,255,0.5)' }]}>{desc}</Text>
-    </View>
-  );
-}
-
-function TrustBadge({ text }: { text: string }) {
-  return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-      <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: '#8E9AA8' }} />
-      <Text style={{ fontSize: 12, color: '#8E9AA8', fontWeight: '500', letterSpacing: 0.3 }}>{text}</Text>
-    </View>
-  );
-}
 
 function LogisticsStep({ icon, label, time, highlight }: { icon: string; label: string; time: string; highlight?: boolean }) {
   return (
@@ -677,9 +659,6 @@ export default function Onboarding() {
   const [waist,  setWaist]      = useState('');
   const [thigh,  setThigh]      = useState('');
   const [arm,    setArm]        = useState('');
-  const [email,  setEmail]      = useState('');
-  const [emailSent, setEmailSent]       = useState(false);
-  const [emailLoading, setEmailLoading] = useState(false);
 
   const vals: Record<string, string>              = { weight, height, waist, thigh, arm };
   const sets: Record<string, (v: string) => void> = { weight: setWeight, height: setHeight, waist: setWaist, thigh: setThigh, arm: setArm };
@@ -726,18 +705,6 @@ export default function Onboarding() {
     const idx = STEPS.indexOf(step);
     if (idx < STEPS.length - 1) transitionTo(STEPS[idx + 1]);
     else finish();
-  }
-
-  async function handleEmailLogin() {
-    if (!email.trim()) return;
-    setEmailLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
-    });
-    setEmailLoading(false);
-    if (error) Alert.alert('Erreur', error.message);
-    else setEmailSent(true);
   }
 
   function finish() {
@@ -1110,99 +1077,6 @@ export default function Onboarding() {
                 </View>
               </View>
 
-              {/* ════════════════════════════════════════════
-                  SLIDE 7 — Infrastructure B2B & Capture
-              ════════════════════════════════════════════ */}
-              <View style={styles.slide5}>
-                <LinearGradient colors={['#050A12', '#0A0F1E', '#050A12']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
-
-                <View style={styles.s5Header}>
-                  <Users size={16} color={Colors.accent} strokeWidth={1.8} />
-                  <Text style={styles.s5HeaderChip}>PROFESSIONNELS & ÉTABLISSEMENTS</Text>
-                </View>
-                <Text style={styles.s5Title}>L'INFRASTRUCTURE{'\n'}POUR LES PROS</Text>
-
-                {/* Options B2B */}
-                <View style={styles.s5OptionsRow}>
-                  <B2BOption
-                    emoji="🔑"
-                    title="Clé en main"
-                    desc={"Méthode EnzoBoost intégrée. Lancez votre structure en 48h."}
-                    dark
-                  />
-                  <B2BOption
-                    emoji="🏷️"
-                    title="Marque Blanche"
-                    desc={"Vos protocoles + notre infrastructure IA, Scanner & Navette."}
-                  />
-                </View>
-
-                {/* Cibles B2B */}
-                <View style={styles.s5TargetsRow}>
-                  {['🏋️ Salles de sport', '🎽 Coachs indépendants', '🏠 EHPAD & Maisons de Santé'].map((t) => (
-                    <View key={t} style={styles.s5TargetBadge}>
-                      <Text style={styles.s5TargetTxt}>{t}</Text>
-                    </View>
-                  ))}
-                </View>
-
-                {/* Trust badges */}
-                <View style={styles.s5TrustBlock}>
-                  <TrustBadge text="Données Chiffrées RGPD" />
-                  <TrustBadge text="Synchronisation IoT Native" />
-                  <TrustBadge text="Protocoles Certifiés Sport-Santé" />
-                </View>
-
-                {/* CTA zone */}
-                <View style={styles.s5CTAZone}>
-                  {emailSent ? (
-                    <View style={styles.emailSentBox}>
-                      <Text style={[styles.emailSentTxt, { color: Colors.text }]}>📧 Vérifie ta boîte mail !</Text>
-                      <Text style={styles.emailSentSub}>Lien envoyé à {email.trim()}</Text>
-                    </View>
-                  ) : (
-                    <>
-                      <TextInput
-                        style={styles.s5Input}
-                        value={email}
-                        onChangeText={setEmail}
-                        placeholder="Ton adresse email"
-                        placeholderTextColor="rgba(255,255,255,0.28)"
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        spellCheck={false}
-                        inputMode="email"
-                      />
-                      <TouchableOpacity style={[styles.s5CTA, emailLoading && { opacity: 0.6 }]} onPress={handleEmailLogin} activeOpacity={0.9} disabled={emailLoading}>
-                        <Text style={styles.s5CTATxt}>{emailLoading ? 'ENVOI...' : 'DÉMARRER MON SUIVI'}</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.s5Ghost} onPress={() => transitionTo('welcome')} activeOpacity={0.8}>
-                        <Text style={styles.s5GhostTxt}>Commencer sans compte</Text>
-                        <ChevronRight size={14} color="rgba(255,255,255,0.4)" strokeWidth={2} />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-
-                {/* Footer légal */}
-                <View style={styles.s5Legal}>
-                  <Text style={styles.s5LegalTxt}>
-                    En continuant, tu acceptes nos{' '}
-                    <Text style={styles.s5LegalLink} onPress={() => router.push('/legal/cgu')}>Conditions d'utilisation</Text>
-                    {' '}et notre{' '}
-                    <Text style={styles.s5LegalLink} onPress={() => router.push('/legal/privacy')}>Politique de confidentialité</Text>
-                    {' '}(RGPD). Traitement des données de santé au sens de l'art. 9 du RGPD, sous contrôle de la CNIL.
-                  </Text>
-                  <View style={styles.s5LegalRow}>
-                    <Text style={styles.s5LegalLink} onPress={() => router.push('/legal/mentions')}>Mentions légales</Text>
-                    <Text style={styles.s5LegalSep}>·</Text>
-                    <Text style={styles.s5LegalLink} onPress={() => router.push('/legal/cgv')}>CGV</Text>
-                    <Text style={styles.s5LegalSep}>·</Text>
-                    <Text style={styles.s5LegalLink} onPress={() => router.push('/legal/cookies')}>Cookies</Text>
-                  </View>
-                </View>
-              </View>
 
             </ScrollView>
           )}
