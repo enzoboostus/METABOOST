@@ -405,6 +405,8 @@ function LogistiqueBlock() {
   );
 }
 
+const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
 const REPORT_TABS = [
   {
     key: 'adherent',
@@ -1232,52 +1234,79 @@ export default function Onboarding() {
                   Date de naissance
                 </Text>
                 <View style={{ flexDirection: 'row' as any, gap: 8, marginBottom: 20 }}>
-                  <TextInput
-                    style={{
-                      width: 56, fontSize: 17, fontWeight: '500', color: '#0D1117',
-                      borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
-                      paddingHorizontal: 12, paddingVertical: 14, textAlign: 'center',
-                      ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
-                    }}
-                    value={birthDay}
-                    onChangeText={(v) => setBirthDay(v.replace(/\D/g, '').slice(0, 2))}
-                    placeholder="JJ"
-                    placeholderTextColor="#C4C4C4"
-                    keyboardType="numeric"
-                    maxLength={2}
-                    returnKeyType="next"
-                  />
-                  <TextInput
-                    style={{
-                      width: 56, fontSize: 17, fontWeight: '500', color: '#0D1117',
-                      borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
-                      paddingHorizontal: 12, paddingVertical: 14, textAlign: 'center',
-                      ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
-                    }}
-                    value={birthMonth}
-                    onChangeText={(v) => setBirthMonth(v.replace(/\D/g, '').slice(0, 2))}
-                    placeholder="MM"
-                    placeholderTextColor="#C4C4C4"
-                    keyboardType="numeric"
-                    maxLength={2}
-                    returnKeyType="next"
-                  />
-                  <TextInput
-                    style={{
-                      flex: 1, fontSize: 17, fontWeight: '500', color: '#0D1117',
-                      borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
-                      paddingHorizontal: 16, paddingVertical: 14, textAlign: 'center',
-                      ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
-                    }}
-                    value={birthYear}
-                    onChangeText={(v) => setBirthYear(v.replace(/\D/g, '').slice(0, 4))}
-                    placeholder="AAAA"
-                    placeholderTextColor="#C4C4C4"
-                    keyboardType="numeric"
-                    maxLength={4}
-                    returnKeyType="done"
-                    onSubmitEditing={() => Keyboard.dismiss()}
-                  />
+
+                  {/* Jour */}
+                  <View style={{ width: 72, borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12, overflow: 'hidden' as any }}>
+                    {Platform.OS === 'web'
+                      ? (React.createElement as any)('select', {
+                          value: birthDay,
+                          onChange: (e: any) => setBirthDay(e.target.value),
+                          style: {
+                            border: 'none', outline: 'none', background: '#FFFFFF',
+                            fontSize: '15px', fontFamily: 'inherit',
+                            color: birthDay ? '#0D1117' : '#9CA3AF',
+                            width: '100%', cursor: 'pointer',
+                            padding: '14px 10px',
+                          },
+                        }, [
+                          (React.createElement as any)('option', { key: '__', value: '', disabled: true, hidden: true }, 'Jour'),
+                          ...Array.from({ length: 31 }, (_, i) => {
+                            const v = String(i + 1).padStart(2, '0');
+                            return (React.createElement as any)('option', { key: v, value: v }, v);
+                          }),
+                        ])
+                      : <TextInput style={{ fontSize: 15, color: '#0D1117', paddingHorizontal: 10, paddingVertical: 14, textAlign: 'center' as any }} value={birthDay} onChangeText={(v) => setBirthDay(v.replace(/\D/g, '').slice(0, 2))} placeholder="JJ" placeholderTextColor="#9CA3AF" keyboardType="numeric" maxLength={2} />
+                    }
+                  </View>
+
+                  {/* Mois */}
+                  <View style={{ flex: 1, borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12, overflow: 'hidden' as any }}>
+                    {Platform.OS === 'web'
+                      ? (React.createElement as any)('select', {
+                          value: birthMonth,
+                          onChange: (e: any) => setBirthMonth(e.target.value),
+                          style: {
+                            border: 'none', outline: 'none', background: '#FFFFFF',
+                            fontSize: '15px', fontFamily: 'inherit',
+                            color: birthMonth ? '#0D1117' : '#9CA3AF',
+                            width: '100%', cursor: 'pointer',
+                            padding: '14px 10px',
+                          },
+                        }, [
+                          (React.createElement as any)('option', { key: '__', value: '', disabled: true, hidden: true }, 'Mois'),
+                          ...MONTHS_FR.map((m, i) => {
+                            const v = String(i + 1).padStart(2, '0');
+                            return (React.createElement as any)('option', { key: v, value: v }, m);
+                          }),
+                        ])
+                      : <TextInput style={{ fontSize: 15, color: '#0D1117', paddingHorizontal: 10, paddingVertical: 14 }} value={birthMonth} onChangeText={(v) => setBirthMonth(v.replace(/\D/g, '').slice(0, 2))} placeholder="Mois" placeholderTextColor="#9CA3AF" keyboardType="numeric" maxLength={2} />
+                    }
+                  </View>
+
+                  {/* Année */}
+                  <View style={{ width: 96, borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12, overflow: 'hidden' as any }}>
+                    {Platform.OS === 'web'
+                      ? (React.createElement as any)('select', {
+                          value: birthYear,
+                          onChange: (e: any) => setBirthYear(e.target.value),
+                          style: {
+                            border: 'none', outline: 'none', background: '#FFFFFF',
+                            fontSize: '15px', fontFamily: 'inherit',
+                            color: birthYear ? '#0D1117' : '#9CA3AF',
+                            width: '100%', cursor: 'pointer',
+                            padding: '14px 10px',
+                          },
+                        }, [
+                          (React.createElement as any)('option', { key: '__', value: '', disabled: true, hidden: true }, 'Année'),
+                          ...Array.from({ length: 100 }, (_, i) => {
+                            const y = new Date().getFullYear() - i;
+                            return (React.createElement as any)('option', { key: y, value: String(y) }, String(y));
+                          }),
+                        ])
+                      : <TextInput style={{ fontSize: 15, color: '#0D1117', paddingHorizontal: 10, paddingVertical: 14, textAlign: 'center' as any }} value={birthYear} onChangeText={(v) => setBirthYear(v.replace(/\D/g, '').slice(0, 4))} placeholder="Année" placeholderTextColor="#9CA3AF" keyboardType="numeric" maxLength={4} />
+                    }
+                  </View>
+
                 </View>
 
                 {/* Sub line */}
