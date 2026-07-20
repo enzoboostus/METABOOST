@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
-  Dimensions, Animated, Platform, Alert, Keyboard, ScrollView, Image,
+  Dimensions, Animated, Platform, Alert, Keyboard, ScrollView, Image, Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -460,7 +460,7 @@ function ReportingBlock() {
   const [activeTab, setActiveTab] = useState(0);
   const underlineX = useRef(new Animated.Value(0)).current;
   const tabW = Math.round((W - 48) / 3);
-  const heroH = Math.round(H * 0.36);
+  const heroH = Math.round(H * 0.28);
 
   useEffect(() => {
     const t = setInterval(() => setActiveTab(s => (s + 1) % 3), 2800);
@@ -660,6 +660,44 @@ function LogisticsStep({ icon, label, time, highlight }: { icon: string; label: 
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+const LEGAL_CONTENT = {
+  mentions: {
+    title: 'Mentions Légales',
+    sections: [
+      { heading: 'Éditeur du site', body: "Enzoboost SAS\nSiège social : France\nSIRET : en cours d'immatriculation\nDirecteur de la publication : Enzo Boostus\nContact : contact@enzoboost.fr" },
+      { heading: 'Hébergement', body: "Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA." },
+      { heading: 'Propriété intellectuelle', body: "L'ensemble des contenus présents sur ce site (textes, images, logos, vidéos, bases de données) sont la propriété exclusive d'Enzoboost ou de ses partenaires. Toute reproduction, distribution ou utilisation sans autorisation préalable est strictement interdite." },
+      { heading: 'Limitation de responsabilité', body: "Enzoboost s'efforce d'assurer l'exactitude des informations diffusées sur ce site. Toutefois, nous ne pouvons garantir l'exhaustivité ou l'absence d'erreurs. L'utilisation des informations se fait sous la seule responsabilité de l'utilisateur." },
+    ],
+  },
+  privacy: {
+    title: 'Politique de Confidentialité',
+    sections: [
+      { heading: 'Responsable du traitement', body: "Enzoboost SAS — contact@enzoboost.fr" },
+      { heading: 'Données collectées', body: "Prénom, genre, objectifs fitness, données morphologiques (poids, taille, tour de taille, cuisse, bras), données de séances, adresse e-mail lors de la création de compte." },
+      { heading: 'Finalités du traitement', body: "• Personnalisation du programme d'entraînement\n• Suivi de la progression\n• Communication relative au compte\n• Amélioration de nos services" },
+      { heading: 'Base légale', body: "Consentement de l'utilisateur (Art. 6.1.a RGPD) et exécution du contrat (Art. 6.1.b RGPD)." },
+      { heading: 'Durée de conservation', body: "Les données sont conservées pendant toute la durée de la relation contractuelle, puis archivées 3 ans après la désactivation du compte." },
+      { heading: 'Vos droits', body: "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de portabilité et d'opposition. Pour exercer ces droits : contact@enzoboost.fr" },
+      { heading: 'Cookies', body: "Ce site utilise des cookies strictement nécessaires au fonctionnement de la plateforme. Aucun cookie publicitaire tiers n'est déposé sans votre consentement." },
+    ],
+  },
+  cgu: {
+    title: "Conditions Générales d'Utilisation",
+    sections: [
+      { heading: 'Objet', body: "Les présentes CGU définissent les conditions d'accès et d'utilisation de la plateforme MetaBoost, éditée par Enzoboost SAS." },
+      { heading: 'Accès au service', body: "L'accès à MetaBoost est réservé aux personnes majeures. L'inscription est gratuite et requiert la création d'un compte. L'utilisateur s'engage à fournir des informations exactes." },
+      { heading: 'Responsabilités de l'utilisateur', body: "L'utilisateur s'engage à :\n• Utiliser la plateforme conformément à sa destination\n• Ne pas partager ses identifiants\n• Informer MetaBoost de tout problème de santé contre-indiquant l'exercice physique\n• Consulter un professionnel de santé avant de démarrer tout programme intensif" },
+      { heading: 'Avertissement médical', body: "MetaBoost est une plateforme de coaching sportif et ne se substitue pas à un avis médical. En cas de pathologie, de blessure ou de doute, consultez un médecin avant toute pratique sportive." },
+      { heading: 'Propriété intellectuelle', body: "Les contenus, algorithmes, programmes et interfaces de MetaBoost sont protégés par le droit de la propriété intellectuelle. Toute reproduction non autorisée est interdite." },
+      { heading: 'Résiliation', body: "L'utilisateur peut supprimer son compte à tout moment depuis les paramètres. Enzoboost se réserve le droit de suspendre un compte en cas de manquement aux présentes CGU." },
+      { heading: 'Droit applicable', body: "Les présentes CGU sont soumises au droit français. En cas de litige, les parties s'efforceront de trouver une solution amiable avant tout recours judiciaire." },
+    ],
+  },
+};
+
+type LegalKey = 'mentions' | 'privacy' | 'cgu' | null;
+
 export default function Onboarding() {
   const [step, setStep]         = useState<Step>('login');
   const [userName, setUserName] = useState('');
@@ -676,6 +714,7 @@ export default function Onboarding() {
 
   const [profileIdx, setProfileIdx] = useState(0);
   const profileScrollRef = useRef<ScrollView>(null);
+  const [legalModal, setLegalModal] = useState<LegalKey>(null);
 
   const fadeAnim     = useRef(new Animated.Value(1)).current;
   const slideAnim    = useRef(new Animated.Value(0)).current;
@@ -1086,6 +1125,26 @@ export default function Onboarding() {
                 <View style={{ flex: 1 }}>
                   <ReportingBlock />
                 </View>
+
+                {/* Legal footer */}
+                <View style={{ paddingHorizontal: 24, paddingBottom: 18, paddingTop: 10 }}>
+                  <View style={{ height: 1, backgroundColor: '#E5E7EB', marginBottom: 10 }} />
+                  <View style={{ flexDirection: 'row' as any, flexWrap: 'wrap' as any, alignItems: 'center' as any, justifyContent: 'center' as any, gap: 0 }}>
+                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>© 2026 Enzoboost. Tous droits réservés.{'  '}</Text>
+                    <TouchableOpacity onPress={() => setLegalModal('mentions')} activeOpacity={0.7}>
+                      <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Mentions Légales</Text>
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}</Text>
+                    <TouchableOpacity onPress={() => setLegalModal('privacy')} activeOpacity={0.7}>
+                      <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Politique de Confidentialité</Text>
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}</Text>
+                    <TouchableOpacity onPress={() => setLegalModal('cgu')} activeOpacity={0.7}>
+                      <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>CGU</Text>
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}Accessibilité : non conforme</Text>
+                  </View>
+                </View>
               </View>
 
 
@@ -1220,6 +1279,76 @@ export default function Onboarding() {
           )}
 
         </Animated.View>
+
+        {/* ══════════════ LEGAL MODALS ══════════════ */}
+        <Modal
+          visible={legalModal !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setLegalModal(null)}
+        >
+          <View style={{
+            flex: 1, backgroundColor: 'rgba(0,0,0,0.55)',
+            justifyContent: 'center' as any, alignItems: 'center' as any,
+            padding: 20,
+          }}>
+            <View style={{
+              backgroundColor: '#FFFFFF', borderRadius: 20,
+              width: '100%' as any, maxWidth: 480, maxHeight: '85%' as any,
+              overflow: 'hidden' as any,
+              shadowColor: '#000', shadowOffset: { width: 0, height: 12 },
+              shadowOpacity: 0.25, shadowRadius: 32, elevation: 20,
+            }}>
+              {/* Modal header */}
+              <View style={{
+                flexDirection: 'row' as any, alignItems: 'center' as any,
+                justifyContent: 'space-between' as any,
+                paddingHorizontal: 20, paddingTop: 20, paddingBottom: 14,
+                borderBottomWidth: 1, borderBottomColor: '#F3F4F6',
+              }}>
+                <Text style={{ fontSize: 17, fontWeight: '800' as any, color: '#0D1117', flex: 1 }}>
+                  {legalModal ? LEGAL_CONTENT[legalModal].title : ''}
+                </Text>
+                <TouchableOpacity onPress={() => setLegalModal(null)} activeOpacity={0.7}
+                  style={{
+                    width: 32, height: 32, borderRadius: 16,
+                    backgroundColor: '#F3F4F6',
+                    alignItems: 'center' as any, justifyContent: 'center' as any,
+                    marginLeft: 12,
+                  }}>
+                  <Text style={{ fontSize: 16, color: '#6B7280', fontWeight: '600' as any, lineHeight: 18 }}>✕</Text>
+                </TouchableOpacity>
+              </View>
+              {/* Modal body */}
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ padding: 20, gap: 18 }}
+                showsVerticalScrollIndicator={false}
+              >
+                {legalModal && LEGAL_CONTENT[legalModal].sections.map((s, i) => (
+                  <View key={i} style={{ gap: 6 }}>
+                    <Text style={{ fontSize: 13, fontWeight: '800' as any, color: '#0D1117' }}>{s.heading}</Text>
+                    <Text style={{ fontSize: 13, color: '#4B5563', lineHeight: 20 }}>{s.body}</Text>
+                  </View>
+                ))}
+                <View style={{ height: 8 }} />
+              </ScrollView>
+              {/* Modal footer */}
+              <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
+                <TouchableOpacity
+                  onPress={() => setLegalModal(null)}
+                  activeOpacity={0.85}
+                  style={{
+                    backgroundColor: '#0D1117', borderRadius: 12,
+                    paddingVertical: 13, alignItems: 'center' as any,
+                  }}>
+                  <Text style={{ fontSize: 14, fontWeight: '700' as any, color: '#FFFFFF' }}>Fermer</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
       </SafeAreaView>
     </View>
   );
