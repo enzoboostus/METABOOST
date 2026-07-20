@@ -710,8 +710,11 @@ type LegalKey = 'mentions' | 'privacy' | 'cgu' | null;
 
 export default function Onboarding() {
   const [step, setStep]         = useState<Step>('login');
-  const [userName, setUserName] = useState('');
-  const [gender, setGender]     = useState<Gender>('male');
+  const [userName, setUserName]   = useState('');
+  const [gender, setGender]       = useState<Gender>('male');
+  const [birthDay, setBirthDay]   = useState('');
+  const [birthMonth, setBirthMonth] = useState('');
+  const [birthYear, setBirthYear] = useState('');
   const [goal, setGoal]         = useState<Goal>(null);
   const [height, setHeight]     = useState('175');
   const [weight, setWeight]     = useState('');
@@ -767,13 +770,29 @@ export default function Onboarding() {
     else finish();
   }
 
+  function computeAge(d: string, m: string, y: string): number | null {
+    const day = parseInt(d), month = parseInt(m), year = parseInt(y);
+    if (!day || !month || !year || year < 1900 || year > 2100) return null;
+    const birth = new Date(year, month - 1, day);
+    if (isNaN(birth.getTime())) return null;
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const md = today.getMonth() - birth.getMonth();
+    if (md < 0 || (md === 0 && today.getDate() < birth.getDate())) age--;
+    return age > 0 && age < 130 ? age : null;
+  }
+
   function finish() {
     const h  = parseFloat(height) || 175;
     const w  = parseFloat(weight) || 75;
     const wa = parseFloat(waist)  || 80;
     const th = parseFloat(thigh)  || undefined;
     const ar = parseFloat(arm)    || undefined;
-    setProfile({ name: userName.trim() || 'Athlète', gender, height: h, goal });
+    const age = computeAge(birthDay, birthMonth, birthYear);
+    const birthDate = (birthYear && birthMonth && birthDay)
+      ? `${birthYear}-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`
+      : '';
+    setProfile({ name: userName.trim() || 'Athlète', gender, height: h, goal, age, birthDate });
     const measure = { date: new Date().toISOString(), weight: w, waist: wa, thigh: th, arm: ar };
     addMeasure(measure);
     setInitialMeasure(measure);
@@ -1186,36 +1205,89 @@ export default function Onboarding() {
                   letterSpacing: -1, lineHeight: 43,
                   marginBottom: 32,
                 }}>
-                  Ravi de te{'\n'}rencontrer.
+                  Bienvenue sur{'\n'}MetaBoost.
                 </Text>
 
-                {/* Name input — bordered rounded rectangle */}
+                {/* Name input */}
                 <TextInput
                   style={{
                     fontSize: 17, fontWeight: '500', color: '#0D1117',
                     borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
                     paddingHorizontal: 18, paddingVertical: 16,
-                    width: '100%', marginBottom: 10,
+                    width: '100%', marginBottom: 12,
                     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
                   }}
                   value={userName}
                   onChangeText={setUserName}
                   placeholder="Ton prénom"
                   placeholderTextColor="#C4C4C4"
-                  returnKeyType="done"
+                  returnKeyType="next"
                   autoCapitalize="words"
                   autoCorrect={false}
                   onSubmitEditing={() => Keyboard.dismiss()}
                 />
 
+                {/* Date de naissance */}
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase' as any, marginBottom: 8 }}>
+                  Date de naissance
+                </Text>
+                <View style={{ flexDirection: 'row' as any, gap: 8, marginBottom: 20 }}>
+                  <TextInput
+                    style={{
+                      width: 56, fontSize: 17, fontWeight: '500', color: '#0D1117',
+                      borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
+                      paddingHorizontal: 12, paddingVertical: 14, textAlign: 'center',
+                      ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+                    }}
+                    value={birthDay}
+                    onChangeText={(v) => setBirthDay(v.replace(/\D/g, '').slice(0, 2))}
+                    placeholder="JJ"
+                    placeholderTextColor="#C4C4C4"
+                    keyboardType="numeric"
+                    maxLength={2}
+                    returnKeyType="next"
+                  />
+                  <TextInput
+                    style={{
+                      width: 56, fontSize: 17, fontWeight: '500', color: '#0D1117',
+                      borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
+                      paddingHorizontal: 12, paddingVertical: 14, textAlign: 'center',
+                      ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+                    }}
+                    value={birthMonth}
+                    onChangeText={(v) => setBirthMonth(v.replace(/\D/g, '').slice(0, 2))}
+                    placeholder="MM"
+                    placeholderTextColor="#C4C4C4"
+                    keyboardType="numeric"
+                    maxLength={2}
+                    returnKeyType="next"
+                  />
+                  <TextInput
+                    style={{
+                      flex: 1, fontSize: 17, fontWeight: '500', color: '#0D1117',
+                      borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
+                      paddingHorizontal: 16, paddingVertical: 14, textAlign: 'center',
+                      ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+                    }}
+                    value={birthYear}
+                    onChangeText={(v) => setBirthYear(v.replace(/\D/g, '').slice(0, 4))}
+                    placeholder="AAAA"
+                    placeholderTextColor="#C4C4C4"
+                    keyboardType="numeric"
+                    maxLength={4}
+                    returnKeyType="done"
+                    onSubmitEditing={() => Keyboard.dismiss()}
+                  />
+                </View>
+
                 {/* Sub line */}
                 <Text style={{
-                  fontSize: 14, color: '#9CA3AF', lineHeight: 20, marginBottom: 28,
+                  fontSize: 14, color: '#9CA3AF', lineHeight: 20, marginBottom: 24,
                 }}>
-                  Prêt(e) à transformer ton corps ? 🔥
+                  Pour un accompagnement qui te ressemble.
                 </Text>
 
-                {/* Gender pills — borderRadius 12, not bubble */}
+                {/* Gender pills */}
                 <View style={{ flexDirection: 'row' as any, gap: 10 }}>
                   {([{ key: 'male' as Gender, sym: '♂', lbl: 'Homme' }, { key: 'female' as Gender, sym: '♀', lbl: 'Femme' }]).map((g) => {
                     const on = gender === g.key;
@@ -1243,7 +1315,7 @@ export default function Onboarding() {
                 </View>
               </View>
 
-              {/* CTA — full-width black pill, fixed on web */}
+              {/* CTA */}
               <View style={Platform.OS === 'web' ? styles.ctaFixed : undefined}>
                 <TouchableOpacity
                   style={{
@@ -1255,7 +1327,7 @@ export default function Onboarding() {
                   activeOpacity={0.88}
                 >
                   <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.2 }}>
-                    C'est parti !
+                    Continuer
                   </Text>
                   <ChevronRight size={20} color="#FFFFFF" strokeWidth={2.5} />
                 </TouchableOpacity>

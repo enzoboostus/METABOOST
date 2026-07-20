@@ -37,6 +37,8 @@ export interface UserProfile {
   height: number;
   onboardingDone: boolean;
   goal: Goal;
+  age: number | null;
+  birthDate: string;
 }
 
 // App config loaded from Supabase (God Mode)
@@ -128,6 +130,8 @@ export const useUserStore = create<UserState>()(
         height: 175,
         onboardingDone: false,
         goal: null,
+        age: null,
+        birthDate: '',
       },
       measures: [],
       initialMeasure: null,
@@ -198,6 +202,8 @@ export const useUserStore = create<UserState>()(
           name: profile.name || 'Athlète',
           gender: profile.gender,
           height_cm: profile.height,
+          age: profile.age,
+          birth_date: profile.birthDate || null,
         }).then(({ error }) => { if (error) console.warn('Supabase profile sync:', error.message); });
       },
 
@@ -327,7 +333,7 @@ export const useUserStore = create<UserState>()(
       logout: async () => {
         await supabase.auth.signOut();
         set({
-          profile: { name: '', gender: 'male', height: 175, onboardingDone: false, goal: null },
+          profile: { name: '', gender: 'male', height: 175, onboardingDone: false, goal: null, age: null, birthDate: '' },
           measures: [],
           initialMeasure: null,
           sessions: [],
