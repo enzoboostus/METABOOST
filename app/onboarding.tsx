@@ -664,7 +664,7 @@ const LEGAL_CONTENT = {
   mentions: {
     title: 'Mentions Légales',
     sections: [
-      { heading: 'Éditeur du site', body: "Enzoboost SAS\nSiège social : Guyane\nSIRET : en cours d'immatriculation\nDirecteur de la publication : Enzo Boostus\nContact : contact@enzoboost.us" },
+      { heading: 'Éditeur du site', body: "Enzoboost SAS\nSiège social : Guyane\nSIRET : en cours d'immatriculation\nDirecteur de la publication : Enzo\nContact : contact@enzoboost.us" },
       { heading: 'Hébergement', body: "Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA.\nTéléphone : +1 (551) 800-5645\nEmail : privacy@vercel.com" },
       { heading: 'Propriété intellectuelle', body: "L'ensemble des contenus présents sur ce site (textes, images, logos, vidéos, bases de données) sont la propriété exclusive d'Enzoboost ou de ses partenaires. Toute reproduction, distribution ou utilisation sans autorisation préalable est strictement interdite." },
       { heading: 'Limitation de responsabilité', body: "Enzoboost s'efforce d'assurer l'exactitude des informations diffusées sur ce site. Toutefois, nous ne pouvons garantir l'exhaustivité ou l'absence d'erreurs. L'utilisation des informations se fait sous la seule responsabilité de l'utilisateur." },
@@ -1326,7 +1326,7 @@ export default function Onboarding() {
               {/* Modal body */}
               <ScrollView
                 style={{ flex: 1 }}
-                contentContainerStyle={{ padding: 20, gap: 18 }}
+                contentContainerStyle={{ padding: 20, gap: 18, paddingBottom: 80 }}
                 showsVerticalScrollIndicator={false}
               >
                 {legalModal && LEGAL_CONTENT[legalModal].sections.map((s, i) => (
@@ -1335,7 +1335,6 @@ export default function Onboarding() {
                     <Text style={{ fontSize: 13, color: '#4B5563', lineHeight: 20 }}>{s.body}</Text>
                   </View>
                 ))}
-                <View style={{ height: 8 }} />
               </ScrollView>
               {/* Modal footer */}
               <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
