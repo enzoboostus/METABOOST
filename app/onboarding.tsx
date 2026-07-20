@@ -460,7 +460,7 @@ function ReportingBlock() {
   const [activeTab, setActiveTab] = useState(0);
   const underlineX = useRef(new Animated.Value(0)).current;
   const tabW = Math.round((W - 48) / 3);
-  const heroH = Math.round(H * 0.19);
+  const heroH = W - 48; // full square — image is 1024x1024
 
   useEffect(() => {
     const t = setInterval(() => setActiveTab(s => (s + 1) % 3), 2800);
@@ -478,7 +478,7 @@ function ReportingBlock() {
   const tab = REPORT_TABS[activeTab];
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: 8, paddingBottom: 10 }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: 8 }}>
 
       {/* Hero image */}
       <View style={{
@@ -1118,7 +1118,7 @@ export default function Onboarding() {
               {/* ════════════════════════════════════════════
                   SLIDE 6 — Reporting Intelligent
               ════════════════════════════════════════════ */}
-              <View style={{ width: W, height: H, backgroundColor: '#FFFFFF', flexDirection: 'column' as any, paddingTop: 16 }}>
+              <View style={{ width: W, height: H, backgroundColor: '#FFFFFF', flexDirection: 'column' as any, paddingTop: 16, overflow: 'hidden' as any }}>
                 <Text style={{
                   fontSize: 28, fontWeight: '900' as any, color: '#0D1117',
                   letterSpacing: -1, lineHeight: 35,
@@ -1128,9 +1128,9 @@ export default function Onboarding() {
                   Le bilan en un clic,{'\n'}pour tous.
                 </Text>
                 <Text style={{
-                  fontSize: 12, color: '#4B5563', lineHeight: 18,
+                  fontSize: 11, color: '#4B5563', lineHeight: 16,
                   textAlign: 'center' as any, paddingHorizontal: 28,
-                  marginTop: 6, flexShrink: 0 as any,
+                  marginTop: 5, flexShrink: 0 as any,
                 }}>
                   Résumez et écrivez le parcours de chaque utilisateur pour chaque étape de sa progression. D'un simple clic, notre plateforme retranscrit l'évolution exacte de chacun dans un rapport qui adapte instantanément son langage : un résumé visuel et motivant pour l'adhérent, un suivi de performance technique pour le coach, et un bilan clinique rigoureux pour vos partenaires médicaux et institutionnels.
                 </Text>
