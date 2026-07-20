@@ -1131,7 +1131,7 @@ export default function Onboarding() {
                 <View style={{ paddingHorizontal: 24, paddingBottom: 14, paddingTop: 6, flexShrink: 0 as any }}>
                   <View style={{ height: 1, backgroundColor: '#E5E7EB', marginBottom: 8 }} />
                   <View style={{ flexDirection: 'row' as any, flexWrap: 'wrap' as any, alignItems: 'center' as any, justifyContent: 'center' as any }}>
-                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>© 2026 Enzoboost. Tous droits réservés.{'  '}</Text>
+                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>© 2026 MetaBoost. Tous droits réservés.{'  '}</Text>
                     <TouchableOpacity onPress={() => setLegalModal('mentions')} activeOpacity={0.7}>
                       <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Mentions Légales</Text>
                     </TouchableOpacity>
