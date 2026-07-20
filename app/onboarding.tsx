@@ -664,8 +664,8 @@ const LEGAL_CONTENT = {
   mentions: {
     title: 'Mentions Légales',
     sections: [
-      { heading: 'Éditeur du site', body: "Enzoboost SAS\nSiège social : France\nSIRET : en cours d'immatriculation\nDirecteur de la publication : Enzo Boostus\nContact : contact@enzoboost.fr" },
-      { heading: 'Hébergement', body: "Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA." },
+      { heading: 'Éditeur du site', body: "Enzoboost SAS\nSiège social : Guyane\nSIRET : en cours d'immatriculation\nDirecteur de la publication : Enzo Boostus\nContact : contact@enzoboost.us" },
+      { heading: 'Hébergement', body: "Le site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA.\nTéléphone : +1 (551) 800-5645\nEmail : privacy@vercel.com" },
       { heading: 'Propriété intellectuelle', body: "L'ensemble des contenus présents sur ce site (textes, images, logos, vidéos, bases de données) sont la propriété exclusive d'Enzoboost ou de ses partenaires. Toute reproduction, distribution ou utilisation sans autorisation préalable est strictement interdite." },
       { heading: 'Limitation de responsabilité', body: "Enzoboost s'efforce d'assurer l'exactitude des informations diffusées sur ce site. Toutefois, nous ne pouvons garantir l'exhaustivité ou l'absence d'erreurs. L'utilisation des informations se fait sous la seule responsabilité de l'utilisateur." },
     ],
@@ -673,13 +673,13 @@ const LEGAL_CONTENT = {
   privacy: {
     title: 'Politique de Confidentialité',
     sections: [
-      { heading: 'Responsable du traitement', body: "Enzoboost SAS — contact@enzoboost.fr" },
+      { heading: 'Responsable du traitement', body: "Enzoboost SAS — contact@enzoboost.us" },
       { heading: 'Données collectées', body: "Prénom, genre, objectifs fitness, données morphologiques (poids, taille, tour de taille, cuisse, bras), données de séances, adresse e-mail lors de la création de compte." },
       { heading: 'Finalités du traitement', body: "• Personnalisation du programme d'entraînement\n• Suivi de la progression\n• Communication relative au compte\n• Amélioration de nos services" },
       { heading: 'Base légale', body: "Consentement de l'utilisateur (Art. 6.1.a RGPD) et exécution du contrat (Art. 6.1.b RGPD)." },
       { heading: 'Durée de conservation', body: "Les données sont conservées pendant toute la durée de la relation contractuelle, puis archivées 3 ans après la désactivation du compte." },
-      { heading: 'Vos droits', body: "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de portabilité et d'opposition. Pour exercer ces droits : contact@enzoboost.fr" },
-      { heading: 'Cookies', body: "Ce site utilise des cookies strictement nécessaires au fonctionnement de la plateforme. Aucun cookie publicitaire tiers n'est déposé sans votre consentement." },
+      { heading: 'Vos droits', body: "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de portabilité et d'opposition. Pour exercer ces droits : contact@enzoboost.us\n\nVous disposez également du droit d'introduire une réclamation auprès de la CNIL (cnil.fr)." },
+      { heading: 'Cookies', body: "Des cookies techniques et de session sont strictement nécessaires pour l'authentification (Supabase) et le bon fonctionnement de l'application. Aucun cookie publicitaire tiers n'est déposé sans votre consentement." },
     ],
   },
   cgu: {
