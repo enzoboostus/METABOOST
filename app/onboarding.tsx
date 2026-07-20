@@ -478,7 +478,7 @@ function ReportingBlock() {
   const tab = REPORT_TABS[activeTab];
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: 8, paddingBottom: 16 }}>
+    <View style={{ backgroundColor: '#FFFFFF', paddingTop: 8, paddingBottom: 16 }}>
 
       {/* Hero image */}
       <View style={{
@@ -1108,48 +1108,47 @@ export default function Onboarding() {
               {/* ════════════════════════════════════════════
                   SLIDE 6 — Reporting Intelligent
               ════════════════════════════════════════════ */}
-              <View style={{ width: W, height: H, backgroundColor: '#FFFFFF', paddingTop: 20, gap: 8, flexDirection: 'column' as any, position: 'relative' as any }}>
-                <Text style={{
-                  fontSize: 30, fontWeight: '900' as any, color: '#0D1117',
-                  letterSpacing: -1, lineHeight: 38,
-                  textAlign: 'center' as any, paddingHorizontal: 24,
-                }}>
-                  Le bilan en un clic,{'\n'}pour tous.
-                </Text>
-                <Text style={{
-                  fontSize: 13, color: '#4B5563', lineHeight: 21,
-                  textAlign: 'center' as any, paddingHorizontal: 28,
-                }}>
-                  Résumez et écrivez le parcours de chaque utilisateur pour chaque étape de sa progression. D'un simple clic, notre plateforme retranscrit l'évolution exacte de chacun dans un rapport qui adapte instantanément son langage : un résumé visuel et motivant pour l'adhérent, un suivi de performance technique pour le coach, et un bilan clinique rigoureux pour vos partenaires médicaux et institutionnels.
-                </Text>
-                {/* paddingBottom reserves space for the absolutely positioned footer */}
-                <View style={{ flex: 1, paddingBottom: 54 }}>
+              <View style={{ width: W, height: H, backgroundColor: '#FFFFFF', overflow: 'hidden' as any }}>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  nestedScrollEnabled={true}
+                  contentContainerStyle={{ paddingTop: 20, paddingBottom: 28 }}
+                >
+                  <Text style={{
+                    fontSize: 30, fontWeight: '900' as any, color: '#0D1117',
+                    letterSpacing: -1, lineHeight: 38,
+                    textAlign: 'center' as any, paddingHorizontal: 24,
+                  }}>
+                    Le bilan en un clic,{'\n'}pour tous.
+                  </Text>
+                  <Text style={{
+                    fontSize: 13, color: '#4B5563', lineHeight: 21,
+                    textAlign: 'center' as any, paddingHorizontal: 28,
+                    marginTop: 8,
+                  }}>
+                    Résumez et écrivez le parcours de chaque utilisateur pour chaque étape de sa progression. D'un simple clic, notre plateforme retranscrit l'évolution exacte de chacun dans un rapport qui adapte instantanément son langage : un résumé visuel et motivant pour l'adhérent, un suivi de performance technique pour le coach, et un bilan clinique rigoureux pour vos partenaires médicaux et institutionnels.
+                  </Text>
                   <ReportingBlock />
-                </View>
-
-                {/* Legal footer — absolute so it never pushes into the flex layout */}
-                <View style={{
-                  position: 'absolute' as any, bottom: 0, left: 0, right: 0,
-                  paddingHorizontal: 24, paddingBottom: 18, paddingTop: 10,
-                  backgroundColor: '#FFFFFF',
-                }}>
-                  <View style={{ height: 1, backgroundColor: '#E5E7EB', marginBottom: 10 }} />
-                  <View style={{ flexDirection: 'row' as any, flexWrap: 'wrap' as any, alignItems: 'center' as any, justifyContent: 'center' as any }}>
-                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>© 2026 Enzoboost. Tous droits réservés.{'  '}</Text>
-                    <TouchableOpacity onPress={() => setLegalModal('mentions')} activeOpacity={0.7}>
-                      <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Mentions Légales</Text>
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}</Text>
-                    <TouchableOpacity onPress={() => setLegalModal('privacy')} activeOpacity={0.7}>
-                      <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Politique de Confidentialité</Text>
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}</Text>
-                    <TouchableOpacity onPress={() => setLegalModal('cgu')} activeOpacity={0.7}>
-                      <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>CGU</Text>
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}Accessibilité : non conforme</Text>
+                  {/* Legal footer — below the card, revealed by scrolling */}
+                  <View style={{ paddingHorizontal: 24, paddingTop: 14, paddingBottom: 4 }}>
+                    <View style={{ height: 1, backgroundColor: '#E5E7EB', marginBottom: 10 }} />
+                    <View style={{ flexDirection: 'row' as any, flexWrap: 'wrap' as any, alignItems: 'center' as any, justifyContent: 'center' as any }}>
+                      <Text style={{ fontSize: 10, color: '#9CA3AF' }}>© 2026 Enzoboost. Tous droits réservés.{'  '}</Text>
+                      <TouchableOpacity onPress={() => setLegalModal('mentions')} activeOpacity={0.7}>
+                        <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Mentions Légales</Text>
+                      </TouchableOpacity>
+                      <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}</Text>
+                      <TouchableOpacity onPress={() => setLegalModal('privacy')} activeOpacity={0.7}>
+                        <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Politique de Confidentialité</Text>
+                      </TouchableOpacity>
+                      <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}</Text>
+                      <TouchableOpacity onPress={() => setLegalModal('cgu')} activeOpacity={0.7}>
+                        <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>CGU</Text>
+                      </TouchableOpacity>
+                      <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}Accessibilité : non conforme</Text>
+                    </View>
                   </View>
-                </View>
+                </ScrollView>
               </View>
 
 
