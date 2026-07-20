@@ -1217,7 +1217,7 @@ export default function Onboarding() {
                     borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
                     paddingHorizontal: 18, paddingVertical: 16,
                     width: '100%', marginBottom: 12,
-                    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+                    ...(Platform.OS === 'web' ? { outlineStyle: 'none', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif' } as any : {}),
                   }}
                   value={userName}
                   onChangeText={setUserName}
@@ -1243,7 +1243,7 @@ export default function Onboarding() {
                           onChange: (e: any) => setBirthDay(e.target.value),
                           style: {
                             border: 'none', outline: 'none', background: '#FFFFFF',
-                            fontSize: '15px', fontFamily: 'inherit',
+                            fontSize: '15px', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif',
                             color: birthDay ? '#0D1117' : '#9CA3AF',
                             width: '100%', cursor: 'pointer',
                             padding: '14px 10px',
@@ -1267,7 +1267,7 @@ export default function Onboarding() {
                           onChange: (e: any) => setBirthMonth(e.target.value),
                           style: {
                             border: 'none', outline: 'none', background: '#FFFFFF',
-                            fontSize: '15px', fontFamily: 'inherit',
+                            fontSize: '15px', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif',
                             color: birthMonth ? '#0D1117' : '#9CA3AF',
                             width: '100%', cursor: 'pointer',
                             padding: '14px 10px',
@@ -1291,7 +1291,7 @@ export default function Onboarding() {
                           onChange: (e: any) => setBirthYear(e.target.value),
                           style: {
                             border: 'none', outline: 'none', background: '#FFFFFF',
-                            fontSize: '15px', fontFamily: 'inherit',
+                            fontSize: '15px', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif',
                             color: birthYear ? '#0D1117' : '#9CA3AF',
                             width: '100%', cursor: 'pointer',
                             padding: '14px 10px',
