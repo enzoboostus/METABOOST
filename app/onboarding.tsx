@@ -788,15 +788,15 @@ export default function Onboarding() {
   });
 
   return (
-    <View style={[styles.root, step === 'login' && styles.rootLight, Platform.OS === 'web' && styles.rootWeb]}>
-      {step !== 'login' && (
+    <View style={[styles.root, (step === 'login' || step === 'welcome') && styles.rootLight, Platform.OS === 'web' && styles.rootWeb]}>
+      {step !== 'login' && step !== 'welcome' && (
         <LinearGradient colors={['#0B1628', '#060E1C', '#03080F']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
       )}
-      {step !== 'login' && <View style={styles.glowA} />}
-      {step !== 'login' && <View style={styles.glowB} />}
+      {step !== 'login' && step !== 'welcome' && <View style={styles.glowA} />}
+      {step !== 'login' && step !== 'welcome' && <View style={styles.glowB} />}
 
       <SafeAreaView style={{ flex: 1 }} edges={Platform.OS === 'web' ? ['top'] : ['top', 'bottom']}>
-        {step !== 'login' && (
+        {step !== 'login' && step !== 'welcome' && (
           <View style={styles.progressTrack}>
             <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
           </View>
@@ -1162,37 +1162,94 @@ export default function Onboarding() {
 
           {/* ══════════════ WELCOME ══════════════ */}
           {step === 'welcome' && (
-            <View style={styles.screen}>
-              <View style={[styles.screenContent, Platform.OS === 'web' && { paddingBottom: 80 }]}>
-                <View style={styles.welcomeBlock}>
-                  <View style={styles.emojiRing}><Text style={{ fontSize: 34 }}>👋</Text></View>
-                  <Text style={styles.welcomeHi}>Ravi de te rencontrer,</Text>
-                  <TextInput
-                    style={styles.nameInput}
-                    value={userName}
-                    onChangeText={setUserName}
-                    placeholder="Ton prénom"
-                    placeholderTextColor="rgba(226,209,179,0.28)"
-                    returnKeyType="done"
-                    autoCapitalize="words"
-                    autoCorrect={false}
-                    onSubmitEditing={() => Keyboard.dismiss()}
-                  />
-                  <Text style={styles.welcomeSub}>Prêt(e) à transformer ton corps ? 🔥</Text>
-                  <View style={styles.genderRow}>
-                    {([{ key: 'male' as Gender, sym: '♂', lbl: 'Homme' }, { key: 'female' as Gender, sym: '♀', lbl: 'Femme' }]).map((g) => (
-                      <TouchableOpacity key={g.key} style={[styles.genderPill, gender === g.key && styles.genderOn]} onPress={() => { setGender(g.key); Haptics.selectionAsync?.(); }} activeOpacity={0.8}>
-                        <Text style={[styles.genderSym, gender === g.key && { color: '#2a2a2a' }]}>{g.sym}</Text>
-                        <Text style={[styles.genderLbl, gender === g.key && styles.genderLblOn]}>{g.lbl}</Text>
+            <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: 24, paddingBottom: 32, justifyContent: 'space-between' }}>
+
+              {/* Progress bar — light theme */}
+              <View style={{ height: 2, backgroundColor: '#F0F0F0', borderRadius: 2, marginTop: 6, overflow: 'hidden' as any }}>
+                <Animated.View style={{ height: '100%' as any, backgroundColor: '#0D1117', borderRadius: 2, width: progressWidth }} />
+              </View>
+
+              {/* Content block */}
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',
+                ...(Platform.OS === 'web' ? { paddingBottom: 80 } : {}) }}>
+
+                {/* Emoji badge */}
+                <View style={{
+                  width: 64, height: 64, borderRadius: 32,
+                  backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: '#E5E7EB',
+                  alignItems: 'center', justifyContent: 'center', marginBottom: 20,
+                }}>
+                  <Text style={{ fontSize: 30 }}>👋</Text>
+                </View>
+
+                {/* Greeting */}
+                <Text style={{ fontSize: 15, color: '#6B7280', fontWeight: '400', letterSpacing: 0.2, marginBottom: 10 }}>
+                  Ravi de te rencontrer,
+                </Text>
+
+                {/* Name input — display-size, underline style */}
+                <TextInput
+                  style={{
+                    fontSize: 40, fontWeight: '900', color: '#0D1117',
+                    textAlign: 'center', letterSpacing: -1.5,
+                    borderBottomWidth: 2, borderBottomColor: '#E5E7EB',
+                    paddingBottom: 6, width: '100%', marginBottom: 28,
+                    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+                  }}
+                  value={userName}
+                  onChangeText={setUserName}
+                  placeholder="Ton prénom"
+                  placeholderTextColor="#D1D5DB"
+                  returnKeyType="done"
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  onSubmitEditing={() => Keyboard.dismiss()}
+                />
+
+                {/* Sub line */}
+                <Text style={{ fontSize: 15, color: '#4B5563', textAlign: 'center', marginBottom: 24 }}>
+                  Prêt(e) à transformer ton corps ? 🔥
+                </Text>
+
+                {/* Gender pills */}
+                <View style={{ flexDirection: 'row' as any, gap: 10, width: '100%' }}>
+                  {([{ key: 'male' as Gender, sym: '♂', lbl: 'Homme' }, { key: 'female' as Gender, sym: '♀', lbl: 'Femme' }]).map((g) => {
+                    const on = gender === g.key;
+                    return (
+                      <TouchableOpacity
+                        key={g.key}
+                        onPress={() => { setGender(g.key); Haptics.selectionAsync?.(); }}
+                        activeOpacity={0.8}
+                        style={{
+                          flex: 1, flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 8,
+                          paddingVertical: 15, borderRadius: 100,
+                          borderWidth: 1.5,
+                          borderColor: on ? '#0D1117' : '#E5E7EB',
+                          backgroundColor: on ? '#0D1117' : '#FFFFFF',
+                          ...(Platform.OS === 'web' ? { transition: 'all 0.2s ease' } as any : {}),
+                        }}
+                      >
+                        <Text style={{ fontSize: 15, color: on ? '#FFFFFF' : '#9CA3AF' }}>{g.sym}</Text>
+                        <Text style={{ fontSize: 15, fontWeight: on ? '800' : '600' as any, color: on ? '#FFFFFF' : '#6B7280' }}>{g.lbl}</Text>
                       </TouchableOpacity>
-                    ))}
-                  </View>
+                    );
+                  })}
                 </View>
               </View>
-              <View style={Platform.OS === 'web' ? styles.ctaFixed : null}>
-                <TouchableOpacity style={styles.ctaBtn} onPress={goNext} activeOpacity={0.88}>
-                  <Text style={styles.ctaTxt}>C'est parti !</Text>
-                  <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
+
+              {/* CTA button */}
+              <View style={Platform.OS === 'web' ? styles.ctaFixed : undefined}>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 8,
+                    backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 18,
+                    ...(Platform.OS === 'web' ? { boxShadow: '0 8px 30px rgba(0,0,0,0.12)' } as any : {}),
+                  }}
+                  onPress={goNext}
+                  activeOpacity={0.88}
+                >
+                  <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.2 }}>C'est parti !</Text>
+                  <ChevronRight size={20} color="#FFFFFF" strokeWidth={2.5} />
                 </TouchableOpacity>
               </View>
             </View>
