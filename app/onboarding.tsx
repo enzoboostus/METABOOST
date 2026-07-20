@@ -1118,12 +1118,7 @@ export default function Onboarding() {
               {/* ════════════════════════════════════════════
                   SLIDE 6 — Reporting Intelligent
               ════════════════════════════════════════════ */}
-              <View style={{ width: W, height: H, backgroundColor: '#FFFFFF', overflow: 'hidden' as any }}>
-                <ScrollView
-                  showsVerticalScrollIndicator={false}
-                  nestedScrollEnabled={true}
-                  contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}
-                >
+              <View style={{ width: W, backgroundColor: '#FFFFFF', paddingTop: 16, paddingBottom: 40 }}>
                   <Text style={{
                     fontSize: 28, fontWeight: '900' as any, color: '#0D1117',
                     letterSpacing: -1, lineHeight: 35,
@@ -1159,7 +1154,6 @@ export default function Onboarding() {
                       <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}Accessibilité : non conforme</Text>
                     </View>
                   </View>
-                </ScrollView>
               </View>
 
 
