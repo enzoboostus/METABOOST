@@ -1162,44 +1162,46 @@ export default function Onboarding() {
 
           {/* ══════════════ WELCOME ══════════════ */}
           {step === 'welcome' && (
-            <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: 24, paddingBottom: 32, justifyContent: 'space-between' }}>
+            <View style={{
+              flex: 1, backgroundColor: '#FFFFFF',
+              paddingHorizontal: 28, paddingTop: 48, paddingBottom: 32,
+              justifyContent: 'space-between',
+            }}>
 
-              {/* Progress bar — light theme */}
-              <View style={{ height: 2, backgroundColor: '#F0F0F0', borderRadius: 2, marginTop: 6, overflow: 'hidden' as any }}>
-                <Animated.View style={{ height: '100%' as any, backgroundColor: '#0D1117', borderRadius: 2, width: progressWidth }} />
-              </View>
+              {/* Top content — left-aligned, editorial */}
+              <View style={{ ...(Platform.OS === 'web' ? { paddingBottom: 80 } : {}) }}>
 
-              {/* Content block */}
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',
-                ...(Platform.OS === 'web' ? { paddingBottom: 80 } : {}) }}>
-
-                {/* Emoji badge */}
-                <View style={{
-                  width: 64, height: 64, borderRadius: 32,
-                  backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: '#E5E7EB',
-                  alignItems: 'center', justifyContent: 'center', marginBottom: 20,
+                {/* Brand micro-label */}
+                <Text style={{
+                  fontSize: 10, fontWeight: '800', color: '#C4C4C4',
+                  letterSpacing: 3.5, textTransform: 'uppercase' as any,
+                  marginBottom: 44,
                 }}>
-                  <Text style={{ fontSize: 30 }}>👋</Text>
-                </View>
-
-                {/* Greeting */}
-                <Text style={{ fontSize: 15, color: '#6B7280', fontWeight: '400', letterSpacing: 0.2, marginBottom: 10 }}>
-                  Ravi de te rencontrer,
+                  METABOOST
                 </Text>
 
-                {/* Name input — display-size, underline style */}
+                {/* Display title */}
+                <Text style={{
+                  fontSize: 36, fontWeight: '900', color: '#0D1117',
+                  letterSpacing: -1, lineHeight: 43,
+                  marginBottom: 32,
+                }}>
+                  Ravi de te{'\n'}rencontrer.
+                </Text>
+
+                {/* Name input — bordered rounded rectangle */}
                 <TextInput
                   style={{
-                    fontSize: 40, fontWeight: '900', color: '#0D1117',
-                    textAlign: 'center', letterSpacing: -1.5,
-                    borderBottomWidth: 2, borderBottomColor: '#E5E7EB',
-                    paddingBottom: 6, width: '100%', marginBottom: 28,
+                    fontSize: 17, fontWeight: '500', color: '#0D1117',
+                    borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
+                    paddingHorizontal: 18, paddingVertical: 16,
+                    width: '100%', marginBottom: 10,
                     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
                   }}
                   value={userName}
                   onChangeText={setUserName}
                   placeholder="Ton prénom"
-                  placeholderTextColor="#D1D5DB"
+                  placeholderTextColor="#C4C4C4"
                   returnKeyType="done"
                   autoCapitalize="words"
                   autoCorrect={false}
@@ -1207,12 +1209,14 @@ export default function Onboarding() {
                 />
 
                 {/* Sub line */}
-                <Text style={{ fontSize: 15, color: '#4B5563', textAlign: 'center', marginBottom: 24 }}>
+                <Text style={{
+                  fontSize: 14, color: '#9CA3AF', lineHeight: 20, marginBottom: 28,
+                }}>
                   Prêt(e) à transformer ton corps ? 🔥
                 </Text>
 
-                {/* Gender pills */}
-                <View style={{ flexDirection: 'row' as any, gap: 10, width: '100%' }}>
+                {/* Gender pills — borderRadius 12, not bubble */}
+                <View style={{ flexDirection: 'row' as any, gap: 10 }}>
                   {([{ key: 'male' as Gender, sym: '♂', lbl: 'Homme' }, { key: 'female' as Gender, sym: '♀', lbl: 'Femme' }]).map((g) => {
                     const on = gender === g.key;
                     return (
@@ -1222,33 +1226,37 @@ export default function Onboarding() {
                         activeOpacity={0.8}
                         style={{
                           flex: 1, flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 8,
-                          paddingVertical: 15, borderRadius: 100,
+                          paddingVertical: 14, borderRadius: 12,
                           borderWidth: 1.5,
                           borderColor: on ? '#0D1117' : '#E5E7EB',
-                          backgroundColor: on ? '#0D1117' : '#FFFFFF',
-                          ...(Platform.OS === 'web' ? { transition: 'all 0.2s ease' } as any : {}),
+                          backgroundColor: on ? '#0D1117' : '#FAFAFA',
+                          ...(Platform.OS === 'web' ? { transition: 'all 0.18s ease' } as any : {}),
                         }}
                       >
-                        <Text style={{ fontSize: 15, color: on ? '#FFFFFF' : '#9CA3AF' }}>{g.sym}</Text>
-                        <Text style={{ fontSize: 15, fontWeight: on ? '800' : '600' as any, color: on ? '#FFFFFF' : '#6B7280' }}>{g.lbl}</Text>
+                        <Text style={{ fontSize: 14, color: on ? '#FFFFFF' : '#BFBFBF' }}>{g.sym}</Text>
+                        <Text style={{ fontSize: 15, fontWeight: on ? '800' : '500' as any, color: on ? '#FFFFFF' : '#374151' }}>
+                          {g.lbl}
+                        </Text>
                       </TouchableOpacity>
                     );
                   })}
                 </View>
               </View>
 
-              {/* CTA button */}
+              {/* CTA — full-width black pill, fixed on web */}
               <View style={Platform.OS === 'web' ? styles.ctaFixed : undefined}>
                 <TouchableOpacity
                   style={{
                     flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 8,
                     backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 18,
-                    ...(Platform.OS === 'web' ? { boxShadow: '0 8px 30px rgba(0,0,0,0.12)' } as any : {}),
+                    ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(0,0,0,0.14)' } as any : {}),
                   }}
                   onPress={goNext}
                   activeOpacity={0.88}
                 >
-                  <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.2 }}>C'est parti !</Text>
+                  <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.2 }}>
+                    C'est parti !
+                  </Text>
                   <ChevronRight size={20} color="#FFFFFF" strokeWidth={2.5} />
                 </TouchableOpacity>
               </View>
