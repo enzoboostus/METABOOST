@@ -460,7 +460,7 @@ function ReportingBlock() {
   const [activeTab, setActiveTab] = useState(0);
   const underlineX = useRef(new Animated.Value(0)).current;
   const tabW = Math.round((W - 48) / 3);
-  const heroH = Math.round(H * 0.28);
+  const heroH = Math.round(H * 0.19);
 
   useEffect(() => {
     const t = setInterval(() => setActiveTab(s => (s + 1) % 3), 2800);
@@ -478,7 +478,7 @@ function ReportingBlock() {
   const tab = REPORT_TABS[activeTab];
 
   return (
-    <View style={{ backgroundColor: '#FFFFFF', paddingTop: 8, paddingBottom: 16 }}>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: 8, paddingBottom: 10 }}>
 
       {/* Hero image */}
       <View style={{
@@ -486,7 +486,7 @@ function ReportingBlock() {
         overflow: 'hidden' as any, alignSelf: 'center' as any,
         shadowColor: '#000', shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.10, shadowRadius: 16, elevation: 5,
-        marginBottom: 18,
+        marginBottom: 10,
       }}>
         <Image
           source={REPORTING_HERO}
@@ -496,13 +496,13 @@ function ReportingBlock() {
       </View>
 
       {/* Underline selector */}
-      <View style={{ paddingHorizontal: 24, marginBottom: 14 }}>
+      <View style={{ paddingHorizontal: 24, marginBottom: 10 }}>
         <View style={{ flexDirection: 'row' as any }}>
           {REPORT_TABS.map((t, i) => {
             const active = i === activeTab;
             return (
               <TouchableOpacity key={t.key} onPress={() => setActiveTab(i)} activeOpacity={0.7}
-                style={{ flex: 1, alignItems: 'center' as any, paddingVertical: 10 }}>
+                style={{ flex: 1, alignItems: 'center' as any, paddingVertical: 7 }}>
                 <View style={{ flexDirection: 'row' as any, alignItems: 'center' as any, gap: 6 }}>
                   <View style={{
                     width: 7, height: 7, borderRadius: 4,
@@ -538,7 +538,7 @@ function ReportingBlock() {
         shadowOpacity: 0.06, shadowRadius: 16, elevation: 3,
       }}>
         <View style={{
-          backgroundColor: '#0D1117', paddingHorizontal: 16, paddingVertical: 14,
+          backgroundColor: '#0D1117', paddingHorizontal: 16, paddingVertical: 10,
           flexDirection: 'row' as any, alignItems: 'center' as any, gap: 12,
         }}>
           <View style={{ width: 3, alignSelf: 'stretch' as any, borderRadius: 2, backgroundColor: tab.color }} />
@@ -548,25 +548,25 @@ function ReportingBlock() {
           </View>
           <Text style={{ fontSize: 22 }}>{tab.icon}</Text>
         </View>
-        <View style={{ padding: 12, gap: 8 }}>
-          <View style={{ flexDirection: 'row' as any, gap: 8 }}>
+        <View style={{ padding: 8, gap: 6 }}>
+          <View style={{ flexDirection: 'row' as any, gap: 6 }}>
             {tab.lines.slice(0, 2).map((line, i) => (
-              <View key={i} style={{ flex: 1, backgroundColor: '#FAFAFA', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F3F4F6' }}>
-                <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '600' as any, marginBottom: 5, letterSpacing: 0.3 }}>{line.label}</Text>
-                <Text style={{ fontSize: 15, fontWeight: '900' as any, color: line.accent ? tab.color : '#0D1117' }}>{line.value}</Text>
+              <View key={i} style={{ flex: 1, backgroundColor: '#FAFAFA', borderRadius: 10, padding: 8, borderWidth: 1, borderColor: '#F3F4F6' }}>
+                <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '600' as any, marginBottom: 3, letterSpacing: 0.3 }}>{line.label}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '900' as any, color: line.accent ? tab.color : '#0D1117' }}>{line.value}</Text>
               </View>
             ))}
           </View>
-          <View style={{ flexDirection: 'row' as any, gap: 8 }}>
+          <View style={{ flexDirection: 'row' as any, gap: 6 }}>
             {tab.lines.slice(2, 4).map((line, i) => (
-              <View key={i} style={{ flex: 1, backgroundColor: '#FAFAFA', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F3F4F6' }}>
-                <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '600' as any, marginBottom: 5, letterSpacing: 0.3 }}>{line.label}</Text>
-                <Text style={{ fontSize: 15, fontWeight: '900' as any, color: line.accent ? tab.color : '#0D1117' }}>{line.value}</Text>
+              <View key={i} style={{ flex: 1, backgroundColor: '#FAFAFA', borderRadius: 10, padding: 8, borderWidth: 1, borderColor: '#F3F4F6' }}>
+                <Text style={{ fontSize: 9, color: '#9CA3AF', fontWeight: '600' as any, marginBottom: 3, letterSpacing: 0.3 }}>{line.label}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '900' as any, color: line.accent ? tab.color : '#0D1117' }}>{line.value}</Text>
               </View>
             ))}
           </View>
         </View>
-        <View style={{ flexDirection: 'row' as any, alignItems: 'center' as any, justifyContent: 'space-between' as any, paddingHorizontal: 16, paddingVertical: 10, borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
+        <View style={{ flexDirection: 'row' as any, alignItems: 'center' as any, justifyContent: 'space-between' as any, paddingHorizontal: 16, paddingVertical: 7, borderTopWidth: 1, borderTopColor: '#F3F4F6' }}>
           <View style={{ flexDirection: 'row' as any, alignItems: 'center' as any, gap: 6 }}>
             <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#10B981' }} />
             <Text style={{ fontSize: 10, color: '#9CA3AF' }}>PDF · RGPD · Signé</Text>
@@ -1108,47 +1108,44 @@ export default function Onboarding() {
               {/* ════════════════════════════════════════════
                   SLIDE 6 — Reporting Intelligent
               ════════════════════════════════════════════ */}
-              <View style={{ width: W, height: H, backgroundColor: '#FFFFFF', overflow: 'hidden' as any }}>
-                <ScrollView
-                  showsVerticalScrollIndicator={false}
-                  nestedScrollEnabled={true}
-                  contentContainerStyle={{ paddingTop: 20, paddingBottom: 28 }}
-                >
-                  <Text style={{
-                    fontSize: 30, fontWeight: '900' as any, color: '#0D1117',
-                    letterSpacing: -1, lineHeight: 38,
-                    textAlign: 'center' as any, paddingHorizontal: 24,
-                  }}>
-                    Le bilan en un clic,{'\n'}pour tous.
-                  </Text>
-                  <Text style={{
-                    fontSize: 13, color: '#4B5563', lineHeight: 21,
-                    textAlign: 'center' as any, paddingHorizontal: 28,
-                    marginTop: 8,
-                  }}>
-                    Résumez et écrivez le parcours de chaque utilisateur pour chaque étape de sa progression. D'un simple clic, notre plateforme retranscrit l'évolution exacte de chacun dans un rapport qui adapte instantanément son langage : un résumé visuel et motivant pour l'adhérent, un suivi de performance technique pour le coach, et un bilan clinique rigoureux pour vos partenaires médicaux et institutionnels.
-                  </Text>
+              <View style={{ width: W, height: H, backgroundColor: '#FFFFFF', flexDirection: 'column' as any, paddingTop: 16 }}>
+                <Text style={{
+                  fontSize: 28, fontWeight: '900' as any, color: '#0D1117',
+                  letterSpacing: -1, lineHeight: 35,
+                  textAlign: 'center' as any, paddingHorizontal: 24,
+                  flexShrink: 0 as any,
+                }}>
+                  Le bilan en un clic,{'\n'}pour tous.
+                </Text>
+                <Text style={{
+                  fontSize: 12, color: '#4B5563', lineHeight: 18,
+                  textAlign: 'center' as any, paddingHorizontal: 28,
+                  marginTop: 6, flexShrink: 0 as any,
+                }}>
+                  Résumez et écrivez le parcours de chaque utilisateur pour chaque étape de sa progression. D'un simple clic, notre plateforme retranscrit l'évolution exacte de chacun dans un rapport qui adapte instantanément son langage : un résumé visuel et motivant pour l'adhérent, un suivi de performance technique pour le coach, et un bilan clinique rigoureux pour vos partenaires médicaux et institutionnels.
+                </Text>
+                <View style={{ flex: 1, minHeight: 0 as any }}>
                   <ReportingBlock />
-                  {/* Legal footer — below the card, revealed by scrolling */}
-                  <View style={{ paddingHorizontal: 24, paddingTop: 14, paddingBottom: 4 }}>
-                    <View style={{ height: 1, backgroundColor: '#E5E7EB', marginBottom: 10 }} />
-                    <View style={{ flexDirection: 'row' as any, flexWrap: 'wrap' as any, alignItems: 'center' as any, justifyContent: 'center' as any }}>
-                      <Text style={{ fontSize: 10, color: '#9CA3AF' }}>© 2026 Enzoboost. Tous droits réservés.{'  '}</Text>
-                      <TouchableOpacity onPress={() => setLegalModal('mentions')} activeOpacity={0.7}>
-                        <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Mentions Légales</Text>
-                      </TouchableOpacity>
-                      <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}</Text>
-                      <TouchableOpacity onPress={() => setLegalModal('privacy')} activeOpacity={0.7}>
-                        <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Politique de Confidentialité</Text>
-                      </TouchableOpacity>
-                      <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}</Text>
-                      <TouchableOpacity onPress={() => setLegalModal('cgu')} activeOpacity={0.7}>
-                        <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>CGU</Text>
-                      </TouchableOpacity>
-                      <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}Accessibilité : non conforme</Text>
-                    </View>
+                </View>
+                {/* Legal footer — sibling of flex:1, always visible at bottom */}
+                <View style={{ paddingHorizontal: 24, paddingBottom: 14, paddingTop: 6, flexShrink: 0 as any }}>
+                  <View style={{ height: 1, backgroundColor: '#E5E7EB', marginBottom: 8 }} />
+                  <View style={{ flexDirection: 'row' as any, flexWrap: 'wrap' as any, alignItems: 'center' as any, justifyContent: 'center' as any }}>
+                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>© 2026 Enzoboost. Tous droits réservés.{'  '}</Text>
+                    <TouchableOpacity onPress={() => setLegalModal('mentions')} activeOpacity={0.7}>
+                      <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Mentions Légales</Text>
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}</Text>
+                    <TouchableOpacity onPress={() => setLegalModal('privacy')} activeOpacity={0.7}>
+                      <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>Politique de Confidentialité</Text>
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}</Text>
+                    <TouchableOpacity onPress={() => setLegalModal('cgu')} activeOpacity={0.7}>
+                      <Text style={{ fontSize: 10, color: '#6B7280', textDecorationLine: 'underline' as any }}>CGU</Text>
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 10, color: '#9CA3AF' }}>{'  '}|{'  '}Accessibilité : non conforme</Text>
                   </View>
-                </ScrollView>
+                </View>
               </View>
 
 
