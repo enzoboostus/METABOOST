@@ -27,16 +27,37 @@ export default function AuthCallback() {
   );
 
   useEffect(() => {
-    // Supabase JS client automatically exchanges the URL code/fragment for a session.
-    // We listen for the SIGNED_IN event which fires once the exchange completes.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event !== 'SIGNED_IN' || !session) return;
-      subscription.unsubscribe();
+    if (Platform.OS !== 'web') return;
 
+    async function handleCallback() {
       try {
+        const url = new URL(window.location.href);
+
+        // ── Case 1: OAuth error returned by Apple / Supabase ──────────────────
+        const errorParam = url.searchParams.get('error');
+        const errorDesc  = url.searchParams.get('error_description');
+        if (errorParam) {
+          throw new Error(errorDesc || errorParam);
+        }
+
+        // ── Case 2: PKCE flow — Supabase sends back a `code` query param ──────
+        // This is the standard Supabase v2 OAuth / PKCE exchange.
+        const code = url.searchParams.get('code');
+        if (!code) {
+          throw new Error(
+            'Aucun code d\'autorisation reçu dans l\'URL. ' +
+            'Vérifie que le provider Apple est bien activé dans le dashboard Supabase.'
+          );
+        }
+
+        // Exchange the code for a real session (PKCE verifier stored in localStorage by the SDK)
+        const { data: { session }, error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
+        if (exchangeErr) throw exchangeErr;
+        if (!session) throw new Error('Session nulle après l\'échange du code.');
+
         const user = session.user;
 
-        // ── Read pending onboarding data saved before the OAuth redirect ──
+        // ── Read pending onboarding data saved before the OAuth redirect ──────
         let pending: {
           userName?: string;
           gender?: string;
@@ -45,15 +66,12 @@ export default function AuthCallback() {
           birthMonth?: string;
           birthYear?: string;
         } = {};
+        try {
+          const raw = localStorage.getItem('metaboost-pending-onboarding');
+          if (raw) pending = JSON.parse(raw);
+        } catch {}
 
-        if (Platform.OS === 'web') {
-          try {
-            const raw = localStorage.getItem('metaboost-pending-onboarding');
-            if (raw) pending = JSON.parse(raw);
-          } catch {}
-        }
-
-        // ── Resolve first name ──
+        // ── Resolve first name ──────────────────────────────────────────────
         const metaName =
           user.user_metadata?.full_name ||
           user.user_metadata?.name ||
@@ -74,7 +92,7 @@ export default function AuthCallback() {
             : '';
         const age = computeAge(birthDate);
 
-        // ── Upsert profile in Supabase with the real auth user ID ──
+        // ── Upsert profile with real Supabase auth user ID ──────────────────
         const { error: upsertErr } = await supabase.from('profiles').upsert({
           id: user.id,
           name: firstName,
@@ -84,21 +102,19 @@ export default function AuthCallback() {
           birth_date: birthDate || null,
           email: user.email || null,
         });
+        if (upsertErr) console.warn('Profile upsert:', upsertErr.message);
 
-        if (upsertErr) console.warn('Profile upsert error:', upsertErr.message);
-
-        // ── Update local Zustand store ──
+        // ── Update Zustand store ─────────────────────────────────────────────
         setSupabaseUserId(user.id);
         setProfile({ name: firstName, gender, height, age, birthDate });
 
-        // ── Clean up localStorage ──
-        if (Platform.OS === 'web') {
-          try { localStorage.removeItem('metaboost-pending-onboarding'); } catch {}
-        }
+        // ── Clean up localStorage ────────────────────────────────────────────
+        try { localStorage.removeItem('metaboost-pending-onboarding'); } catch {}
+
+        // ── Clean up the URL (remove ?code= to avoid double-exchange on refresh)
+        window.history.replaceState({}, document.title, '/auth/callback');
 
         setStatus('success');
-
-        // Brief success pause, then continue to measures step
         setTimeout(() => {
           router.replace('/onboarding?from_auth=1' as any);
         }, 700);
@@ -108,27 +124,18 @@ export default function AuthCallback() {
         setErrorMsg(e?.message || 'Erreur lors de la connexion.');
         setStatus('error');
       }
-    });
+    }
 
-    // Safety timeout: if no event fires in 8s, something went wrong
-    const timeout = setTimeout(() => {
-      if (status === 'loading') {
-        setErrorMsg('La connexion a pris trop de temps. Réessaie.');
-        setStatus('error');
-      }
-    }, 8000);
-
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
-    };
+    handleCallback();
   }, []);
 
   return (
     <View style={styles.root}>
       {status === 'error' ? (
         <>
-          <Text style={styles.errorIcon}>✕</Text>
+          <View style={styles.errorIconWrap}>
+            <Text style={styles.errorIcon}>✕</Text>
+          </View>
           <Text style={styles.errorTitle}>Connexion échouée</Text>
           <Text style={styles.errorSub}>{errorMsg}</Text>
           <TouchableOpacity
@@ -143,7 +150,7 @@ export default function AuthCallback() {
         <>
           <ActivityIndicator size="large" color="#0D1117" style={{ marginBottom: 20 }} />
           <Text style={styles.loadingTxt}>
-            {status === 'success' ? 'Connexion réussie ✓' : 'Connexion en cours…'}
+            {status === 'success' ? 'Connexion réussie ✓' : 'Finalisation de la connexion…'}
           </Text>
           {status === 'success' && (
             <Text style={styles.redirectTxt}>Redirection automatique…</Text>
@@ -174,10 +181,19 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     textAlign: 'center',
   },
-  errorIcon: {
-    fontSize: 36,
-    color: '#EF4444',
+  errorIconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#FEF2F2',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
+  },
+  errorIcon: {
+    fontSize: 22,
+    color: '#EF4444',
+    fontWeight: '700',
   },
   errorTitle: {
     fontSize: 18,
@@ -187,7 +203,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   errorSub: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#6B7280',
     textAlign: 'center',
     lineHeight: 20,
