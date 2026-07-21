@@ -13,7 +13,7 @@ import {
 } from 'lucide-react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, Gender, Goal } from '@/store/userStore';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL } from '@/lib/supabase';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import * as Haptics from 'expo-haptics';
 
@@ -1421,7 +1421,31 @@ export default function Onboarding() {
                     if (appleLoading) return;
                     setAppleLoading(true);
                     try {
-                      // Save current onboarding data before the full-page OAuth redirect
+                      // ── Health check: verify Supabase is reachable BEFORE navigating.
+                      // signInWithOAuth does a direct browser redirect (no JS catch possible),
+                      // so we must abort here if the server is down/paused.
+                      const ctrl = new AbortController();
+                      const hTimer = setTimeout(() => ctrl.abort(), 5000);
+                      try {
+                        const res = await fetch(`${SUPABASE_URL}/auth/v1/health`, {
+                          signal: ctrl.signal,
+                        });
+                        clearTimeout(hTimer);
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                      } catch (healthErr: any) {
+                        clearTimeout(hTimer);
+                        const isTimeout = healthErr?.name === 'AbortError';
+                        Alert.alert(
+                          'Service temporairement indisponible',
+                          isTimeout
+                            ? 'La connexion au serveur a expiré.\n\nTon projet Supabase est peut-être en pause — va sur dashboard.supabase.com et clique "Restore project".'
+                            : 'Impossible de joindre le serveur.\n\n• Vérifie ta connexion internet\n• Va sur dashboard.supabase.com → vérifie que le projet est actif',
+                        );
+                        setAppleLoading(false);
+                        return;
+                      }
+
+                      // ── Save onboarding data to localStorage before the full-page OAuth redirect
                       if (Platform.OS === 'web') {
                         try {
                           localStorage.setItem('metaboost-pending-onboarding', JSON.stringify({
@@ -1434,6 +1458,8 @@ export default function Onboarding() {
                           }));
                         } catch {}
                       }
+
+                      // ── Launch Apple OAuth
                       const redirectTo = Platform.OS === 'web'
                         ? `${(window as any).location.origin}/auth/callback`
                         : 'metaboost://auth/callback';
@@ -1442,10 +1468,15 @@ export default function Onboarding() {
                         options: { redirectTo, scopes: 'name email' },
                       });
                       if (error) {
-                        Alert.alert('Erreur Apple', error.message);
+                        Alert.alert(
+                          'Connexion Apple impossible',
+                          error.message.includes('provider') || error.message.includes('not enabled')
+                            ? 'Le provider Apple n\'est pas encore activé dans Supabase.\n\nVa dans Authentication → Providers → Apple et configure-le.'
+                            : error.message,
+                        );
                         setAppleLoading(false);
                       }
-                      // On success the browser navigates away — no need to reset loading
+                      // If no error: browser navigates away — loading state stays until redirect
                     } catch (e: any) {
                       Alert.alert('Erreur', e?.message || 'Connexion Apple indisponible.');
                       setAppleLoading(false);
