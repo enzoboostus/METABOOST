@@ -2,9 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
   Dimensions, Animated, Platform, Alert, Keyboard, ScrollView, Image, Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Flame, TrendingUp, Shield, ChevronRight, ChevronLeft, ScanLine,
@@ -711,6 +712,8 @@ const LEGAL_CONTENT = {
 type LegalKey = 'mentions' | 'privacy' | 'cgu' | null;
 
 export default function Onboarding() {
+  const params = useLocalSearchParams<{ from_auth?: string }>();
+
   const [step, setStep]         = useState<Step>('login');
   const [userName, setUserName]   = useState('');
   const [gender, setGender]       = useState<Gender>('male');
@@ -723,6 +726,7 @@ export default function Onboarding() {
   const [waist,  setWaist]      = useState('');
   const [thigh,  setThigh]      = useState('');
   const [arm,    setArm]        = useState('');
+  const [appleLoading, setAppleLoading] = useState(false);
 
   const vals: Record<string, string>              = { weight, height, waist, thigh, arm };
   const sets: Record<string, (v: string) => void> = { weight: setWeight, height: setHeight, waist: setWaist, thigh: setThigh, arm: setArm };
@@ -735,11 +739,19 @@ export default function Onboarding() {
   const slideAnim    = useRef(new Animated.Value(0)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
 
-  const { setProfile, addMeasure, setInitialMeasure, completeOnboarding } = useUserStore(
-    useShallow((s) => ({ setProfile: s.setProfile, addMeasure: s.addMeasure, setInitialMeasure: s.setInitialMeasure, completeOnboarding: s.completeOnboarding }))
+  const { setProfile, addMeasure, setInitialMeasure, completeOnboarding, profile } = useUserStore(
+    useShallow((s) => ({ setProfile: s.setProfile, addMeasure: s.addMeasure, setInitialMeasure: s.setInitialMeasure, completeOnboarding: s.completeOnboarding, profile: s.profile }))
   );
 
   useEffect(() => {
+    // Retour depuis le callback Apple OAuth → sauter directement aux mesures
+    if (params.from_auth === '1') {
+      if (profile.name) setUserName(profile.name);
+      if (profile.gender) setGender(profile.gender);
+      transitionTo('measures', false);
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         const raw = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || '';
@@ -1402,23 +1414,61 @@ export default function Onboarding() {
                   style={{
                     flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 10,
                     backgroundColor: '#0D1117', borderRadius: 12, paddingVertical: 16, marginBottom: 12,
+                    opacity: appleLoading ? 0.65 : 1,
+                    ...(Platform.OS === 'web' ? { transition: 'opacity 0.2s ease' } as any : {}),
                   }}
-                  onPress={() => Alert.alert('Apple Sign In', 'Disponible très prochainement.')}
+                  onPress={async () => {
+                    if (appleLoading) return;
+                    setAppleLoading(true);
+                    try {
+                      // Save current onboarding data before the full-page OAuth redirect
+                      if (Platform.OS === 'web') {
+                        try {
+                          localStorage.setItem('metaboost-pending-onboarding', JSON.stringify({
+                            userName: userName.trim(),
+                            gender,
+                            height,
+                            birthDay,
+                            birthMonth,
+                            birthYear,
+                          }));
+                        } catch {}
+                      }
+                      const redirectTo = Platform.OS === 'web'
+                        ? `${(window as any).location.origin}/auth/callback`
+                        : 'metaboost://auth/callback';
+                      const { error } = await supabase.auth.signInWithOAuth({
+                        provider: 'apple',
+                        options: { redirectTo, scopes: 'name email' },
+                      });
+                      if (error) {
+                        Alert.alert('Erreur Apple', error.message);
+                        setAppleLoading(false);
+                      }
+                      // On success the browser navigates away — no need to reset loading
+                    } catch (e: any) {
+                      Alert.alert('Erreur', e?.message || 'Connexion Apple indisponible.');
+                      setAppleLoading(false);
+                    }
+                  }}
                   activeOpacity={0.88}
+                  disabled={appleLoading}
                 >
-                  {Platform.OS === 'web'
-                    ? (React.createElement as any)('svg', {
-                        width: 20, height: 20,
-                        viewBox: '0 0 24 24',
-                        fill: '#FFFFFF',
-                        style: { display: 'block', flexShrink: 0 },
-                      }, [
-                        (React.createElement as any)('path', {
-                          key: 'apple',
-                          d: 'M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.54 9.103 1.519 12.09 1.013 1.459 2.208 3.09 3.792 3.029 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701',
-                        }),
-                      ])
-                    : <Text style={{ fontSize: 19, color: '#FFFFFF', lineHeight: 22 }}></Text>
+                  {appleLoading
+                    ? <ActivityIndicator size="small" color="#FFFFFF" />
+                    : Platform.OS === 'web'
+                      ? (React.createElement as any)('svg', {
+                          width: 20, height: 20,
+                          viewBox: '0 0 24 24',
+                          fill: '#FFFFFF',
+                          style: { display: 'block', flexShrink: 0 },
+                        }, [
+                          (React.createElement as any)('path', {
+                            key: 'apple',
+                            d: 'M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.54 9.103 1.519 12.09 1.013 1.459 2.208 3.09 3.792 3.029 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701',
+                          }),
+                        ])
+                      : <Text style={{ fontSize: 19, color: '#FFFFFF', lineHeight: 22 }}></Text>
                   }
                   <Text style={{ fontSize: 16, fontWeight: '600', color: '#FFFFFF' }}>Continuer avec Apple</Text>
                 </TouchableOpacity>

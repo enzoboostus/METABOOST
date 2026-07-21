@@ -90,11 +90,6 @@ const DEFAULT_CONFIG: AppConfig = {
   avatar_female_full:     'https://i.ibb.co/Qjh86N44/IMG-5074.png',
 };
 
-// Generate a stable local user ID
-function getLocalUserId(): string {
-  return 'local-user';
-}
-
 interface UserState {
   profile: UserProfile;
   measures: BodyMeasure[];
@@ -105,8 +100,10 @@ interface UserState {
   weekSteps: number;
   config: AppConfig;
   syncedToSupabase: boolean;
+  supabaseUserId: string | null;
 
   setProfile: (profile: Partial<UserProfile>) => void;
+  setSupabaseUserId: (id: string) => void;
   addMeasure: (measure: BodyMeasure) => void;
   setInitialMeasure: (measure: BodyMeasure) => void;
   addSession: (session: Session) => void;
@@ -141,14 +138,17 @@ export const useUserStore = create<UserState>()(
       weekSteps: 0,
       config: DEFAULT_CONFIG,
       syncedToSupabase: false,
+      supabaseUserId: null,
 
       setProfile: (partial) =>
         set((state) => ({ profile: { ...state.profile, ...partial } })),
 
+      setSupabaseUserId: (id) => set({ supabaseUserId: id }),
+
       addMeasure: (measure) => {
         set((state) => ({ measures: [...state.measures, measure] }));
         // Sync to Supabase
-        const userId = getLocalUserId();
+        const userId = get().supabaseUserId || 'local-user';
         supabase.from('body_measures').insert({
           id: `${userId}-${measure.date}`,
           user_id: userId,
@@ -163,7 +163,7 @@ export const useUserStore = create<UserState>()(
       addSession: (session) => {
         set((state) => ({ sessions: [session, ...state.sessions] }));
         // Sync to Supabase
-        const userId = getLocalUserId();
+        const userId = get().supabaseUserId || 'local-user';
         supabase.from('sessions').insert({
           id: session.id,
           user_id: userId,
@@ -177,7 +177,7 @@ export const useUserStore = create<UserState>()(
       addMeal: (meal) => {
         set((state) => ({ meals: [meal, ...state.meals] }));
         // Sync to Supabase
-        const userId = getLocalUserId();
+        const userId = get().supabaseUserId || 'local-user';
         supabase.from('meals').insert({
           id: meal.id,
           user_id: userId,
@@ -196,7 +196,7 @@ export const useUserStore = create<UserState>()(
           profile: { ...state.profile, onboardingDone: true },
         }));
         // Create profile in Supabase
-        const userId = getLocalUserId();
+        const userId = get().supabaseUserId || 'local-user';
         supabase.from('profiles').upsert({
           id: userId,
           name: profile.name || 'Athlète',
@@ -235,7 +235,7 @@ export const useUserStore = create<UserState>()(
       // Full sync: push all local data to Supabase
       syncToSupabase: async () => {
         const { profile, measures, sessions, meals } = get();
-        const userId = getLocalUserId();
+        const userId = get().supabaseUserId || 'local-user';
 
         // Upsert profile
         await supabase.from('profiles').upsert({
@@ -291,7 +291,7 @@ export const useUserStore = create<UserState>()(
 
       // Load data from Supabase (used on app start)
       loadFromSupabase: async () => {
-        const userId = getLocalUserId();
+        const userId = get().supabaseUserId || 'local-user';
         const [measRes, sesRes, mealRes] = await Promise.all([
           supabase.from('body_measures').select('*').eq('user_id', userId).order('date'),
           supabase.from('sessions').select('*').eq('user_id', userId).order('date', { ascending: false }),
@@ -341,6 +341,7 @@ export const useUserStore = create<UserState>()(
           todaySteps: 0,
           weekSteps: 0,
           syncedToSupabase: false,
+          supabaseUserId: null,
         });
       },
 
