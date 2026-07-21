@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Flame, TrendingUp, Shield, ChevronRight, ChevronLeft, ScanLine,
-  Activity, Users, ChevronDown, Bot,
+  Activity, Users, ChevronDown, Bot, Mail,
 } from 'lucide-react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, Gender, Goal } from '@/store/userStore';
@@ -809,15 +809,15 @@ export default function Onboarding() {
   });
 
   return (
-    <View style={[styles.root, (step === 'login' || step === 'welcome') && styles.rootLight, Platform.OS === 'web' && styles.rootWeb]}>
-      {step !== 'login' && step !== 'welcome' && (
+    <View style={[styles.root, (step === 'login' || step === 'welcome' || step === 'goal') && styles.rootLight, Platform.OS === 'web' && styles.rootWeb]}>
+      {step !== 'login' && step !== 'welcome' && step !== 'goal' && (
         <LinearGradient colors={['#0B1628', '#060E1C', '#03080F']} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
       )}
-      {step !== 'login' && step !== 'welcome' && <View style={styles.glowA} />}
-      {step !== 'login' && step !== 'welcome' && <View style={styles.glowB} />}
+      {step !== 'login' && step !== 'welcome' && step !== 'goal' && <View style={styles.glowA} />}
+      {step !== 'login' && step !== 'welcome' && step !== 'goal' && <View style={styles.glowB} />}
 
       <SafeAreaView style={{ flex: 1 }} edges={Platform.OS === 'web' ? ['top'] : ['top', 'bottom']}>
-        {step !== 'login' && step !== 'welcome' && (
+        {step !== 'login' && step !== 'welcome' && step !== 'goal' && (
           <View style={styles.progressTrack}>
             <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
           </View>
@@ -1364,39 +1364,111 @@ export default function Onboarding() {
             </View>
           )}
 
-          {/* ══════════════ GOAL ══════════════ */}
+          {/* ══════════════ GOAL → Création de compte ══════════════ */}
           {step === 'goal' && (
-            <View style={styles.screen}>
-              <View style={styles.screenContent}>
-                <View style={styles.screenHead}>
-                  <Text style={styles.screenTitle}>Ton objectif principal ?</Text>
-                  <Text style={styles.screenSub}>Choisis ce qui te correspond — tu pourras changer plus tard.</Text>
+            <View style={{
+              flex: 1, backgroundColor: '#FFFFFF',
+              paddingHorizontal: 28, paddingTop: 48, paddingBottom: 32,
+              justifyContent: 'space-between',
+            }}>
+
+              {/* Top content */}
+              <View style={{ ...(Platform.OS === 'web' ? { paddingBottom: 80 } : {}) }}>
+
+                {/* Retour */}
+                <TouchableOpacity
+                  onPress={() => transitionTo('welcome')}
+                  activeOpacity={0.7}
+                  style={{ alignSelf: 'flex-start', marginBottom: 32, padding: 8, borderRadius: 10, backgroundColor: '#F3F4F6' }}
+                >
+                  <ChevronLeft size={20} color="#0D1117" strokeWidth={2.5} />
+                </TouchableOpacity>
+
+                {/* Titre */}
+                <Text style={{
+                  fontSize: 36, fontWeight: '900', color: '#0D1117',
+                  letterSpacing: -1, lineHeight: 43, marginBottom: 12,
+                }}>
+                  Crée ton{'\n'}compte.
+                </Text>
+
+                {/* Sous-titre */}
+                <Text style={{ fontSize: 14, color: '#6B7280', lineHeight: 21, marginBottom: 36 }}>
+                  Pour sauvegarder ton parcours et retrouver tes données partout.
+                </Text>
+
+                {/* Continuer avec Apple */}
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 10,
+                    backgroundColor: '#0D1117', borderRadius: 12, paddingVertical: 16, marginBottom: 12,
+                  }}
+                  onPress={() => Alert.alert('Apple Sign In', 'Disponible très prochainement.')}
+                  activeOpacity={0.88}
+                >
+                  <Text style={{ fontSize: 19, color: '#FFFFFF', lineHeight: 22 }}></Text>
+                  <Text style={{ fontSize: 16, fontWeight: '600', color: '#FFFFFF' }}>Continuer avec Apple</Text>
+                </TouchableOpacity>
+
+                {/* Continuer avec Google */}
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 10,
+                    backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 16, marginBottom: 28,
+                    borderWidth: 1.5, borderColor: '#E5E7EB',
+                  }}
+                  onPress={() => Alert.alert('Google Sign In', 'Disponible très prochainement.')}
+                  activeOpacity={0.88}
+                >
+                  <View style={{
+                    width: 20, height: 20, borderRadius: 10,
+                    borderWidth: 2, borderColor: '#4285F4',
+                    alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <Text style={{ fontSize: 11, fontWeight: '900', color: '#4285F4', lineHeight: 14 }}>G</Text>
+                  </View>
+                  <Text style={{ fontSize: 16, fontWeight: '600', color: '#0D1117' }}>Continuer avec Google</Text>
+                </TouchableOpacity>
+
+                {/* Séparateur */}
+                <View style={{ flexDirection: 'row' as any, alignItems: 'center', gap: 14, marginBottom: 28 }}>
+                  <View style={{ flex: 1, height: 1, backgroundColor: '#E5E7EB' }} />
+                  <Text style={{ fontSize: 13, color: '#9CA3AF', fontWeight: '500' }}>ou</Text>
+                  <View style={{ flex: 1, height: 1, backgroundColor: '#E5E7EB' }} />
                 </View>
-                <View style={styles.goalList}>
-                  {GOALS.map((g) => {
-                    const on = goal === g.key;
-                    return (
-                      <TouchableOpacity key={String(g.key)} style={[styles.goalCard, on && { borderColor: g.color + '55', borderWidth: 1.5 }]} onPress={() => { setGoal(g.key); Haptics.selectionAsync?.(); }} activeOpacity={0.85}>
-                        {on && (
-                          <LinearGradient colors={[g.color + '16', 'transparent']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
-                        )}
-                        <View style={[styles.goalIconBox, on && { borderColor: g.color + '45', backgroundColor: g.color + '12' }]}>{g.icon}</View>
-                        <View style={{ flex: 1 }}>
-                          <Text style={[styles.goalLabel, on && { color: Colors.text }]}>{g.label}</Text>
-                          <Text style={styles.goalSub}>{g.sub}</Text>
-                        </View>
-                        <View style={[styles.goalCheck, on && { backgroundColor: g.color, borderColor: g.color }]}>
-                          {on && <Text style={{ color: '#fff', fontSize: 11, fontWeight: '900' }}>✓</Text>}
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
+
+                {/* Continuer avec e-mail / téléphone */}
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 10,
+                    backgroundColor: '#FAFAFA', borderRadius: 12, paddingVertical: 16,
+                    borderWidth: 1.5, borderColor: '#E5E7EB',
+                  }}
+                  onPress={() => Alert.alert('E-mail / Téléphone', 'Disponible très prochainement.')}
+                  activeOpacity={0.88}
+                >
+                  <Mail size={17} color="#6B7280" strokeWidth={2} />
+                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#374151' }}>
+                    Continuer avec un e-mail ou un téléphone
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <View style={Platform.OS === 'web' ? styles.ctaFixed : null}>
-                <TouchableOpacity style={[styles.ctaBtn, !goal && styles.ctaOff]} onPress={goal ? goNext : undefined} activeOpacity={0.88}>
-                  <Text style={styles.ctaTxt}>Continuer</Text>
-                  <ChevronRight size={20} color="#2a2a2a" strokeWidth={2.5} />
+
+              {/* Bouton bas */}
+              <View style={Platform.OS === 'web' ? styles.ctaFixed : undefined}>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 8,
+                    backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 18,
+                    ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(0,0,0,0.14)' } as any : {}),
+                  }}
+                  onPress={goNext}
+                  activeOpacity={0.88}
+                >
+                  <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.2 }}>
+                    Continuer
+                  </Text>
+                  <ChevronRight size={20} color="#FFFFFF" strokeWidth={2.5} />
                 </TouchableOpacity>
               </View>
             </View>
