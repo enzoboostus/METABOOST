@@ -1409,89 +1409,22 @@ export default function Onboarding() {
                   Pour sauvegarder ton parcours et retrouver tes données partout.
                 </Text>
 
-                {/* Continuer avec Apple */}
-                <TouchableOpacity
-                  style={{
-                    flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 10,
-                    backgroundColor: '#0D1117', borderRadius: 12, paddingVertical: 16, marginBottom: 12,
-                    opacity: appleLoading ? 0.65 : 1,
-                    ...(Platform.OS === 'web' ? { transition: 'opacity 0.2s ease' } as any : {}),
-                  }}
-                  onPress={async () => {
-                    if (appleLoading) return;
-                    setAppleLoading(true);
-                    try {
-                      // ── Health check: verify Supabase is reachable BEFORE navigating.
-                      // signInWithOAuth does a direct browser redirect (no JS catch possible),
-                      // so we must abort here if the server is down/paused.
-                      const ctrl = new AbortController();
-                      const hTimer = setTimeout(() => ctrl.abort(), 5000);
-                      try {
-                        const res = await fetch(`${SUPABASE_URL}/auth/v1/health`, {
-                          signal: ctrl.signal,
-                        });
-                        clearTimeout(hTimer);
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                      } catch (healthErr: any) {
-                        clearTimeout(hTimer);
-                        const isTimeout = healthErr?.name === 'AbortError';
-                        Alert.alert(
-                          'Service temporairement indisponible',
-                          isTimeout
-                            ? 'La connexion au serveur a expiré.\n\nTon projet Supabase est peut-être en pause — va sur dashboard.supabase.com et clique "Restore project".'
-                            : 'Impossible de joindre le serveur.\n\n• Vérifie ta connexion internet\n• Va sur dashboard.supabase.com → vérifie que le projet est actif',
-                        );
-                        setAppleLoading(false);
-                        return;
-                      }
-
-                      // ── Save onboarding data to localStorage before the full-page OAuth redirect
-                      if (Platform.OS === 'web') {
-                        try {
-                          localStorage.setItem('metaboost-pending-onboarding', JSON.stringify({
-                            userName: userName.trim(),
-                            gender,
-                            height,
-                            birthDay,
-                            birthMonth,
-                            birthYear,
-                          }));
-                        } catch {}
-                      }
-
-                      // ── Launch Apple OAuth
-                      const redirectTo = Platform.OS === 'web'
-                        ? `${(window as any).location.origin}/auth/callback`
-                        : 'metaboost://auth/callback';
-                      const { error } = await supabase.auth.signInWithOAuth({
-                        provider: 'apple',
-                        options: { redirectTo, scopes: 'name email' },
-                      });
-                      if (error) {
-                        Alert.alert(
-                          'Connexion Apple impossible',
-                          error.message.includes('provider') || error.message.includes('not enabled')
-                            ? 'Le provider Apple n\'est pas encore activé dans Supabase.\n\nVa dans Authentication → Providers → Apple et configure-le.'
-                            : error.message,
-                        );
-                        setAppleLoading(false);
-                      }
-                      // If no error: browser navigates away — loading state stays until redirect
-                    } catch (e: any) {
-                      Alert.alert('Erreur', e?.message || 'Connexion Apple indisponible.');
-                      setAppleLoading(false);
-                    }
-                  }}
-                  activeOpacity={0.88}
-                  disabled={appleLoading}
-                >
-                  {appleLoading
-                    ? <ActivityIndicator size="small" color="#FFFFFF" />
-                    : Platform.OS === 'web'
+                {/* Continuer avec Apple — désactivé temporairement */}
+                <View style={{ marginBottom: 12 }}>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 10,
+                      backgroundColor: '#F3F4F6', borderRadius: 12, paddingVertical: 16,
+                      borderWidth: 1.5, borderColor: '#E5E7EB',
+                    }}
+                    onPress={() => {}}
+                    activeOpacity={1}
+                  >
+                    {Platform.OS === 'web'
                       ? (React.createElement as any)('svg', {
                           width: 20, height: 20,
                           viewBox: '0 0 24 24',
-                          fill: '#FFFFFF',
+                          fill: '#C4C4C4',
                           style: { display: 'block', flexShrink: 0 },
                         }, [
                           (React.createElement as any)('path', {
@@ -1499,10 +1432,17 @@ export default function Onboarding() {
                             d: 'M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.54 9.103 1.519 12.09 1.013 1.459 2.208 3.09 3.792 3.029 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701',
                           }),
                         ])
-                      : <Text style={{ fontSize: 19, color: '#FFFFFF', lineHeight: 22 }}></Text>
-                  }
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: '#FFFFFF' }}>Continuer avec Apple</Text>
-                </TouchableOpacity>
+                      : <Text style={{ fontSize: 19, color: '#C4C4C4', lineHeight: 22 }}></Text>
+                    }
+                    <Text style={{ fontSize: 16, fontWeight: '600', color: '#B0B8C4' }}>Continuer avec Apple</Text>
+                    <View style={{
+                      marginLeft: 4, backgroundColor: '#E5E7EB', borderRadius: 6,
+                      paddingHorizontal: 7, paddingVertical: 3,
+                    }}>
+                      <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 0.4 }}>Bientôt</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
 
                 {/* Continuer avec Google */}
                 <TouchableOpacity
