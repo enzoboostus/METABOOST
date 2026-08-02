@@ -1457,6 +1457,7 @@ export default function Onboarding() {
                   onPress={async () => {
                     if (googleLoading) return;
                     setGoogleLoading(true);
+                    if (Platform.OS === 'web') (window as any).alert('Button clicked — début du flow Google');
                     try {
                       // Health check avant la navigation complète du navigateur
                       const ctrl = new AbortController();
@@ -1505,18 +1506,16 @@ export default function Onboarding() {
                       });
 
                       if (error) {
-                        Alert.alert('Erreur OAuth', `Code: ${error.message}`);
+                        (window as any).alert(`Erreur OAuth: ${error.message}`);
                         setGoogleLoading(false);
                         return;
                       }
 
                       if (data?.url && Platform.OS === 'web') {
-                        Alert.alert('Debug', `URL: ${data.url.substring(0, 80)}...`, [
-                          { text: 'OK, ouvrir', onPress: () => { (window as any).location.href = data.url; } },
-                          { text: 'Annuler', onPress: () => setGoogleLoading(false) },
-                        ]);
+                        (window as any).alert(`URL OK: ${data.url.substring(0, 100)}`);
+                        (window as any).location.href = data.url;
                       } else {
-                        Alert.alert('Erreur', `data.url est null. data=${JSON.stringify(data)}`);
+                        (window as any).alert(`Erreur: data.url est null. data=${JSON.stringify(data)}`);
                         setGoogleLoading(false);
                       }
                       // Succès : le navigateur redirige vers Google, la page quitte
