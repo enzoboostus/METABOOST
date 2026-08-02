@@ -1505,20 +1505,18 @@ export default function Onboarding() {
                       });
 
                       if (error) {
-                        Alert.alert(
-                          'Connexion Google impossible',
-                          error.message.includes('provider') || error.message.includes('not enabled')
-                            ? 'Le provider Google n\'est pas encore activé.\nVa dans Supabase → Authentication → Providers → Google.'
-                            : error.message,
-                        );
+                        Alert.alert('Erreur OAuth', `Code: ${error.message}`);
                         setGoogleLoading(false);
                         return;
                       }
 
                       if (data?.url && Platform.OS === 'web') {
-                        (window as any).location.href = data.url;
-                      } else if (!data?.url) {
-                        Alert.alert('Erreur', 'Impossible d\'obtenir l\'URL de connexion Google.');
+                        Alert.alert('Debug', `URL: ${data.url.substring(0, 80)}...`, [
+                          { text: 'OK, ouvrir', onPress: () => { (window as any).location.href = data.url; } },
+                          { text: 'Annuler', onPress: () => setGoogleLoading(false) },
+                        ]);
+                      } else {
+                        Alert.alert('Erreur', `data.url est null. data=${JSON.stringify(data)}`);
                         setGoogleLoading(false);
                       }
                       // Succès : le navigateur redirige vers Google, la page quitte
