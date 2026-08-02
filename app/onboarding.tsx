@@ -1468,15 +1468,11 @@ export default function Onboarding() {
                         if (!res.ok) throw new Error(`HTTP ${res.status}`);
                       } catch (healthErr: any) {
                         clearTimeout(hTimer);
-                        Alert.alert(
-                          'Service indisponible',
-                          healthErr?.name === 'AbortError'
-                            ? 'Délai dépassé. Vérifie ta connexion internet.'
-                            : 'Serveur inaccessible. Réessaie dans quelques instants.',
-                        );
+                        if (Platform.OS === 'web') (window as any).alert(`Health check échoué: ${healthErr?.name} — ${healthErr?.message}`);
                         setGoogleLoading(false);
                         return;
                       }
+                      if (Platform.OS === 'web') (window as any).alert('Health check OK — appel signInWithOAuth...');
 
                       // Sauvegarde des données onboarding avant la redirection
                       if (Platform.OS === 'web') {
@@ -1520,7 +1516,7 @@ export default function Onboarding() {
                       }
                       // Succès : le navigateur redirige vers Google, la page quitte
                     } catch (e: any) {
-                      Alert.alert('Erreur', e?.message || 'Connexion Google indisponible.');
+                      if (Platform.OS === 'web') (window as any).alert(`Exception: ${e?.message}`);
                       setGoogleLoading(false);
                     }
                   }}
