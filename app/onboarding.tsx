@@ -1495,11 +1495,12 @@ export default function Onboarding() {
                         ? `${(window as any).location.origin}/auth/callback`
                         : 'metaboost://auth/callback';
 
-                      const { error } = await supabase.auth.signInWithOAuth({
+                      const { data, error } = await supabase.auth.signInWithOAuth({
                         provider: 'google',
                         options: {
                           redirectTo,
                           queryParams: { access_type: 'offline', prompt: 'consent' },
+                          skipBrowserRedirect: true,
                         },
                       });
 
@@ -1510,6 +1511,14 @@ export default function Onboarding() {
                             ? 'Le provider Google n\'est pas encore activé.\nVa dans Supabase → Authentication → Providers → Google.'
                             : error.message,
                         );
+                        setGoogleLoading(false);
+                        return;
+                      }
+
+                      if (data?.url && Platform.OS === 'web') {
+                        (window as any).location.href = data.url;
+                      } else if (!data?.url) {
+                        Alert.alert('Erreur', 'Impossible d\'obtenir l\'URL de connexion Google.');
                         setGoogleLoading(false);
                       }
                       // Succès : le navigateur redirige vers Google, la page quitte
