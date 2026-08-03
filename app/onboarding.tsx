@@ -1457,24 +1457,7 @@ export default function Onboarding() {
                   onPress={async () => {
                     if (googleLoading) return;
                     setGoogleLoading(true);
-                    if (Platform.OS === 'web') (window as any).alert('Button clicked — début du flow Google');
                     try {
-                      // Health check avant la navigation complète du navigateur
-                      const ctrl = new AbortController();
-                      const hTimer = setTimeout(() => ctrl.abort(), 5000);
-                      try {
-                        const res = await fetch(`${SUPABASE_URL}/auth/v1/health`, { signal: ctrl.signal });
-                        clearTimeout(hTimer);
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                      } catch (healthErr: any) {
-                        clearTimeout(hTimer);
-                        if (Platform.OS === 'web') (window as any).alert(`Health check échoué: ${healthErr?.name} — ${healthErr?.message}`);
-                        setGoogleLoading(false);
-                        return;
-                      }
-                      if (Platform.OS === 'web') (window as any).alert('Health check OK — appel signInWithOAuth...');
-
-                      // Sauvegarde des données onboarding avant la redirection
                       if (Platform.OS === 'web') {
                         try {
                           localStorage.setItem('metaboost-pending-onboarding', JSON.stringify({
@@ -1502,21 +1485,19 @@ export default function Onboarding() {
                       });
 
                       if (error) {
-                        (window as any).alert(`Erreur OAuth: ${error.message}`);
+                        Alert.alert('Connexion impossible', error.message);
                         setGoogleLoading(false);
                         return;
                       }
 
                       if (data?.url && Platform.OS === 'web') {
-                        (window as any).alert(`URL OK: ${data.url.substring(0, 100)}`);
                         (window as any).location.href = data.url;
                       } else {
-                        (window as any).alert(`Erreur: data.url est null. data=${JSON.stringify(data)}`);
+                        Alert.alert('Erreur', 'Impossible de se connecter avec Google.');
                         setGoogleLoading(false);
                       }
-                      // Succès : le navigateur redirige vers Google, la page quitte
                     } catch (e: any) {
-                      if (Platform.OS === 'web') (window as any).alert(`Exception: ${e?.message}`);
+                      Alert.alert('Erreur', e?.message || 'Connexion Google indisponible.');
                       setGoogleLoading(false);
                     }
                   }}
