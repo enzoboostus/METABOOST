@@ -1472,7 +1472,7 @@ export default function Onboarding() {
                       }
 
                       const redirectTo = Platform.OS === 'web'
-                        ? `${(window as any).location.origin}/auth/callback`
+                        ? 'https://ost-five.vercel.app/auth/callback'
                         : 'metaboost://auth/callback';
 
                       const { data, error } = await supabase.auth.signInWithOAuth({
