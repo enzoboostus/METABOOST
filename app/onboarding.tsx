@@ -1,3 +1,4 @@
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
   Dimensions, Animated, Platform, Alert, Keyboard, ScrollView, Image, Modal,
