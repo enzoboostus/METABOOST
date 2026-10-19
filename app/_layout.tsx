@@ -51,7 +51,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="god-mode" />
             <Stack.Screen name="legal" />
-            <Stack.Screen name="auth/callback" />
+            <Stack.Screen name="auth" />
           </Stack>
         </AppInit>
       </GestureHandlerRootView>
