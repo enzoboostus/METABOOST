@@ -7,23 +7,12 @@ import { useShallow } from 'zustand/react/shallow';
 
 type Status = 'loading' | 'success' | 'error';
 
-function computeAge(birthDate: string): number | null {
-  if (!birthDate) return null;
-  const b = new Date(birthDate);
-  if (isNaN(b.getTime())) return null;
-  const today = new Date();
-  let age = today.getFullYear() - b.getFullYear();
-  const md = today.getMonth() - b.getMonth();
-  if (md < 0 || (md === 0 && today.getDate() < b.getDate())) age--;
-  return age > 0 && age < 130 ? age : null;
-}
-
 export default function AuthCallback() {
   const [status, setStatus] = useState<Status>('loading');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const { setProfile, setSupabaseUserId } = useUserStore(
-    useShallow((s) => ({ setProfile: s.setProfile, setSupabaseUserId: s.setSupabaseUserId }))
+  const { setProfile } = useUserStore(
+    useShallow((s) => ({ setProfile: s.setProfile }))
   );
 
   useEffect(() => {
@@ -35,67 +24,40 @@ export default function AuthCallback() {
 
         const errorParam = url.searchParams.get('error');
         const errorDesc  = url.searchParams.get('error_description');
-        if (errorParam) {
-          throw new Error(errorDesc || errorParam);
-        }
+        if (errorParam) throw new Error(errorDesc || errorParam);
 
         const code = url.searchParams.get('code');
-        if (!code) {
-          throw new Error("Aucun code d'autorisation reçu dans l'URL.");
-        }
+        if (!code) throw new Error("Aucun code d'autorisation reçu.");
 
         const { data: { session }, error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
         if (exchangeErr) throw exchangeErr;
-        if (!session) throw new Error('Session nulle après l\'échange du code.');
+        if (!session) throw new Error('Session nulle après échange du code.');
 
         const user = session.user;
 
-        let pending: {
-          userName?: string;
-          gender?: string;
-          height?: string;
-          birthDay?: string;
-          birthMonth?: string;
-          birthYear?: string;
-        } = {};
+        let pending: { userName?: string; gender?: string; height?: string } = {};
         try {
           const raw = localStorage.getItem('metaboost-pending-onboarding');
           if (raw) pending = JSON.parse(raw);
         } catch {}
 
-        const metaName =
-          user.user_metadata?.full_name ||
-          user.user_metadata?.name ||
-          '';
+        const metaName = user.user_metadata?.full_name || user.user_metadata?.name || '';
         const firstName = (
-          pending.userName ||
-          metaName.split(' ')[0] ||
-          user.email?.split('@')[0] ||
-          'Athlète'
+          pending.userName || metaName.split(' ')[0] || user.email?.split('@')[0] || 'Athlète'
         ).trim();
 
         const gender = (pending.gender as 'male' | 'female') || 'male';
         const height = pending.height ? parseFloat(pending.height) : 175;
 
-        const birthDate =
-          pending.birthYear && pending.birthMonth && pending.birthDay
-            ? `${pending.birthYear}-${pending.birthMonth.padStart(2, '0')}-${pending.birthDay.padStart(2, '0')}`
-            : '';
-        const age = computeAge(birthDate);
-
-        const { error: upsertErr } = await supabase.from('profiles').upsert({
+        await supabase.from('profiles').upsert({
           id: user.id,
           name: firstName,
           gender,
           height_cm: height,
-          age: age ?? null,
-          birth_date: birthDate || null,
           email: user.email || null,
         });
-        if (upsertErr) console.warn('Profile upsert:', upsertErr.message);
 
-        setSupabaseUserId(user.id);
-        setProfile({ name: firstName, gender, height, age, birthDate });
+        setProfile({ name: firstName, gender, height, onboardingDone: true });
 
         try { localStorage.removeItem('metaboost-pending-onboarding'); } catch {}
 
@@ -103,7 +65,7 @@ export default function AuthCallback() {
 
         setStatus('success');
         setTimeout(() => {
-          router.replace('/onboarding?from_auth=1' as any);
+          router.replace('/(tabs)' as any);
         }, 700);
 
       } catch (e: any) {
@@ -120,9 +82,6 @@ export default function AuthCallback() {
     <View style={styles.root}>
       {status === 'error' ? (
         <>
-          <View style={styles.errorIconWrap}>
-            <Text style={styles.errorIcon}>✕</Text>
-          </View>
           <Text style={styles.errorTitle}>Connexion échouée</Text>
           <Text style={styles.errorSub}>{errorMsg}</Text>
           <TouchableOpacity
@@ -130,18 +89,15 @@ export default function AuthCallback() {
             style={styles.retryBtn}
             activeOpacity={0.8}
           >
-            <Text style={styles.retryTxt}>Retour à l'inscription</Text>
+            <Text style={styles.retryTxt}>Retour</Text>
           </TouchableOpacity>
         </>
       ) : (
         <>
-          <ActivityIndicator size="large" color="#0D1117" style={{ marginBottom: 20 }} />
+          <ActivityIndicator size="large" color="#FF6B35" style={{ marginBottom: 20 }} />
           <Text style={styles.loadingTxt}>
-            {status === 'success' ? 'Connexion réussie ✓' : 'Finalisation de la connexion…'}
+            {status === 'success' ? 'Connexion réussie ✓' : 'Connexion en cours…'}
           </Text>
-          {status === 'success' && (
-            <Text style={styles.redirectTxt}>Redirection automatique…</Text>
-          )}
         </>
       )}
     </View>
@@ -151,7 +107,7 @@ export default function AuthCallback() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#0a0a0a',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
@@ -159,45 +115,25 @@ const styles = StyleSheet.create({
   loadingTxt: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#0D1117',
+    color: '#fff',
     textAlign: 'center',
-  },
-  redirectTxt: {
-    marginTop: 8,
-    fontSize: 13,
-    color: '#9CA3AF',
-    textAlign: 'center',
-  },
-  errorIconWrap: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#FEF2F2',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  errorIcon: {
-    fontSize: 22,
-    color: '#EF4444',
-    fontWeight: '700',
   },
   errorTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0D1117',
+    color: '#fff',
     marginBottom: 8,
     textAlign: 'center',
   },
   errorSub: {
     fontSize: 13,
-    color: '#6B7280',
+    color: '#888',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 28,
   },
   retryBtn: {
-    backgroundColor: '#0D1117',
+    backgroundColor: '#FF6B35',
     borderRadius: 100,
     paddingVertical: 14,
     paddingHorizontal: 32,
@@ -205,6 +141,6 @@ const styles = StyleSheet.create({
   retryTxt: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#fff',
   },
 });
