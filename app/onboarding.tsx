@@ -1460,6 +1460,17 @@ export default function Onboarding() {
                     try {
                       if (Platform.OS === 'web') {
                         try {
+                          // Clear stale Supabase OAuth state to avoid bad_oauth_state errors
+                          const staleKeys: string[] = [];
+                          for (let i = 0; i < localStorage.length; i++) {
+                            const k = localStorage.key(i);
+                            if (k && (k.startsWith('sb-') || k.includes('supabase')) && k !== 'metaboost-pending-onboarding') {
+                              staleKeys.push(k);
+                            }
+                          }
+                          staleKeys.forEach(k => localStorage.removeItem(k));
+                        } catch {}
+                        try {
                           localStorage.setItem('metaboost-pending-onboarding', JSON.stringify({
                             userName: userName.trim(),
                             gender,
