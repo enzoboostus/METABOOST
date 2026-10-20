@@ -44,10 +44,7 @@ export default function AuthCallback() {
         // This is the standard Supabase v2 OAuth / PKCE exchange.
         const code = url.searchParams.get('code');
         if (!code) {
-          throw new Error(
-            'Aucun code d\'autorisation reçu dans l\'URL. ' +
-            'Vérifie que le provider Apple est bien activé dans le dashboard Supabase.'
-          );
+          throw new Error('Aucun code d\'autorisation reçu. Réessaie la connexion Google.');
         }
 
         // Exchange the code for a real session (PKCE verifier stored in localStorage by the SDK)
