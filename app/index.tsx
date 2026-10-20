@@ -4,8 +4,6 @@ import { useUserStore } from '@/store/userStore';
 
 export default function Index() {
   const onboardingDone = useUserStore((s) => s.profile.onboardingDone);
-  const profileName = useUserStore((s) => s.profile.name);
-  const supabaseUserId = useUserStore((s) => s.supabaseUserId);
   const isRestoring = useUserStore((s) => s.isRestoring);
   const params = useLocalSearchParams();
 
@@ -15,13 +13,10 @@ export default function Index() {
     return <Redirect href={`/auth/callback?${qs}` as any} />;
   }
 
-  // If name + userId are stored, user already onboarded — no need to wait
-  const alreadyOnboarded = onboardingDone || !!(profileName && supabaseUserId);
-
-  // Wait for Supabase session restore only if we have no local signal
-  if (!alreadyOnboarded && isRestoring) {
+  // Wait for session check before routing (isRestoring is never persisted)
+  if (isRestoring) {
     return <View style={{ flex: 1, backgroundColor: '#111', alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator color="#fff" /></View>;
   }
 
-  return <Redirect href={alreadyOnboarded ? '/(tabs)/' : '/onboarding'} />;
+  return <Redirect href={onboardingDone ? '/(tabs)/' : '/onboarding'} />;
 }

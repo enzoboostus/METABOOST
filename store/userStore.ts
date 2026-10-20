@@ -302,12 +302,8 @@ export const useUserStore = create<UserState>()(
             set({ supabaseUserId: userId });
           }
           if (!userId || userId === 'local-user') {
-            // No session, but if we have a stored name+userId, the user already onboarded
-            if (get().profile.name && get().supabaseUserId) {
-              set({ isRestoring: false, profile: { ...get().profile, onboardingDone: true } });
-            } else {
-              set({ isRestoring: false });
-            }
+            // No valid session → show login screen, reset auth state
+            set({ isRestoring: false, supabaseUserId: null, profile: { ...get().profile, onboardingDone: false } });
             return;
           }
 
