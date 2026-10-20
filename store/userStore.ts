@@ -291,14 +291,36 @@ export const useUserStore = create<UserState>()(
 
       // Load data from Supabase (used on app start)
       loadFromSupabase: async () => {
-        const userId = get().supabaseUserId || 'local-user';
-        const [measRes, sesRes, mealRes] = await Promise.all([
+        // Restore auth session first (handles Safari iOS clearing localStorage)
+        const { data: { session } } = await supabase.auth.getSession();
+        let userId = get().supabaseUserId;
+        if (session?.user) {
+          userId = session.user.id;
+          set({ supabaseUserId: userId });
+        }
+        if (!userId || userId === 'local-user') return;
+
+        const [profRes, measRes, sesRes, mealRes] = await Promise.all([
+          supabase.from('profiles').select('name,gender,height_cm,age,birth_date').eq('id', userId).maybeSingle(),
           supabase.from('body_measures').select('*').eq('user_id', userId).order('date'),
           supabase.from('sessions').select('*').eq('user_id', userId).order('date', { ascending: false }),
           supabase.from('meals').select('*').eq('user_id', userId).order('date', { ascending: false }),
         ]);
 
         const updates: Partial<UserState> = {};
+
+        // If a Supabase profile exists, the user already completed onboarding
+        if (profRes.data?.name) {
+          updates.profile = {
+            ...get().profile,
+            name: profRes.data.name,
+            gender: (profRes.data.gender as Gender) || get().profile.gender,
+            height: profRes.data.height_cm || get().profile.height,
+            age: profRes.data.age ?? get().profile.age,
+            birthDate: profRes.data.birth_date || get().profile.birthDate,
+            onboardingDone: true,
+          };
+        }
 
         if (measRes.data && measRes.data.length > 0) {
           updates.measures = measRes.data.map((m) => ({
