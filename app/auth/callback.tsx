@@ -111,14 +111,9 @@ export default function AuthCallback() {
         // ── Clean up localStorage ────────────────────────────────────────────
         try { localStorage.removeItem('metaboost-pending-onboarding'); } catch {}
 
-        // ── Clean up the URL (remove ?code= to avoid double-exchange on refresh)
-        window.history.replaceState({}, document.title, '/auth/callback');
-
         setStatus('success');
-        setTimeout(() => {
-          const alreadyOnboarded = useUserStore.getState().profile.onboardingDone;
-          router.replace(alreadyOnboarded ? '/(tabs)/' : '/onboarding?from_auth=1' as any);
-        }, 700);
+        // Full page reload to /onboarding so onAuthStateChange picks up the new session cleanly
+        setTimeout(() => { window.location.href = '/onboarding?from_auth=1'; }, 800);
 
       } catch (e: any) {
         console.error('Auth callback error:', e);
@@ -149,9 +144,9 @@ export default function AuthCallback() {
         </>
       ) : (
         <>
-          <ActivityIndicator size="large" color="#0D1117" style={{ marginBottom: 20 }} />
+          <ActivityIndicator size="large" color="#00C8D4" style={{ marginBottom: 20 }} />
           <Text style={styles.loadingTxt}>
-            {status === 'success' ? 'Connexion réussie ✓' : 'Finalisation de la connexion…'}
+            {status === 'success' ? 'Connexion réussie ✓' : 'Connexion en cours…'}
           </Text>
           {status === 'success' && (
             <Text style={styles.redirectTxt}>Redirection automatique…</Text>
@@ -165,7 +160,7 @@ export default function AuthCallback() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#111318',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
@@ -173,7 +168,7 @@ const styles = StyleSheet.create({
   loadingTxt: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#0D1117',
+    color: '#FFFFFF',
     textAlign: 'center',
   },
   redirectTxt: {
@@ -186,7 +181,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: '#2D1B1B',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
@@ -199,19 +194,19 @@ const styles = StyleSheet.create({
   errorTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0D1117',
+    color: '#FFFFFF',
     marginBottom: 8,
     textAlign: 'center',
   },
   errorSub: {
     fontSize: 13,
-    color: '#6B7280',
+    color: '#EF4444',
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 28,
   },
   retryBtn: {
-    backgroundColor: '#0D1117',
+    backgroundColor: '#00C8D4',
     borderRadius: 100,
     paddingVertical: 14,
     paddingHorizontal: 32,
@@ -219,6 +214,6 @@ const styles = StyleSheet.create({
   retryTxt: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#111318',
   },
 });
