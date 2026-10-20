@@ -390,6 +390,10 @@ export const useUserStore = create<UserState>()(
     {
       name: 'metaboost-storage',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => {
+        const { isRestoring, ...rest } = state as any;
+        return rest;
+      },
     }
   )
 );
