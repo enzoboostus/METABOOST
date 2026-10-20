@@ -301,7 +301,15 @@ export const useUserStore = create<UserState>()(
             userId = session.user.id;
             set({ supabaseUserId: userId });
           }
-          if (!userId || userId === 'local-user') { set({ isRestoring: false }); return; }
+          if (!userId || userId === 'local-user') {
+            // No session, but if we have a stored name+userId, the user already onboarded
+            if (get().profile.name && get().supabaseUserId) {
+              set({ isRestoring: false, profile: { ...get().profile, onboardingDone: true } });
+            } else {
+              set({ isRestoring: false });
+            }
+            return;
+          }
 
           const [profRes, measRes, sesRes, mealRes] = await Promise.all([
             supabase.from('profiles').select('name,gender,height_cm,age,birth_date').eq('id', userId).maybeSingle(),
