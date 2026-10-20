@@ -745,8 +745,12 @@ export default function Onboarding() {
   );
 
   useEffect(() => {
-    // Retour depuis le callback Apple OAuth → sauter directement aux mesures
+    // Retour depuis le callback OAuth → si déjà onboardé, aller directement à l'accueil
     if (params.from_auth === '1') {
+      if (profile.onboardingDone) {
+        router.replace('/(tabs)/');
+        return;
+      }
       if (profile.name) setUserName(profile.name);
       if (profile.gender) setGender(profile.gender);
       transitionTo('measures', false);
@@ -1464,7 +1468,7 @@ export default function Onboarding() {
                           const staleKeys: string[] = [];
                           for (let i = 0; i < localStorage.length; i++) {
                             const k = localStorage.key(i);
-                            if (k && (k.startsWith('sb-') || k.includes('supabase')) && k !== 'metaboost-pending-onboarding') {
+                            if (k && (k.includes('code-verifier') || k.includes('oauth-state') || k.includes('-pkce-'))) {
                               staleKeys.push(k);
                             }
                           }

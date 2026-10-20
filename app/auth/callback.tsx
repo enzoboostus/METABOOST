@@ -116,7 +116,8 @@ export default function AuthCallback() {
 
         setStatus('success');
         setTimeout(() => {
-          router.replace('/onboarding?from_auth=1' as any);
+          const alreadyOnboarded = useUserStore.getState().profile.onboardingDone;
+          router.replace(alreadyOnboarded ? '/(tabs)/' : '/onboarding?from_auth=1' as any);
         }, 700);
 
       } catch (e: any) {
