@@ -43,8 +43,12 @@ function AppInit({ children }: { children: React.ReactNode }) {
         // Valid session → restore profile + data from Supabase
         loadFromSupabase();
       } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') {
-        // No session on startup or after logout → wipe stale state, show login
-        try { if (Platform.OS === 'web') localStorage.clear(); } catch {}
+        // Don't clear if an OAuth callback is in progress (would delete the PKCE verifier)
+        const isOAuthCallback = Platform.OS === 'web' &&
+          (window.location.search.includes('code=') || window.location.search.includes('error='));
+        if (!isOAuthCallback) {
+          try { if (Platform.OS === 'web') localStorage.clear(); } catch {}
+        }
         useUserStore.setState({ isRestoring: false, supabaseUserId: null, profile: BLANK_PROFILE });
       }
     });
