@@ -2,9 +2,12 @@ import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Platform } from 'react-native';
 import { Colors } from '@/constants/theme';
 import { useUserStore } from '@/store/userStore';
+import { supabase } from '@/lib/supabase';
+
+const BLANK_PROFILE = { name: '', gender: 'male' as const, height: 175, onboardingDone: false, goal: null as any, age: null, birthDate: '' };
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: string | null }> {
   constructor(props: any) {
@@ -32,9 +35,21 @@ function AppInit({ children }: { children: React.ReactNode }) {
   const { loadConfig, loadFromSupabase } = useUserStore();
 
   useEffect(() => {
-    // Load God Mode config + user data from Supabase on startup
     loadConfig();
-    loadFromSupabase();
+
+    // Single source of truth for auth: onAuthStateChange
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        // Valid session → restore profile + data from Supabase
+        loadFromSupabase();
+      } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') {
+        // No session on startup or after logout → wipe stale state, show login
+        try { if (Platform.OS === 'web') localStorage.clear(); } catch {}
+        useUserStore.setState({ isRestoring: false, supabaseUserId: null, profile: BLANK_PROFILE });
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   return <>{children}</>;

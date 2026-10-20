@@ -294,23 +294,10 @@ export const useUserStore = create<UserState>()(
       // Load data from Supabase (used on app start)
       loadFromSupabase: async () => {
         try {
-          // Restore auth session first (handles Safari iOS clearing localStorage)
           const { data: { session } } = await supabase.auth.getSession();
-          let userId = get().supabaseUserId;
-          if (session?.user) {
-            userId = session.user.id;
-            set({ supabaseUserId: userId });
-          }
-          if (!userId || userId === 'local-user') {
-            // No valid session → wipe stale local storage and show login screen clean
-            try { if (typeof localStorage !== 'undefined') localStorage.clear(); } catch {}
-            set({
-              isRestoring: false,
-              supabaseUserId: null,
-              profile: { name: '', gender: 'male', height: 175, onboardingDone: false, goal: null, age: null, birthDate: '' },
-            });
-            return;
-          }
+          const userId = session?.user?.id;
+          if (!userId) { set({ isRestoring: false }); return; }
+          set({ supabaseUserId: userId });
 
           const [profRes, measRes, sesRes, mealRes] = await Promise.all([
             supabase.from('profiles').select('name,gender,height_cm,age,birth_date').eq('id', userId).maybeSingle(),
