@@ -101,6 +101,7 @@ interface UserState {
   config: AppConfig;
   syncedToSupabase: boolean;
   supabaseUserId: string | null;
+  isRestoring: boolean;
 
   setProfile: (profile: Partial<UserProfile>) => void;
   setSupabaseUserId: (id: string) => void;
@@ -139,6 +140,7 @@ export const useUserStore = create<UserState>()(
       config: DEFAULT_CONFIG,
       syncedToSupabase: false,
       supabaseUserId: null,
+      isRestoring: true,
 
       setProfile: (partial) =>
         set((state) => ({ profile: { ...state.profile, ...partial } })),
@@ -291,64 +293,69 @@ export const useUserStore = create<UserState>()(
 
       // Load data from Supabase (used on app start)
       loadFromSupabase: async () => {
-        // Restore auth session first (handles Safari iOS clearing localStorage)
-        const { data: { session } } = await supabase.auth.getSession();
-        let userId = get().supabaseUserId;
-        if (session?.user) {
-          userId = session.user.id;
-          set({ supabaseUserId: userId });
-        }
-        if (!userId || userId === 'local-user') return;
+        try {
+          // Restore auth session first (handles Safari iOS clearing localStorage)
+          const { data: { session } } = await supabase.auth.getSession();
+          let userId = get().supabaseUserId;
+          if (session?.user) {
+            userId = session.user.id;
+            set({ supabaseUserId: userId });
+          }
+          if (!userId || userId === 'local-user') { set({ isRestoring: false }); return; }
 
-        const [profRes, measRes, sesRes, mealRes] = await Promise.all([
-          supabase.from('profiles').select('name,gender,height_cm,age,birth_date').eq('id', userId).maybeSingle(),
-          supabase.from('body_measures').select('*').eq('user_id', userId).order('date'),
-          supabase.from('sessions').select('*').eq('user_id', userId).order('date', { ascending: false }),
-          supabase.from('meals').select('*').eq('user_id', userId).order('date', { ascending: false }),
-        ]);
+          const [profRes, measRes, sesRes, mealRes] = await Promise.all([
+            supabase.from('profiles').select('name,gender,height_cm,age,birth_date').eq('id', userId).maybeSingle(),
+            supabase.from('body_measures').select('*').eq('user_id', userId).order('date'),
+            supabase.from('sessions').select('*').eq('user_id', userId).order('date', { ascending: false }),
+            supabase.from('meals').select('*').eq('user_id', userId).order('date', { ascending: false }),
+          ]);
 
-        const updates: Partial<UserState> = {};
+          const updates: Partial<UserState> = {};
 
-        // If a Supabase profile exists, the user already completed onboarding
-        if (profRes.data?.name) {
-          updates.profile = {
-            ...get().profile,
-            name: profRes.data.name,
-            gender: (profRes.data.gender as Gender) || get().profile.gender,
-            height: profRes.data.height_cm || get().profile.height,
-            age: profRes.data.age ?? get().profile.age,
-            birthDate: profRes.data.birth_date || get().profile.birthDate,
-            onboardingDone: true,
-          };
-        }
+          // If a Supabase profile exists, the user already completed onboarding
+          if (profRes.data?.name) {
+            updates.profile = {
+              ...get().profile,
+              name: profRes.data.name,
+              gender: (profRes.data.gender as Gender) || get().profile.gender,
+              height: profRes.data.height_cm || get().profile.height,
+              age: profRes.data.age ?? get().profile.age,
+              birthDate: profRes.data.birth_date || get().profile.birthDate,
+              onboardingDone: true,
+            };
+          }
 
-        if (measRes.data && measRes.data.length > 0) {
-          updates.measures = measRes.data.map((m) => ({
-            date: m.date,
-            weight: m.weight_kg,
-            waist: m.waist_cm,
-          }));
-        }
-        if (sesRes.data && sesRes.data.length > 0) {
-          updates.sessions = sesRes.data.map((s) => ({
-            id: s.id,
-            date: s.date,
-            effort: s.effort,
-            feeling: s.feeling as Feeling,
-            steps: s.steps,
-          }));
-        }
-        if (mealRes.data && mealRes.data.length > 0) {
-          updates.meals = mealRes.data.map((m) => ({
-            id: m.id,
-            date: m.date,
-            photo: m.photo_url,
-            analysis: m.analysis_label,
-            category: m.category,
-          }));
-        }
+          if (measRes.data && measRes.data.length > 0) {
+            updates.measures = measRes.data.map((m) => ({
+              date: m.date,
+              weight: m.weight_kg,
+              waist: m.waist_cm,
+            }));
+          }
+          if (sesRes.data && sesRes.data.length > 0) {
+            updates.sessions = sesRes.data.map((s) => ({
+              id: s.id,
+              date: s.date,
+              effort: s.effort,
+              feeling: s.feeling as Feeling,
+              steps: s.steps,
+            }));
+          }
+          if (mealRes.data && mealRes.data.length > 0) {
+            updates.meals = mealRes.data.map((m) => ({
+              id: m.id,
+              date: m.date,
+              photo: m.photo_url,
+              analysis: m.analysis_label,
+              category: m.category,
+            }));
+          }
 
-        if (Object.keys(updates).length > 0) set(updates);
+          updates.isRestoring = false;
+          set(updates);
+        } catch {
+          set({ isRestoring: false });
+        }
       },
 
       // Full logout: clear all user data + Supabase auth session
