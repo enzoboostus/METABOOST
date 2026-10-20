@@ -757,8 +757,15 @@ export default function Onboarding() {
       return;
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!session?.user) return;
+      // Session exists — check if profile is complete in Supabase
+      const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
+      if (prof?.name) {
+        // Already onboarded → go straight to home
+        router.replace('/(tabs)/');
+      } else {
+        // Session but no profile yet → continue onboarding from welcome
         const raw = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || '';
         setUserName(raw.split(' ')[0]);
         transitionTo('welcome', false);

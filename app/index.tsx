@@ -1,22 +1,14 @@
 import { Redirect, useLocalSearchParams } from 'expo-router';
-import { View, ActivityIndicator } from 'react-native';
-import { useUserStore } from '@/store/userStore';
 
 export default function Index() {
-  const onboardingDone = useUserStore((s) => s.profile.onboardingDone);
-  const isRestoring = useUserStore((s) => s.isRestoring);
   const params = useLocalSearchParams();
 
-  // Supabase sends OAuth errors to Site URL (root) — forward to auth/callback to handle them
+  // Supabase sends OAuth errors/codes to Site URL — forward to auth/callback
   if (params.error || params.code) {
     const qs = new URLSearchParams(params as Record<string, string>).toString();
     return <Redirect href={`/auth/callback?${qs}` as any} />;
   }
 
-  // Wait for session check before routing (isRestoring is never persisted)
-  if (isRestoring) {
-    return <View style={{ flex: 1, backgroundColor: '#111', alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator color="#fff" /></View>;
-  }
-
-  return <Redirect href={onboardingDone ? '/(tabs)/' : '/onboarding'} />;
+  // Always start on the landing/login screen — onboarding.tsx handles session detection
+  return <Redirect href="/onboarding" />;
 }
