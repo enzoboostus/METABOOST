@@ -302,8 +302,13 @@ export const useUserStore = create<UserState>()(
             set({ supabaseUserId: userId });
           }
           if (!userId || userId === 'local-user') {
-            // No valid session → show login screen, reset auth state
-            set({ isRestoring: false, supabaseUserId: null, profile: { ...get().profile, onboardingDone: false } });
+            // No valid session → wipe stale local storage and show login screen clean
+            try { if (typeof localStorage !== 'undefined') localStorage.clear(); } catch {}
+            set({
+              isRestoring: false,
+              supabaseUserId: null,
+              profile: { name: '', gender: 'male', height: 175, onboardingDone: false, goal: null, age: null, birthDate: '' },
+            });
             return;
           }
 
