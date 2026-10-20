@@ -757,20 +757,7 @@ export default function Onboarding() {
       return;
     }
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session?.user) return;
-      // Session exists — check if profile is complete in Supabase
-      const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
-      if (prof?.name) {
-        // Already onboarded → go straight to home
-        router.replace('/(tabs)/');
-      } else {
-        // Session but no profile yet → continue onboarding from welcome
-        const raw = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || '';
-        setUserName(raw.split(' ')[0]);
-        transitionTo('welcome', false);
-      }
-    });
+    // No automatic session check — user must tap a button to proceed
   }, []);
 
   function transitionTo(next: Step, animate = true) {
@@ -970,7 +957,18 @@ export default function Onboarding() {
                   <TouchableOpacity style={styles.s1CTA} onPress={() => transitionTo('welcome')} activeOpacity={0.9}>
                     <Text style={styles.s1CTATxt}>S'INSCRIRE →</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.s1CTAOutline} onPress={() => transitionTo('welcome')} activeOpacity={0.8}>
+                  <TouchableOpacity
+                    style={styles.s1CTAOutline}
+                    activeOpacity={0.8}
+                    onPress={async () => {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      if (session?.user) {
+                        const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
+                        if (prof?.name) { router.replace('/(tabs)/'); return; }
+                      }
+                      transitionTo('welcome');
+                    }}
+                  >
                     <Text style={styles.s1CTAOutlineTxt}>SE CONNECTER</Text>
                   </TouchableOpacity>
                 </View>
