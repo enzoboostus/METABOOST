@@ -1,14 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { Platform } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, ActivityIndicator, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
 
 export default function AuthCallback() {
   const didRun = useRef(false);
-
-  // Force dark background before any React paint — eliminates white flash
-  if (Platform.OS === 'web' && typeof document !== 'undefined') {
-    document.body.style.background = '#111318';
-    document.documentElement.style.background = '#111318';
-  }
+  const [msg, setMsg] = useState('Connexion en cours…');
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (Platform.OS !== 'web' || didRun.current) return;
@@ -20,31 +17,29 @@ export default function AuthCallback() {
 
         const url = new URL(window.location.href);
 
-        // Error from Google/Supabase
         const errorParam = url.searchParams.get('error');
         if (errorParam) {
           const msg = url.searchParams.get('error_description') || errorParam;
-          show('❌ ' + msg);
-          setTimeout(() => { window.location.href = '/'; }, 4000);
+          setMsg(msg);
+          setIsError(true);
           return;
         }
 
-        // Try to get session that Supabase may have already exchanged
-        show('Échange du code…');
+        setMsg('Échange du code…');
         let session: any = null;
 
-        // First try: session might already be ready (detectSessionInUrl processed it)
+        // Path 1: session already exchanged by Supabase SDK
         const { data: s1 } = await supabase.auth.getSession();
         if (s1?.session) {
           session = s1.session;
         } else {
-          // Second try: manual exchange (detectSessionInUrl: false path)
+          // Path 2: manual exchange
           const code = url.searchParams.get('code');
           if (code) {
             const { data: s2, error: exchErr } = await supabase.auth.exchangeCodeForSession(code);
             if (exchErr) {
-              show('❌ ' + exchErr.message);
-              setTimeout(() => { window.location.href = '/'; }, 4000);
+              setMsg(exchErr.message);
+              setIsError(true);
               return;
             }
             session = s2?.session;
@@ -52,10 +47,10 @@ export default function AuthCallback() {
         }
 
         if (!session) {
-          // Last resort: wait up to 8s for onAuthStateChange SIGNED_IN
-          show('Finalisation…');
+          // Path 3: wait for onAuthStateChange
+          setMsg('Finalisation…');
           await new Promise<void>((resolve, reject) => {
-            const t = setTimeout(() => reject(new Error('Délai dépassé')), 8000);
+            const t = setTimeout(() => reject(new Error('Délai dépassé. Réessaie.')), 8000);
             const { data: { subscription } } = supabase.auth.onAuthStateChange((ev, sess) => {
               if (ev === 'SIGNED_IN' && sess) {
                 session = sess;
@@ -68,16 +63,14 @@ export default function AuthCallback() {
         }
 
         if (!session) {
-          show('❌ Session introuvable. Retour…');
-          setTimeout(() => { window.location.href = '/'; }, 3000);
+          setMsg('Session introuvable.');
+          setIsError(true);
           return;
         }
 
-        show('✓ Connecté !');
+        setMsg('✓ Connecté !');
 
-        // Check if profile already exists
-        const { supabase: sb } = await import('@/lib/supabase');
-        const { data: profile } = await sb.from('profiles')
+        const { data: profile } = await supabase.from('profiles')
           .select('id, name')
           .eq('id', session.user.id)
           .maybeSingle();
@@ -86,43 +79,40 @@ export default function AuthCallback() {
         setTimeout(() => { window.location.href = dest; }, 600);
 
       } catch (e: any) {
-        show('❌ ' + (e?.message || 'Erreur inattendue'));
-        setTimeout(() => { window.location.href = '/'; }, 4000);
+        setMsg(e?.message || 'Erreur inattendue.');
+        setIsError(true);
       }
     })();
   }, []);
 
-  return null; // background + spinner handled by pure DOM below
+  return (
+    <View style={styles.root}>
+      {isError ? (
+        <>
+          <View style={styles.errIcon}><Text style={styles.errX}>✕</Text></View>
+          <Text style={styles.errTitle}>Connexion échouée</Text>
+          <Text style={styles.errSub}>{msg}</Text>
+          <TouchableOpacity style={styles.btn} onPress={() => router.replace('/onboarding' as any)}>
+            <Text style={styles.btnTxt}>Retour</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <ActivityIndicator size="large" color="#00C8D4" style={{ marginBottom: 20 }} />
+          <Text style={styles.loadTxt}>{msg}</Text>
+        </>
+      )}
+    </View>
+  );
 }
 
-function show(msg: string) {
-  if (typeof document === 'undefined') return;
-  const el = document.getElementById('__cb_msg');
-  if (el) el.textContent = msg;
-}
-
-// Inject a pure-DOM spinner that is guaranteed to appear regardless of React
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.textContent = `
-    #__cb_overlay {
-      position: fixed; inset: 0; background: #111318;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 9999; font-family: -apple-system, sans-serif;
-    }
-    #__cb_spinner {
-      width: 44px; height: 44px; border: 4px solid rgba(0,200,212,0.2);
-      border-top-color: #00C8D4; border-radius: 50%;
-      animation: spin 0.9s linear infinite; margin-bottom: 20px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    #__cb_msg { color: #fff; font-size: 15px; font-weight: 600; }
-  `;
-  document.head.appendChild(style);
-
-  const overlay = document.createElement('div');
-  overlay.id = '__cb_overlay';
-  overlay.innerHTML = `<div id="__cb_spinner"></div><div id="__cb_msg">Connexion en cours…</div>`;
-  document.body.appendChild(overlay);
-}
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#111318', alignItems: 'center', justifyContent: 'center', padding: 32 },
+  loadTxt: { fontSize: 15, fontWeight: '600', color: '#fff', textAlign: 'center' },
+  errIcon: { width: 56, height: 56, borderRadius: 28, backgroundColor: '#2D1B1B', alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
+  errX: { fontSize: 22, color: '#EF4444', fontWeight: '700' },
+  errTitle: { fontSize: 18, fontWeight: '800', color: '#fff', marginBottom: 8, textAlign: 'center' },
+  errSub: { fontSize: 13, color: '#EF4444', textAlign: 'center', lineHeight: 20, marginBottom: 28 },
+  btn: { backgroundColor: '#00C8D4', borderRadius: 100, paddingVertical: 14, paddingHorizontal: 32 },
+  btnTxt: { fontSize: 15, fontWeight: '700', color: '#111318' },
+});
