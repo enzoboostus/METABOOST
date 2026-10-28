@@ -299,12 +299,16 @@ export const useUserStore = create<UserState>()(
           if (!userId) { set({ isRestoring: false }); return; }
           set({ supabaseUserId: userId });
 
-          const [profRes, measRes, sesRes, mealRes] = await Promise.all([
+          // Timeout after 8s — prevents infinite hang when Supabase is paused
+          const withTimeout = <T,>(p: Promise<T>): Promise<T> =>
+            Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error('db_timeout')), 8000))]);
+
+          const [profRes, measRes, sesRes, mealRes] = await withTimeout(Promise.all([
             supabase.from('profiles').select('name,gender,height_cm,age,birth_date').eq('id', userId).maybeSingle(),
             supabase.from('body_measures').select('*').eq('user_id', userId).order('date'),
             supabase.from('sessions').select('*').eq('user_id', userId).order('date', { ascending: false }),
             supabase.from('meals').select('*').eq('user_id', userId).order('date', { ascending: false }),
-          ]);
+          ]));
 
           const updates: Partial<UserState> = {};
 
