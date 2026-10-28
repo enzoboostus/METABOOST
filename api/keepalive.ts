@@ -1,6 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(_req: VercelRequest, res: VercelResponse) {
+export default async function handler(_req: any, res: any) {
   try {
     const response = await fetch(
       'https://ivrkzhboitfbyparwcpr.supabase.co/rest/v1/profiles?select=id&limit=1',
