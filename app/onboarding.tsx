@@ -1736,13 +1736,8 @@ const styles = StyleSheet.create({
   // ── Root ───────────────────────────────────────────────────────────────────
   root: { flex: 1, backgroundColor: '#050A12' },
   rootWeb: {
-    position: 'absolute' as any,
-    top: 0, left: 0,
-    width: '100%' as any,
-    height: '100dvh' as any,
-    overflow: 'hidden' as any,
     flex: 1,
-    paddingBottom: 0,
+    overflow: 'hidden' as any,
   },
   glowA: {
     position: 'absolute', top: -80, alignSelf: 'center',
