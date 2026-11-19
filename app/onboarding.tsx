@@ -91,20 +91,20 @@ function AvatarBlock() {
 
   useEffect(() => {
     Animated.loop(Animated.sequence([
-      Animated.timing(liveDot, { toValue: 0, duration: 600, useNativeDriver: true }),
-      Animated.timing(liveDot, { toValue: 1, duration: 600, useNativeDriver: true }),
+      Animated.timing(liveDot, { toValue: 0, duration: 600, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(liveDot, { toValue: 1, duration: 600, useNativeDriver: Platform.OS !== 'web' }),
     ])).start();
     Animated.loop(Animated.sequence([
-      Animated.timing(float1, { toValue: -10, duration: 2000, useNativeDriver: true }),
-      Animated.timing(float1, { toValue: 0,   duration: 2000, useNativeDriver: true }),
+      Animated.timing(float1, { toValue: -10, duration: 2000, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(float1, { toValue: 0,   duration: 2000, useNativeDriver: Platform.OS !== 'web' }),
     ])).start();
     Animated.loop(Animated.sequence([
-      Animated.timing(float2, { toValue: -4, duration: 2200, useNativeDriver: true }),
-      Animated.timing(float2, { toValue: 6,  duration: 2200, useNativeDriver: true }),
+      Animated.timing(float2, { toValue: -4, duration: 2200, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(float2, { toValue: 6,  duration: 2200, useNativeDriver: Platform.OS !== 'web' }),
     ])).start();
     Animated.loop(Animated.sequence([
-      Animated.timing(float3, { toValue: -8, duration: 1900, useNativeDriver: true }),
-      Animated.timing(float3, { toValue: 0,  duration: 1900, useNativeDriver: true }),
+      Animated.timing(float3, { toValue: -8, duration: 1900, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(float3, { toValue: 0,  duration: 1900, useNativeDriver: Platform.OS !== 'web' }),
     ])).start();
     const t = setInterval(() => {
       setBpm(b   => b   >= 148   ? 72   : b + 2);
@@ -204,20 +204,20 @@ function NutritionBlock() {
 
   useEffect(() => {
     Animated.loop(Animated.sequence([
-      Animated.timing(dotAnim,   { toValue: 0, duration: 700, useNativeDriver: true }),
-      Animated.timing(dotAnim,   { toValue: 1, duration: 700, useNativeDriver: true }),
+      Animated.timing(dotAnim,   { toValue: 0, duration: 700, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(dotAnim,   { toValue: 1, duration: 700, useNativeDriver: Platform.OS !== 'web' }),
     ])).start();
     Animated.loop(Animated.sequence([
-      Animated.timing(laserAnim, { toValue: foodH - 4, duration: 2000, useNativeDriver: true }),
-      Animated.timing(laserAnim, { toValue: 0,          duration: 80,   useNativeDriver: true }),
+      Animated.timing(laserAnim, { toValue: foodH - 4, duration: 2000, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(laserAnim, { toValue: 0,          duration: 80,   useNativeDriver: Platform.OS !== 'web' }),
     ])).start();
     Animated.loop(Animated.sequence([
-      Animated.timing(floatA, { toValue: -9, duration: 2200, useNativeDriver: true }),
-      Animated.timing(floatA, { toValue: 0,  duration: 2200, useNativeDriver: true }),
+      Animated.timing(floatA, { toValue: -9, duration: 2200, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(floatA, { toValue: 0,  duration: 2200, useNativeDriver: Platform.OS !== 'web' }),
     ])).start();
     Animated.loop(Animated.sequence([
-      Animated.timing(floatB, { toValue: -5, duration: 2000, useNativeDriver: true }),
-      Animated.timing(floatB, { toValue: 4,  duration: 2000, useNativeDriver: true }),
+      Animated.timing(floatB, { toValue: -5, duration: 2000, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(floatB, { toValue: 4,  duration: 2000, useNativeDriver: Platform.OS !== 'web' }),
     ])).start();
     const t = setInterval(() => {
       setProtein(p => p >= 34 ? 28 : p + 1);
@@ -473,7 +473,7 @@ function ReportingBlock() {
   useEffect(() => {
     Animated.spring(underlineX, {
       toValue: activeTab * tabW,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web',
       tension: 140, friction: 12,
     }).start();
   }, [activeTab]);
@@ -763,14 +763,14 @@ export default function Onboarding() {
   function transitionTo(next: Step, animate = true) {
     if (!animate) { setStep(next); return; }
     Animated.parallel([
-      Animated.timing(fadeAnim,  { toValue: 0, duration: 150, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: -18, duration: 150, useNativeDriver: true }),
+      Animated.timing(fadeAnim,  { toValue: 0, duration: 150, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(slideAnim, { toValue: -18, duration: 150, useNativeDriver: Platform.OS !== 'web' }),
     ]).start(() => {
       setStep(next);
       slideAnim.setValue(18);
       Animated.parallel([
-        Animated.timing(fadeAnim,     { toValue: 1, duration: 260, useNativeDriver: true }),
-        Animated.timing(slideAnim,    { toValue: 0, duration: 260, useNativeDriver: true }),
+        Animated.timing(fadeAnim,     { toValue: 1, duration: 260, useNativeDriver: Platform.OS !== 'web' }),
+        Animated.timing(slideAnim,    { toValue: 0, duration: 260, useNativeDriver: Platform.OS !== 'web' }),
         Animated.timing(progressAnim, { toValue: PROGRESS[next], duration: 420, useNativeDriver: false }),
       ]).start();
     });
@@ -833,7 +833,7 @@ export default function Onboarding() {
             <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
           </View>
         )}
-        <Animated.View style={[{ flex: 1 }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+        <Animated.View style={[{ flex: 1 }, Platform.OS !== 'web' && { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
 
           {/* ══════════════ LOGIN — 5 SLIDES ══════════════ */}
           {step === 'login' && (
