@@ -716,7 +716,16 @@ type LegalKey = 'mentions' | 'privacy' | 'cgu' | null;
 export default function Onboarding() {
   const params = useLocalSearchParams<{ from_auth?: string }>();
 
-  const [step, setStep]         = useState<Step>('login');
+  const [step, setStep]         = useState<Step>(() => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      const a = (window as any).__mb_action;
+      if (a === 'register' || a === 'login') {
+        (window as any).__mb_action = null;
+        return 'welcome' as Step;
+      }
+    }
+    return 'login' as Step;
+  });
   const [userName, setUserName]   = useState('');
   const [gender, setGender]       = useState<Gender>('male');
   const [birthDay, setBirthDay]   = useState('');
@@ -828,7 +837,7 @@ export default function Onboarding() {
   // ── Web login page — simple, fiable, iOS Safari compatible ──────────────────
   if (Platform.OS === 'web' && step === 'login') {
     return (
-      <View style={{ position: 'fixed' as any, top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#010613' }}>
+      <View style={{ position: 'absolute' as any, top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#010613' }}>
         <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, gap: 0 }}>
 

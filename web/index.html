@@ -1,159 +1,164 @@
 <!DOCTYPE html>
-<html lang="fr" style="background-color: #010613;">
+<html lang="fr" style="background:#010613;">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#010613">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="METABOOST">
     <title>MetaBoost</title>
 
-    <style id="expo-reset">
-      html, body, #root {
-        height: 100dvh !important;
-        width: 100vw !important;
-        overflow: hidden !important;
-        overscroll-behavior: none !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background-color: #010613 !important;
-      }
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
 
-      @supports (padding: env(safe-area-inset-bottom)) {
-        html, body {
-          padding-top: env(safe-area-inset-top) !important;
-          padding-bottom: env(safe-area-inset-bottom) !important;
-          box-sizing: border-box !important;
-        }
-      }
-
-      html {
-        padding-top: env(safe-area-inset-top) !important;
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #010613;
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
       }
 
       #root {
-        display: flex !important;
-        flex-direction: column !important;
-        padding-top: env(safe-area-inset-top) !important;
-        padding-bottom: env(safe-area-inset-bottom) !important;
-        box-sizing: border-box !important;
-        right: 0 !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+        background: #010613;
       }
 
-      /* Force la propagation de hauteur dans les wrappers React Native Web */
+      /* Propagation de hauteur pour React Native Web */
       #root > div,
       #root > div > div {
-        height: 100% !important;
-        overflow: hidden !important;
+        height: 100%;
+        overflow: hidden;
       }
 
-      /* Couche de fond de secours — couvre tout espace hors #root */
-      .bg-fixed-layer {
-        position: fixed !important;
-        top: -200px;
-        left: -200px;
-        right: -200px;
-        bottom: -200px;
-        background-color: #010613;
-        z-index: -1;
+      /* Empêche le zoom sur les inputs iOS */
+      input, select, textarea { font-size: 16px; }
+
+      /* ── Splash HTML ── visible avant que React charge ──────────────────────── */
+      #mb-splash {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: #010613;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        padding-top: max(env(safe-area-inset-top, 0px), 24px);
+        padding-bottom: max(env(safe-area-inset-bottom, 0px), 24px);
+        font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        transition: opacity 0.15s ease;
+      }
+      #mb-splash.mb-hidden {
+        opacity: 0;
         pointer-events: none;
       }
 
-      .button-container {
-        position: fixed;
-        bottom: calc(20px + var(--kb-offset, 0px) + env(safe-area-inset-bottom));
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        z-index: 50;
+      .mb-badge {
+        width: 60px; height: 60px; border-radius: 18px;
+        background: #00C8D4;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 30px;
+        line-height: 1;
       }
-
-      input, select, textarea {
-        font-size: 16px;
+      .mb-title {
+        font-size: 32px; font-weight: 900; color: #fff;
+        letter-spacing: 4px; margin: 0 0 8px;
+        text-align: center;
       }
-      body {
-        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) !important;
-        min-height: 100dvh !important;
+      .mb-sub {
+        font-size: 13px; color: rgba(255,255,255,0.4);
+        text-align: center; line-height: 20px; margin: 0 0 36px;
       }
-    </style>
+      .mb-headline { text-align: center; margin-bottom: 36px; }
+      .mb-headline p { margin: 0; line-height: 1.1; }
+      .mb-eco  { font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.3); letter-spacing: 3px; }
+      .mb-sport { font-size: 28px; font-weight: 900; color: #00C8D4; }
+      .mb-med  { font-size: 28px; font-weight: 900; color: #E2AA27; }
+      .mb-gen  { font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.3); letter-spacing: 3px; }
 
-    <script>
-      var updateLayout = function () {
-        var vv = window.visualViewport;
-        if (!vv) return;
-
-        var kbOffset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-        document.documentElement.style.setProperty('--kb-offset', kbOffset + 'px');
-
-        // Fallback JS pour iOS < 15.4 (pas de support dvh natif)
-        try {
-          if (!CSS.supports('height', '1dvh')) {
-            var root = document.getElementById('root');
-            if (root) root.style.setProperty('height', vv.height + 'px', 'important');
-          }
-        } catch (e) {
-          var root = document.getElementById('root');
-          if (root) root.style.setProperty('height', vv.height + 'px', 'important');
-        }
-      };
-
-      // Verrouille le scroll et force la mise à jour du layout
-      document.addEventListener('scroll', function (e) {
-        e.preventDefault();
-        window.scrollTo(0, 0);
-        updateLayout();
-      }, { passive: false });
-
-      document.addEventListener('touchmove', function (e) {
-        if (e.touches.length === 1) e.preventDefault();
-      }, { passive: false });
-
-      // Délai de 100ms après fermeture du clavier pour recalculer correctement
-      document.addEventListener('focusout', function () {
-        setTimeout(function () {
-          window.scrollTo(0, 0);
-          updateLayout();
-        }, 100);
-      });
-
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', updateLayout);
-        window.visualViewport.addEventListener('scroll', updateLayout);
+      .mb-buttons { width: 100%; max-width: 360px; }
+      .mb-btn-p {
+        display: block; width: 100%;
+        background: #00C8D4; border: none; border-radius: 14px;
+        padding: 18px; margin-bottom: 10px;
+        font-size: 15px; font-weight: 900; color: #010613;
+        letter-spacing: 1.5px; cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
       }
-      window.addEventListener('resize', updateLayout);
-      updateLayout();
-    </script>
-
-    <style type="text/css">
-      html,
-      body,
-      #root,
-      [data-reactroot] {
-        background-color: #010613 !important;
-        background: #010613 !important;
-        min-height: 100dvh !important;
-        max-height: 100dvh !important;
-        overflow: hidden !important;
-        overscroll-behavior: none !important;
-      }
-
-      :root {
-        color-scheme: dark !important;
+      .mb-btn-s {
+        display: block; width: 100%;
+        background: transparent;
+        border: 1.5px solid rgba(255,255,255,0.2); border-radius: 14px;
+        padding: 18px;
+        font-size: 15px; font-weight: 700; color: #fff;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
       }
     </style>
   </head>
 
   <body>
-    <div class="bg-fixed-layer"></div>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- Page d'accueil HTML pure — s'affiche AVANT React, garantie sur iOS Safari -->
+    <div id="mb-splash">
+      <div class="mb-badge">⚡</div>
+      <p class="mb-title">METABOOST</p>
+      <p class="mb-sub">L'écosystème Sport &amp; Médical<br>nouvelle génération</p>
+
+      <div class="mb-headline">
+        <p class="mb-eco">L'ÉCOSYSTÈME</p>
+        <p class="mb-sport">SPORT &amp;</p>
+        <p class="mb-med">MÉDICAL</p>
+        <p class="mb-gen">NOUVELLE GÉNÉRATION.</p>
+      </div>
+
+      <div class="mb-buttons">
+        <button class="mb-btn-p"
+          onclick="window.__mb_action='register'; document.getElementById('mb-splash').classList.add('mb-hidden');">
+          S'INSCRIRE →
+        </button>
+        <button class="mb-btn-s"
+          onclick="window.__mb_action='login'; document.getElementById('mb-splash').classList.add('mb-hidden');">
+          SE CONNECTER
+        </button>
+      </div>
+    </div>
+
     <div id="root"></div>
+
+    <script>
+      // Keyboard viewport offset
+      (function () {
+        var vv = window.visualViewport;
+        if (!vv) return;
+        function update() {
+          var kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+          document.documentElement.style.setProperty('--kb-offset', kb + 'px');
+        }
+        vv.addEventListener('resize', update);
+        vv.addEventListener('scroll', update);
+        update();
+      })();
+
+      // Empêche le scroll/rebond iOS
+      document.addEventListener('scroll', function (e) {
+        e.preventDefault(); window.scrollTo(0, 0);
+      }, { passive: false });
+      document.addEventListener('touchmove', function (e) {
+        if (e.touches.length === 1) e.preventDefault();
+      }, { passive: false });
+    </script>
   </body>
 </html>
