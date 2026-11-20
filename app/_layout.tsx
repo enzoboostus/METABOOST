@@ -65,7 +65,7 @@ export default function RootLayout() {
       <GestureHandlerRootView style={[styles.root, { backgroundColor: Colors.background }]}>
         <StatusBar style="light" backgroundColor={Colors.background} />
         <AppInit>
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }}>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background }, animation: 'none' }}>
             <Stack.Screen name="onboarding" />
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="god-mode" />
