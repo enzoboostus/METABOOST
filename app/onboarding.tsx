@@ -828,8 +828,8 @@ export default function Onboarding() {
   // ── Web login page — simple, fiable, iOS Safari compatible ──────────────────
   if (Platform.OS === 'web' && step === 'login') {
     return (
-      <View style={{ flex: 1, backgroundColor: '#010613' }}>
-        <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <View style={{ position: 'fixed' as any, top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#010613' }}>
+        <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, gap: 0 }}>
 
             {/* ── Marque ── */}
