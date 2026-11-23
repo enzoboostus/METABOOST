@@ -90,7 +90,6 @@ function AvatarBlock() {
   const [fat,   setFat]   = useState(22.4);
 
   useEffect(() => {
-    if (Platform.OS === 'web') return;
     Animated.loop(Animated.sequence([
       Animated.timing(liveDot, { toValue: 0, duration: 600, useNativeDriver: true }),
       Animated.timing(liveDot, { toValue: 1, duration: 600, useNativeDriver: true }),
@@ -204,7 +203,6 @@ function NutritionBlock() {
   const cW     = W - 24;
 
   useEffect(() => {
-    if (Platform.OS === 'web') return;
     Animated.loop(Animated.sequence([
       Animated.timing(dotAnim,   { toValue: 0, duration: 700, useNativeDriver: true }),
       Animated.timing(dotAnim,   { toValue: 1, duration: 700, useNativeDriver: true }),
@@ -475,7 +473,7 @@ function ReportingBlock() {
   useEffect(() => {
     Animated.spring(underlineX, {
       toValue: activeTab * tabW,
-      useNativeDriver: Platform.OS !== 'web',
+      useNativeDriver: true,
       tension: 140, friction: 12,
     }).start();
   }, [activeTab]);
@@ -716,16 +714,7 @@ type LegalKey = 'mentions' | 'privacy' | 'cgu' | null;
 export default function Onboarding() {
   const params = useLocalSearchParams<{ from_auth?: string }>();
 
-  const [step, setStep]         = useState<Step>(() => {
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      const a = (window as any).__mb_action;
-      if (a === 'register' || a === 'login') {
-        (window as any).__mb_action = null;
-        return 'welcome' as Step;
-      }
-    }
-    return 'login' as Step;
-  });
+  const [step, setStep]         = useState<Step>('login');
   const [userName, setUserName]   = useState('');
   const [gender, setGender]       = useState<Gender>('male');
   const [birthDay, setBirthDay]   = useState('');
@@ -767,29 +756,12 @@ export default function Onboarding() {
       transitionTo('measures', false);
       return;
     }
+
+    // No automatic session check — user must tap a button to proceed
   }, []);
 
-  // Écoute les clics sur les boutons HTML du splash (si React monté avant le clic)
-  useEffect(() => {
-    if (Platform.OS !== 'web' || step !== 'login') return;
-    const handler = () => {
-      const action = (window as any).__mb_action;
-      if (action) {
-        (window as any).__mb_action = null;
-        setStep('welcome');
-        progressAnim.setValue(PROGRESS['welcome']);
-      }
-    };
-    window.addEventListener('mb-action', handler);
-    return () => window.removeEventListener('mb-action', handler);
-  }, [step]);
-
   function transitionTo(next: Step, animate = true) {
-    if (!animate || Platform.OS === 'web') {
-      setStep(next);
-      progressAnim.setValue(PROGRESS[next]);
-      return;
-    }
+    if (!animate) { setStep(next); return; }
     Animated.parallel([
       Animated.timing(fadeAnim,  { toValue: 0, duration: 150, useNativeDriver: true }),
       Animated.timing(slideAnim, { toValue: -18, duration: 150, useNativeDriver: true }),
@@ -847,87 +819,6 @@ export default function Onboarding() {
     outputRange: [0, W - Spacing.lg * 2],
   });
 
-  // ── Web login — div HTML natif, bypasse React Native Web ────────────────────
-  // (position:fixed directement sur viewport, indépendant de la chaîne flex RN)
-  if (Platform.OS === 'web' && step === 'login') {
-    const webStyle = (s: React.CSSProperties): any => s;
-    return (
-      <div style={webStyle({
-        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: '#010613',
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        padding: '0 24px',
-        boxSizing: 'border-box',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
-        WebkitFontSmoothing: 'antialiased',
-        zIndex: 10,
-      })}>
-
-        {/* ── Badge + Titre ── */}
-        <div style={webStyle({ textAlign: 'center', marginBottom: 32 })}>
-          <div style={webStyle({
-            width: 56, height: 56, borderRadius: 18, backgroundColor: '#00C8D4',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 14px', fontSize: 28, lineHeight: '1',
-          })}>⚡</div>
-          <p style={webStyle({ fontSize: 30, fontWeight: 900, color: '#fff', letterSpacing: 4, margin: '0 0 6px' })}>METABOOST</p>
-          <p style={webStyle({ fontSize: 13, color: 'rgba(255,255,255,0.4)', textAlign: 'center', lineHeight: '20px', margin: 0 })}>
-            L&apos;écosystème Sport &amp; Médical<br />nouvelle génération
-          </p>
-        </div>
-
-        {/* ── Headline ── */}
-        <div style={webStyle({ textAlign: 'center', marginBottom: 36 })}>
-          <p style={webStyle({ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 3, margin: '0 0 2px' })}>L&apos;ÉCOSYSTÈME</p>
-          <p style={webStyle({ fontSize: 28, fontWeight: 900, color: '#00C8D4', margin: 0, lineHeight: '1.1' })}>SPORT &amp;</p>
-          <p style={webStyle({ fontSize: 28, fontWeight: 900, color: '#E2AA27', margin: 0, lineHeight: '1.1' })}>MÉDICAL</p>
-          <p style={webStyle({ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 3, margin: '4px 0 0' })}>NOUVELLE GÉNÉRATION.</p>
-        </div>
-
-        {/* ── Boutons ── */}
-        <div style={webStyle({ width: '100%', maxWidth: 360 })}>
-          <button
-            onClick={() => transitionTo('welcome')}
-            style={webStyle({
-              display: 'block', width: '100%',
-              backgroundColor: '#00C8D4', border: 'none', borderRadius: 14,
-              padding: '18px', marginBottom: 10,
-              fontSize: 15, fontWeight: 900, color: '#010613', letterSpacing: '1.5px',
-              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-              fontFamily: 'inherit',
-            })}
-          >
-            S&apos;INSCRIRE →
-          </button>
-          <button
-            onClick={async () => {
-              try {
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session?.user) {
-                  const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
-                  if (prof?.name) { router.replace('/(tabs)/'); return; }
-                }
-              } catch {}
-              transitionTo('welcome');
-            }}
-            style={webStyle({
-              display: 'block', width: '100%',
-              backgroundColor: 'transparent',
-              border: '1.5px solid rgba(255,255,255,0.2)', borderRadius: 14,
-              padding: '18px',
-              fontSize: 15, fontWeight: 700, color: '#fff',
-              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-              fontFamily: 'inherit',
-            })}
-          >
-            SE CONNECTER
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <View style={[styles.root, (step === 'login' || step === 'welcome' || step === 'goal') && styles.rootLight, Platform.OS === 'web' && styles.rootWeb]}>
       {step !== 'login' && step !== 'welcome' && step !== 'goal' && (
@@ -942,7 +833,7 @@ export default function Onboarding() {
             <Animated.View style={[styles.progressFill, { width: progressWidth }]} />
           </View>
         )}
-        <Animated.View style={[{ flex: 1 }, Platform.OS !== 'web' && { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+        <Animated.View style={[{ flex: 1 }, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
 
           {/* ══════════════ LOGIN — 5 SLIDES ══════════════ */}
           {step === 'login' && (
@@ -1845,8 +1736,13 @@ const styles = StyleSheet.create({
   // ── Root ───────────────────────────────────────────────────────────────────
   root: { flex: 1, backgroundColor: '#050A12' },
   rootWeb: {
-    flex: 1,
+    position: 'absolute' as any,
+    top: 0, left: 0,
+    width: '100%' as any,
+    height: '100dvh' as any,
     overflow: 'hidden' as any,
+    flex: 1,
+    paddingBottom: 0,
   },
   glowA: {
     position: 'absolute', top: -80, alignSelf: 'center',

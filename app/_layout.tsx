@@ -35,16 +35,6 @@ function AppInit({ children }: { children: React.ReactNode }) {
   const { loadConfig, loadFromSupabase } = useUserStore();
 
   useEffect(() => {
-    // Masque le splash HTML après le premier rendu React
-    if (Platform.OS === 'web') {
-      requestAnimationFrame(() => {
-        try {
-          const s = document.getElementById('mb-splash');
-          if (s) s.classList.add('mb-hidden');
-        } catch {}
-      });
-    }
-
     loadConfig();
 
     // Single source of truth for auth: onAuthStateChange
