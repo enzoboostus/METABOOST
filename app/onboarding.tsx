@@ -17,6 +17,9 @@ import { supabase, SUPABASE_URL } from '@/lib/supabase';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import * as Haptics from 'expo-haptics';
 
+// Passer à true pour réactiver la connexion Google (Supabase doit être actif)
+const GOOGLE_ENABLED = false;
+
 const { width: W, height: H } = Dimensions.get('window');
 const PROFILE_CARD_W = Math.round(W * 0.76);
 const PROFILE_GAP = 12;
@@ -1458,13 +1461,13 @@ export default function Onboarding() {
                 <TouchableOpacity
                   style={{
                     flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 10,
-                    backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 16, marginBottom: 28,
+                    backgroundColor: GOOGLE_ENABLED ? '#FFFFFF' : '#F3F4F6', borderRadius: 12, paddingVertical: 16, marginBottom: 28,
                     borderWidth: 1.5, borderColor: '#E5E7EB',
-                    opacity: googleLoading ? 0.65 : 1,
+                    opacity: googleLoading ? 0.65 : GOOGLE_ENABLED ? 1 : 0.55,
                     ...(Platform.OS === 'web' ? { transition: 'opacity 0.2s ease' } as any : {}),
                   }}
                   onPress={async () => {
-                    if (googleLoading) return;
+                    if (!GOOGLE_ENABLED || googleLoading) return;
                     setGoogleLoading(true);
                     try {
                       if (Platform.OS === 'web') {
@@ -1521,8 +1524,8 @@ export default function Onboarding() {
                       setGoogleLoading(false);
                     }
                   }}
-                  activeOpacity={0.88}
-                  disabled={googleLoading}
+                  activeOpacity={GOOGLE_ENABLED ? 0.88 : 1}
+                  disabled={googleLoading || !GOOGLE_ENABLED}
                 >
                   {googleLoading
                     ? <ActivityIndicator size="small" color="#4285F4" />
@@ -1541,7 +1544,12 @@ export default function Onboarding() {
                           <Text style={{ fontSize: 11, fontWeight: '900', color: '#4285F4', lineHeight: 14 }}>G</Text>
                         </View>
                   }
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: '#0D1117' }}>Continuer avec Google</Text>
+                  <Text style={{ fontSize: 16, fontWeight: '600', color: GOOGLE_ENABLED ? '#0D1117' : '#B0B8C4' }}>Continuer avec Google</Text>
+                  {!GOOGLE_ENABLED && (
+                    <View style={{ marginLeft: 4, backgroundColor: '#E5E7EB', borderRadius: 6, paddingHorizontal: 7, paddingVertical: 3 }}>
+                      <Text style={{ fontSize: 10, fontWeight: '700', color: '#9CA3AF', letterSpacing: 0.4 }}>Bientôt</Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
 
                 {/* Séparateur */}
