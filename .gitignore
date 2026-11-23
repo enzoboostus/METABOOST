@@ -2,4 +2,3 @@ node_modules/
 .expo/
 dist/
 *.log
-package-lock.json
