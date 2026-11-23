@@ -35,12 +35,14 @@ function AppInit({ children }: { children: React.ReactNode }) {
   const { loadConfig, loadFromSupabase } = useUserStore();
 
   useEffect(() => {
-    // Masque le splash HTML dès que React est actif
+    // Masque le splash HTML après le premier rendu React
     if (Platform.OS === 'web') {
-      try {
-        const s = document.getElementById('mb-splash');
-        if (s) s.classList.add('mb-hidden');
-      } catch {}
+      requestAnimationFrame(() => {
+        try {
+          const s = document.getElementById('mb-splash');
+          if (s) s.classList.add('mb-hidden');
+        } catch {}
+      });
     }
 
     loadConfig();

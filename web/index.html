@@ -126,11 +126,11 @@
 
       <div class="mb-buttons">
         <button class="mb-btn-p"
-          onclick="window.__mb_action='register'; document.getElementById('mb-splash').classList.add('mb-hidden');">
+          onclick="window.__mb_action='register'; document.getElementById('mb-splash').classList.add('mb-hidden'); window.dispatchEvent(new CustomEvent('mb-action'));">
           S'INSCRIRE →
         </button>
         <button class="mb-btn-s"
-          onclick="window.__mb_action='login'; document.getElementById('mb-splash').classList.add('mb-hidden');">
+          onclick="window.__mb_action='login'; document.getElementById('mb-splash').classList.add('mb-hidden'); window.dispatchEvent(new CustomEvent('mb-action'));">
           SE CONNECTER
         </button>
       </div>

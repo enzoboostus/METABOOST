@@ -767,9 +767,22 @@ export default function Onboarding() {
       transitionTo('measures', false);
       return;
     }
-
-    // No automatic session check — user must tap a button to proceed
   }, []);
+
+  // Écoute les clics sur les boutons HTML du splash (si React monté avant le clic)
+  useEffect(() => {
+    if (Platform.OS !== 'web' || step !== 'login') return;
+    const handler = () => {
+      const action = (window as any).__mb_action;
+      if (action) {
+        (window as any).__mb_action = null;
+        setStep('welcome');
+        progressAnim.setValue(PROGRESS['welcome']);
+      }
+    };
+    window.addEventListener('mb-action', handler);
+    return () => window.removeEventListener('mb-action', handler);
+  }, [step]);
 
   function transitionTo(next: Step, animate = true) {
     if (!animate || Platform.OS === 'web') {
@@ -834,122 +847,84 @@ export default function Onboarding() {
     outputRange: [0, W - Spacing.lg * 2],
   });
 
-  // ── Web login page — simple, fiable, iOS Safari compatible ──────────────────
+  // ── Web login — div HTML natif, bypasse React Native Web ────────────────────
+  // (position:fixed directement sur viewport, indépendant de la chaîne flex RN)
   if (Platform.OS === 'web' && step === 'login') {
+    const webStyle = (s: React.CSSProperties): any => s;
     return (
-      <View style={{ position: 'absolute' as any, top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#010613' }}>
-        <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, gap: 0 }}>
+      <div style={webStyle({
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: '#010613',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        padding: '0 24px',
+        boxSizing: 'border-box',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
+        WebkitFontSmoothing: 'antialiased',
+        zIndex: 10,
+      })}>
 
-            {/* ── Marque ── */}
-            <View style={{ alignItems: 'center', marginBottom: 32 }}>
-              <View style={{ width: 52, height: 52, borderRadius: 16, backgroundColor: '#00C8D4', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
-                <Text style={{ fontSize: 26 }}>⚡</Text>
-              </View>
-              <Text style={{ fontSize: 30, fontWeight: '900', color: '#FFFFFF', letterSpacing: 4, marginBottom: 6 }}>METABOOST</Text>
-              <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', textAlign: 'center' as any, lineHeight: 20 }}>
-                L'écosystème Sport & Médical{'\n'}nouvelle génération
-              </Text>
-            </View>
+        {/* ── Badge + Titre ── */}
+        <div style={webStyle({ textAlign: 'center', marginBottom: 32 })}>
+          <div style={webStyle({
+            width: 56, height: 56, borderRadius: 18, backgroundColor: '#00C8D4',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 14px', fontSize: 28, lineHeight: '1',
+          })}>⚡</div>
+          <p style={webStyle({ fontSize: 30, fontWeight: 900, color: '#fff', letterSpacing: 4, margin: '0 0 6px' })}>METABOOST</p>
+          <p style={webStyle({ fontSize: 13, color: 'rgba(255,255,255,0.4)', textAlign: 'center', lineHeight: '20px', margin: 0 })}>
+            L&apos;écosystème Sport &amp; Médical<br />nouvelle génération
+          </p>
+        </div>
 
-            {/* ── Mockups simplifés ── */}
-            <View style={{ flexDirection: 'row', gap: 10, marginBottom: 32, alignItems: 'flex-end' }}>
-              {/* Phone gauche */}
-              <View style={{ width: 88, height: 158, borderRadius: 18, backgroundColor: '#0D1117', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.08)', overflow: 'hidden' as any }}>
-                <View style={{ height: 18, backgroundColor: '#0a1525', alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={{ fontSize: 5, color: '#00C8D4', fontWeight: '800', letterSpacing: 1.5 }}>NUTRITION</Text>
-                </View>
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 10, gap: 6 }}>
-                  <View style={{ width: 42, height: 42, borderRadius: 21, borderWidth: 3, borderColor: '#00C8D4', alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 10, fontWeight: '900', color: '#FFFFFF' }}>87%</Text>
-                  </View>
-                  <View style={{ width: '100%', gap: 3 }}>
-                    {[{ c: '#3B82F6', w: '72%' }, { c: '#F59E0B', w: '58%' }, { c: '#EF4444', w: '44%' }].map((b, i) => (
-                      <View key={i} style={{ height: 4, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden' as any }}>
-                        <View style={{ width: b.w as any, height: '100%' as any, backgroundColor: b.c, borderRadius: 2 }} />
-                      </View>
-                    ))}
-                  </View>
-                </View>
-              </View>
+        {/* ── Headline ── */}
+        <div style={webStyle({ textAlign: 'center', marginBottom: 36 })}>
+          <p style={webStyle({ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 3, margin: '0 0 2px' })}>L&apos;ÉCOSYSTÈME</p>
+          <p style={webStyle({ fontSize: 28, fontWeight: 900, color: '#00C8D4', margin: 0, lineHeight: '1.1' })}>SPORT &amp;</p>
+          <p style={webStyle({ fontSize: 28, fontWeight: 900, color: '#E2AA27', margin: 0, lineHeight: '1.1' })}>MÉDICAL</p>
+          <p style={webStyle({ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: 3, margin: '4px 0 0' })}>NOUVELLE GÉNÉRATION.</p>
+        </div>
 
-              {/* Phone centre (plus grand) */}
-              <View style={{ width: 115, height: 210, borderRadius: 22, backgroundColor: '#0D1117', borderWidth: 1.5, borderColor: '#00C8D4', overflow: 'hidden' as any }}>
-                <View style={{ height: 22, backgroundColor: '#05111f', alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={{ fontSize: 5, color: '#00C8D4', fontWeight: '800', letterSpacing: 2 }}>TRAINING</Text>
-                </View>
-                <View style={{ flex: 1, padding: 10, gap: 6 }}>
-                  <Text style={{ fontSize: 15, fontWeight: '900', color: '#FFFFFF' }}>Aujourd'hui</Text>
-                  <View style={{ backgroundColor: 'rgba(0,200,212,0.1)', borderRadius: 8, padding: 8, borderWidth: 1, borderColor: 'rgba(0,200,212,0.2)' }}>
-                    <Text style={{ fontSize: 5, color: '#00C8D4', fontWeight: '800', letterSpacing: 1, marginBottom: 2 }}>SÉANCE DU JOUR</Text>
-                    <Text style={{ fontSize: 9, fontWeight: '700', color: '#FFFFFF' }}>Push — Chest & Delts</Text>
-                    <Text style={{ fontSize: 7, color: 'rgba(255,255,255,0.4)', marginTop: 1 }}>6 ex · 48 min</Text>
-                  </View>
-                  <View style={{ marginTop: 4 }}>
-                    <View style={{ height: 4, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden' as any }}>
-                      <View style={{ width: '65%', height: '100%' as any, backgroundColor: '#E2AA27', borderRadius: 2 }} />
-                    </View>
-                    <Text style={{ fontSize: 7, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>65% complété</Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Phone droite */}
-              <View style={{ width: 88, height: 158, borderRadius: 18, backgroundColor: '#0D1117', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.08)', overflow: 'hidden' as any }}>
-                <View style={{ height: 18, backgroundColor: '#1a1205', alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={{ fontSize: 5, color: '#E2AA27', fontWeight: '800', letterSpacing: 1.5 }}>MÉDICAL</Text>
-                </View>
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 8, gap: 3 }}>
-                  <Text style={{ fontSize: 26, fontWeight: '900', color: '#E2AA27', letterSpacing: -1 }}>72</Text>
-                  <Text style={{ fontSize: 6, color: 'rgba(255,255,255,0.4)', fontWeight: '700', letterSpacing: 1 }}>BPM</Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 1, marginTop: 4 }}>
-                    {[2,2,8,2,14,3,10,3,2,8,3,10,2].map((h, i) => (
-                      <View key={i} style={{ width: 3, height: h, backgroundColor: '#E2AA27', borderRadius: 1, opacity: i < 5 ? 0.3 + i * 0.15 : 1 }} />
-                    ))}
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            {/* ── Headline ── */}
-            <View style={{ alignItems: 'center', marginBottom: 32, gap: 2 }}>
-              <Text style={{ fontSize: 11, fontWeight: '800', color: 'rgba(255,255,255,0.35)', letterSpacing: 3, textAlign: 'center' as any }}>L'ÉCOSYSTÈME</Text>
-              <View style={{ flexDirection: 'row', gap: 8 }}>
-                <Text style={{ fontSize: 26, fontWeight: '900', color: '#00C8D4', letterSpacing: -0.5 }}>SPORT</Text>
-                <Text style={{ fontSize: 26, fontWeight: '900', color: '#FFFFFF', letterSpacing: -0.5 }}>&</Text>
-              </View>
-              <Text style={{ fontSize: 26, fontWeight: '900', color: '#E2AA27', letterSpacing: -0.5 }}>MÉDICAL</Text>
-              <Text style={{ fontSize: 11, fontWeight: '800', color: 'rgba(255,255,255,0.35)', letterSpacing: 3, textAlign: 'center' as any }}>NOUVELLE GÉNÉRATION.</Text>
-            </View>
-
-            {/* ── Boutons ── */}
-            <View style={{ width: '100%', gap: 10 }}>
-              <TouchableOpacity
-                style={{ backgroundColor: '#00C8D4', borderRadius: 14, paddingVertical: 18, alignItems: 'center' }}
-                activeOpacity={0.85}
-                onPress={() => transitionTo('welcome')}
-              >
-                <Text style={{ color: '#010613', fontSize: 15, fontWeight: '900', letterSpacing: 1.5 }}>S'INSCRIRE →</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{ borderRadius: 14, borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.2)', paddingVertical: 18, alignItems: 'center' }}
-                activeOpacity={0.75}
-                onPress={async () => {
-                  const { data: { session } } = await supabase.auth.getSession();
-                  if (session?.user) {
-                    const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
-                    if (prof?.name) { router.replace('/(tabs)/'); return; }
-                  }
-                  transitionTo('welcome');
-                }}
-              >
-                <Text style={{ color: '#FFFFFF', fontSize: 15, fontWeight: '700' }}>SE CONNECTER</Text>
-              </TouchableOpacity>
-            </View>
-
-          </View>
-        </SafeAreaView>
-      </View>
+        {/* ── Boutons ── */}
+        <div style={webStyle({ width: '100%', maxWidth: 360 })}>
+          <button
+            onClick={() => transitionTo('welcome')}
+            style={webStyle({
+              display: 'block', width: '100%',
+              backgroundColor: '#00C8D4', border: 'none', borderRadius: 14,
+              padding: '18px', marginBottom: 10,
+              fontSize: 15, fontWeight: 900, color: '#010613', letterSpacing: '1.5px',
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+              fontFamily: 'inherit',
+            })}
+          >
+            S&apos;INSCRIRE →
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user) {
+                  const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
+                  if (prof?.name) { router.replace('/(tabs)/'); return; }
+                }
+              } catch {}
+              transitionTo('welcome');
+            }}
+            style={webStyle({
+              display: 'block', width: '100%',
+              backgroundColor: 'transparent',
+              border: '1.5px solid rgba(255,255,255,0.2)', borderRadius: 14,
+              padding: '18px',
+              fontSize: 15, fontWeight: 700, color: '#fff',
+              cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+              fontFamily: 'inherit',
+            })}
+          >
+            SE CONNECTER
+          </button>
+        </div>
+      </div>
     );
   }
 
