@@ -59,8 +59,9 @@ const PROFILES = [
 ];
 
 type Step = 'login' | 'welcome' | 'goal' | 'measures';
-const STEPS: Step[] = ['login', 'welcome', 'goal', 'measures'];
-const PROGRESS: Record<Step, number> = { login: 0, welcome: 0.33, goal: 0.66, measures: 1 };
+// Parcours : accueil → "Crée ton compte" (goal) → "Bienvenue" (welcome) → mesures
+const STEPS: Step[] = ['login', 'goal', 'welcome', 'measures'];
+const PROGRESS: Record<Step, number> = { login: 0, goal: 0.33, welcome: 0.66, measures: 1 };
 
 interface GoalDef { key: Goal; label: string; sub: string; color: string; icon: React.ReactNode }
 const GOALS: GoalDef[] = [
@@ -732,6 +733,18 @@ export default function Onboarding() {
   const [appleLoading, setAppleLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  // Création de compte par e-mail (code à 6 chiffres)
+  const [emailOpen, setEmailOpen]       = useState(false);
+  const [email, setEmail]               = useState('');
+  const [otp, setOtp]                   = useState('');
+  const [otpSent, setOtpSent]           = useState(false);
+  const [authBusy, setAuthBusy]         = useState(false);
+  const [authError, setAuthError]       = useState('');
+  const [resendIn, setResendIn]         = useState(0);
+  const [accountReady, setAccountReady] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileError, setProfileError] = useState('');
+
   const vals: Record<string, string>              = { weight, height, waist, thigh, arm };
   const sets: Record<string, (v: string) => void> = { weight: setWeight, height: setHeight, waist: setWaist, thigh: setThigh, arm: setArm };
 
@@ -756,7 +769,7 @@ export default function Onboarding() {
       }
       if (profile.name) setUserName(profile.name);
       if (profile.gender) setGender(profile.gender);
-      transitionTo('measures', false);
+      transitionTo('welcome', false);
       return;
     }
 
@@ -777,7 +790,7 @@ export default function Onboarding() {
         Animated.timing(progressAnim, { toValue: PROGRESS[next], duration: 420, useNativeDriver: false }),
       ]).start();
     });
-    Haptics.selectionAsync?.();
+    if (Platform.OS !== 'web') Haptics.selectionAsync?.();
   }
 
   function goNext() {
@@ -785,6 +798,116 @@ export default function Onboarding() {
     if (idx < STEPS.length - 1) transitionTo(STEPS[idx + 1]);
     else finish();
   }
+
+  function friendlyAuthError(msg?: string, sending = false): string {
+    const m = (msg || '').toLowerCase();
+    if (m.includes('fetch') || m.includes('network') || m.includes('timeout') || m.includes('retryable') || m.includes('unavailable')) {
+      return 'Service momentanément indisponible. Réessaie dans quelques instants.';
+    }
+    if (m.includes('rate') || m.includes('seconds') || m.includes('too many')) {
+      return 'Trop de tentatives. Patiente une minute puis réessaie.';
+    }
+    if (sending && m.includes('email')) return 'Adresse e-mail invalide.';
+    if (m.includes('expired') || m.includes('invalid') || m.includes('token')) {
+      return 'Code invalide ou expiré. Vérifie-le ou demande-en un nouveau.';
+    }
+    return 'Une erreur est survenue. Réessaie.';
+  }
+
+  async function sendEmailCode() {
+    const addr = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr)) { setAuthError('Entre une adresse e-mail valide.'); return; }
+    setAuthBusy(true); setAuthError('');
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: addr,
+        options: {
+          shouldCreateUser: true,
+          emailRedirectTo: Platform.OS === 'web' ? `${window.location.origin}/auth/callback` : undefined,
+        },
+      });
+      if (error) { setAuthError(friendlyAuthError(error.message, true)); return; }
+      setEmail(addr); setOtp(''); setOtpSent(true); setResendIn(45);
+    } catch (e: any) {
+      setAuthError(friendlyAuthError(e?.message, true));
+    } finally {
+      setAuthBusy(false);
+    }
+  }
+
+  async function verifyEmailCode() {
+    const token = otp.replace(/\D/g, '');
+    if (token.length < 6) { setAuthError('Entre le code à 6 chiffres reçu par e-mail.'); return; }
+    setAuthBusy(true); setAuthError('');
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
+      if (error || !data?.session?.user) { setAuthError(friendlyAuthError(error?.message || 'invalid')); return; }
+      const uid = data.session.user.id;
+      useUserStore.getState().setSupabaseUserId(uid);
+      setAccountReady(true);
+      // Compte déjà complet (connexion d'un utilisateur existant) → accueil directement
+      try {
+        const { data: prof } = await supabase.from('profiles').select('name').eq('id', uid).maybeSingle();
+        if (prof?.name) { router.replace('/(tabs)/'); return; }
+      } catch {}
+      transitionTo('welcome');
+    } catch (e: any) {
+      setAuthError(friendlyAuthError(e?.message));
+    } finally {
+      setAuthBusy(false);
+    }
+  }
+
+  async function saveProfileAndContinue() {
+    const name = userName.trim();
+    if (!name) { setProfileError('Entre ton prénom pour continuer.'); return; }
+    setSavingProfile(true); setProfileError('');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const uid = session?.user?.id;
+      if (!uid) { setAccountReady(false); setAuthError('Crée ton compte pour continuer.'); transitionTo('goal'); return; }
+      const age = computeAge(birthDay, birthMonth, birthYear);
+      const birthDate = (birthYear && birthMonth && birthDay)
+        ? `${birthYear}-${birthMonth.padStart(2, '0')}-${birthDay.padStart(2, '0')}`
+        : null;
+      const { error } = await supabase.from('profiles').upsert({
+        id: uid,
+        name,
+        gender,
+        age,
+        birth_date: birthDate,
+        height_cm: parseFloat(height) || 175,
+      });
+      if (error) { setProfileError('Impossible d’enregistrer ton profil pour le moment. Réessaie.'); return; }
+      useUserStore.getState().setSupabaseUserId(uid);
+      setProfile({ name, gender, age, birthDate: birthDate || '' });
+      transitionTo('measures');
+    } catch {
+      setProfileError('Impossible d’enregistrer ton profil pour le moment. Réessaie.');
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
+  // Compte déjà connecté en arrivant sur "Crée ton compte" → on saute l'étape
+  useEffect(() => {
+    if (step !== 'goal') return;
+    let alive = true;
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!alive || !session?.user) return;
+      setAccountReady(true);
+      const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
+      if (!alive) return;
+      if (prof?.name) router.replace('/(tabs)/'); else transitionTo('welcome');
+    }).catch(() => {});
+    return () => { alive = false; };
+  }, [step]);
+
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const t = setTimeout(() => setResendIn((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendIn]);
 
   function computeAge(d: string, m: string, y: string): number | null {
     const day = parseInt(d), month = parseInt(m), year = parseInt(y);
@@ -813,7 +936,7 @@ export default function Onboarding() {
     addMeasure(measure);
     setInitialMeasure(measure);
     completeOnboarding();
-    Haptics.notificationAsync?.(Haptics.NotificationFeedbackType.Success);
+    if (Platform.OS !== 'web') Haptics.notificationAsync?.(Haptics.NotificationFeedbackType.Success);
     router.replace('/(tabs)/');
   }
 
@@ -957,7 +1080,7 @@ export default function Onboarding() {
 
                 {/* BENTO CARD — boutons auth */}
                 <View style={styles.s1BentoCard}>
-                  <TouchableOpacity style={styles.s1CTA} onPress={() => transitionTo('welcome')} activeOpacity={0.9}>
+                  <TouchableOpacity style={styles.s1CTA} onPress={() => transitionTo('goal')} activeOpacity={0.9}>
                     <Text style={styles.s1CTATxt}>S'INSCRIRE →</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -969,7 +1092,7 @@ export default function Onboarding() {
                         const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
                         if (prof?.name) { router.replace('/(tabs)/'); return; }
                       }
-                      transitionTo('welcome');
+                      transitionTo('goal');
                     }}
                   >
                     <Text style={styles.s1CTAOutlineTxt}>SE CONNECTER</Text>
@@ -1348,7 +1471,7 @@ export default function Onboarding() {
                     return (
                       <TouchableOpacity
                         key={g.key}
-                        onPress={() => { setGender(g.key); Haptics.selectionAsync?.(); }}
+                        onPress={() => { setGender(g.key); if (Platform.OS !== 'web') Haptics.selectionAsync?.(); }}
                         activeOpacity={0.8}
                         style={{
                           flex: 1, flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -1371,19 +1494,30 @@ export default function Onboarding() {
 
               {/* CTA */}
               <View style={Platform.OS === 'web' ? styles.ctaFixed : undefined}>
+                {!!profileError && (
+                  <Text style={{ fontSize: 13, color: '#DC2626', textAlign: 'center' as any, marginBottom: 10 }}>{profileError}</Text>
+                )}
                 <TouchableOpacity
                   style={{
                     flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 8,
                     backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 18,
+                    opacity: savingProfile ? 0.7 : 1,
                     ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(0,0,0,0.14)' } as any : {}),
                   }}
-                  onPress={goNext}
+                  onPress={saveProfileAndContinue}
+                  disabled={savingProfile}
                   activeOpacity={0.88}
                 >
-                  <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.2 }}>
-                    Continuer
-                  </Text>
-                  <ChevronRight size={20} color="#FFFFFF" strokeWidth={2.5} />
+                  {savingProfile ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <>
+                      <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.2 }}>
+                        Continuer
+                      </Text>
+                      <ChevronRight size={20} color="#FFFFFF" strokeWidth={2.5} />
+                    </>
+                  )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -1398,11 +1532,16 @@ export default function Onboarding() {
             }}>
 
               {/* Top content */}
-              <View style={{ ...(Platform.OS === 'web' ? { paddingBottom: 80 } : {}) }}>
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingBottom: 120 }}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
 
                 {/* Retour */}
                 <TouchableOpacity
-                  onPress={() => transitionTo('welcome')}
+                  onPress={() => transitionTo('login')}
                   activeOpacity={0.7}
                   style={{ alignSelf: 'flex-start', marginBottom: 32, padding: 8, borderRadius: 10, backgroundColor: '#F3F4F6' }}
                 >
@@ -1559,24 +1698,113 @@ export default function Onboarding() {
                   <View style={{ flex: 1, height: 1, backgroundColor: '#E5E7EB' }} />
                 </View>
 
-                {/* Continuer avec e-mail / téléphone */}
-                <TouchableOpacity
-                  style={{
-                    flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 10,
-                    backgroundColor: '#FAFAFA', borderRadius: 12, paddingVertical: 16,
-                    borderWidth: 1.5, borderColor: '#E5E7EB',
-                  }}
-                  onPress={() => Alert.alert('E-mail / Téléphone', 'Disponible très prochainement.')}
-                  activeOpacity={0.88}
-                >
-                  <Mail size={17} color="#6B7280" strokeWidth={2} />
-                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#374151' }}>
-                    Continuer avec un e-mail ou un téléphone
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                {/* Continuer avec e-mail */}
+                {!emailOpen ? (
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 10,
+                      backgroundColor: '#FAFAFA', borderRadius: 12, paddingVertical: 16,
+                      borderWidth: 1.5, borderColor: '#E5E7EB',
+                    }}
+                    onPress={() => { setEmailOpen(true); setAuthError(''); }}
+                    activeOpacity={0.88}
+                  >
+                    <Mail size={17} color="#6B7280" strokeWidth={2} />
+                    <Text style={{ fontSize: 15, fontWeight: '500', color: '#374151' }}>
+                      Continuer avec un e-mail
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <View style={{ backgroundColor: '#FAFAFA', borderRadius: 12, borderWidth: 1.5, borderColor: '#E5E7EB', padding: 16, gap: 12 }}>
+                    {!otpSent ? (
+                      <>
+                        <Text style={{ fontSize: 12, fontWeight: '600', color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase' as any }}>
+                          Ton adresse e-mail
+                        </Text>
+                        <TextInput
+                          style={{
+                            fontSize: 17, fontWeight: '500', color: '#0D1117', backgroundColor: '#FFFFFF',
+                            borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
+                            paddingHorizontal: 16, paddingVertical: 14,
+                            ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+                          }}
+                          value={email}
+                          onChangeText={(v) => { setEmail(v); setAuthError(''); }}
+                          placeholder="prenom@exemple.com"
+                          placeholderTextColor="#C4C4C4"
+                          keyboardType="email-address"
+                          inputMode="email"
+                          autoCapitalize="none"
+                          autoCorrect={false}
+                          autoComplete="email"
+                          returnKeyType="send"
+                          onSubmitEditing={sendEmailCode}
+                        />
+                        <TouchableOpacity
+                          style={{ backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 14, alignItems: 'center', opacity: authBusy ? 0.7 : 1 }}
+                          onPress={sendEmailCode}
+                          disabled={authBusy}
+                          activeOpacity={0.88}
+                        >
+                          {authBusy
+                            ? <ActivityIndicator size="small" color="#FFFFFF" />
+                            : <Text style={{ fontSize: 15, fontWeight: '800', color: '#FFFFFF' }}>Recevoir mon code</Text>}
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text style={{ fontSize: 14, color: '#374151', lineHeight: 20 }}>
+                          Code envoyé à <Text style={{ fontWeight: '700' }}>{email}</Text>. Entre les 6 chiffres reçus.
+                        </Text>
+                        <TextInput
+                          style={{
+                            fontSize: 24, fontWeight: '800', color: '#0D1117', backgroundColor: '#FFFFFF',
+                            borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
+                            paddingHorizontal: 16, paddingVertical: 14, letterSpacing: 8, textAlign: 'center' as any,
+                            ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+                          }}
+                          value={otp}
+                          onChangeText={(v) => { setOtp(v.replace(/\D/g, '').slice(0, 6)); setAuthError(''); }}
+                          placeholder="······"
+                          placeholderTextColor="#C4C4C4"
+                          keyboardType="number-pad"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          textContentType="oneTimeCode"
+                          maxLength={6}
+                          onSubmitEditing={verifyEmailCode}
+                        />
+                        <TouchableOpacity
+                          style={{ backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 14, alignItems: 'center', opacity: authBusy ? 0.7 : 1 }}
+                          onPress={verifyEmailCode}
+                          disabled={authBusy}
+                          activeOpacity={0.88}
+                        >
+                          {authBusy
+                            ? <ActivityIndicator size="small" color="#FFFFFF" />
+                            : <Text style={{ fontSize: 15, fontWeight: '800', color: '#FFFFFF' }}>Valider mon code</Text>}
+                        </TouchableOpacity>
+                        <View style={{ flexDirection: 'row' as any, justifyContent: 'space-between' }}>
+                          <TouchableOpacity onPress={() => { setOtpSent(false); setOtp(''); setAuthError(''); }} activeOpacity={0.7}>
+                            <Text style={{ fontSize: 13, color: '#6B7280', textDecorationLine: 'underline' as any }}>Changer d'e-mail</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity onPress={sendEmailCode} disabled={resendIn > 0 || authBusy} activeOpacity={0.7}>
+                            <Text style={{ fontSize: 13, color: resendIn > 0 ? '#C4C4C4' : '#6B7280', textDecorationLine: 'underline' as any }}>
+                              {resendIn > 0 ? `Renvoyer le code (${resendIn}s)` : 'Renvoyer le code'}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </>
+                    )}
+                    {!!authError && (
+                      <Text style={{ fontSize: 13, color: '#DC2626', lineHeight: 18 }}>{authError}</Text>
+                    )}
+                  </View>
+                )}
+              </ScrollView>
 
-              {/* Bouton bas */}
+              {/* Bouton bas (masqué pendant la saisie e-mail : le formulaire a son propre bouton) */}
+              {!emailOpen && (
               <View style={Platform.OS === 'web' ? styles.ctaFixed : undefined}>
                 <TouchableOpacity
                   style={{
@@ -1584,7 +1812,13 @@ export default function Onboarding() {
                     backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 18,
                     ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(0,0,0,0.14)' } as any : {}),
                   }}
-                  onPress={goNext}
+                  onPress={() => {
+                    if (accountReady) { goNext(); return; }
+                    setEmailOpen(true);
+                    setAuthError(otpSent
+                      ? 'Entre le code reçu par e-mail pour continuer.'
+                      : 'Crée ton compte avec ton e-mail pour continuer.');
+                  }}
                   activeOpacity={0.88}
                 >
                   <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.2 }}>
@@ -1593,6 +1827,7 @@ export default function Onboarding() {
                   <ChevronRight size={20} color="#FFFFFF" strokeWidth={2.5} />
                 </TouchableOpacity>
               </View>
+              )}
             </View>
           )}
 
