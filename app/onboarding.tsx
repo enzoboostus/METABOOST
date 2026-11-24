@@ -816,7 +816,7 @@ export default function Onboarding() {
   }
 
   async function sendEmailCode() {
-    const addr = email.trim().toLowerCase();
+    const addr = email.trim().toLowerCase().replace(/[\s.]+$/, '');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr)) { setAuthError('Entre une adresse e-mail valide.'); return; }
     setAuthBusy(true); setAuthError('');
     try {
@@ -1756,7 +1756,7 @@ export default function Onboarding() {
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => {
-                            const addr = email.trim().toLowerCase();
+                            const addr = email.trim().toLowerCase().replace(/[\s.]+$/, '');
                             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr)) { setAuthError('Entre d’abord ton adresse e-mail.'); return; }
                             setEmail(addr); setOtp(''); setAuthError(''); setOtpSent(true);
                           }}

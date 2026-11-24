@@ -23,6 +23,7 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
   let upsertBody = null;
   let verifyToken = null;
   let otpCalls = 0;
+  let verifyEmail = null;
   page.on('pageerror', (e) => errors.push(e.message));
   await page.route('**/*.supabase.co/**', (r) => {
     const req = r.request(), u = req.url(), m = req.method();
@@ -30,7 +31,7 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
     if (m === 'OPTIONS') return r.fulfill({ status: 204, headers: cors });
     if (u.includes('/auth/v1/otp')) { otpCalls++; return ok({}); }
     if (u.includes('/auth/v1/verify')) {
-      verifyToken = JSON.parse(req.postData() || '{}').token;
+      const vb = JSON.parse(req.postData() || '{}'); verifyToken = vb.token; verifyEmail = vb.email;
       if (verifyToken === '00000000') return ok({ code: 403, error_code: 'otp_expired', msg: 'Token has expired or is invalid' }, 403);
     }
     if (u.includes('/auth/v1/verify')) return ok({ access_token: jwt, token_type: 'bearer', expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 3600, refresh_token: 'r', user: { id: UID, aud: 'authenticated', role: 'authenticated', email: 'test@exemple.com', app_metadata: {}, user_metadata: {}, created_at: new Date().toISOString() } });
@@ -50,7 +51,7 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
   await must((await body()).includes('Crée ton compte.'), "S'INSCRIRE doit ouvrir 'Crée ton compte.' en premier");
 
   await page.getByText('Continuer avec un e-mail').click();
-  await page.getByPlaceholder('prenom@exemple.com').fill('test@exemple.com');
+  await page.getByPlaceholder('prenom@exemple.com').fill('test@exemple.com.');  // point final parasite de l'iPhone
 
   // « J'ai déjà reçu un code » : ouvre la saisie du code SANS redemander d'e-mail
   await page.getByText('J’ai déjà reçu un code').click();
@@ -79,6 +80,7 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
   await page.getByText('Continuer', { exact: true }).click();
   await page.getByText('Tes mesures de départ').waitFor({ timeout: 10000 }).catch(() => {});
   await must((await body()).includes('Tes mesures de départ'), "après 'Continuer', l'écran des mesures doit s'afficher");
+  await must(verifyEmail === 'test@exemple.com', "le point final de l'adresse doit être retiré avant la vérification : " + verifyEmail);
   await must(verifyToken === '12345678', 'le code complet de 8 chiffres doit être envoyé à Supabase : ' + verifyToken);
   await must(upsertBody && upsertBody.id === UID && upsertBody.name === 'Remy', 'le profil doit être enregistré avec le user.id : ' + JSON.stringify(upsertBody));
   await must(errors.length === 0, 'erreurs JS : ' + errors.join(' | '));
