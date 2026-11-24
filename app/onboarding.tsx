@@ -1754,6 +1754,17 @@ export default function Onboarding() {
                             ? <ActivityIndicator size="small" color="#FFFFFF" />
                             : <Text style={{ fontSize: 15, fontWeight: '800', color: '#FFFFFF' }}>Recevoir mon code</Text>}
                         </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            const addr = email.trim().toLowerCase();
+                            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr)) { setAuthError('Entre d’abord ton adresse e-mail.'); return; }
+                            setEmail(addr); setOtp(''); setAuthError(''); setOtpSent(true);
+                          }}
+                          activeOpacity={0.7}
+                          style={{ alignSelf: 'center' }}
+                        >
+                          <Text style={{ fontSize: 13, color: '#6B7280', textDecorationLine: 'underline' as any }}>J’ai déjà reçu un code</Text>
+                        </TouchableOpacity>
                       </>
                     ) : (
                       <>

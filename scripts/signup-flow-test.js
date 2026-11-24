@@ -22,12 +22,13 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
   const errors = [];
   let upsertBody = null;
   let verifyToken = null;
+  let otpCalls = 0;
   page.on('pageerror', (e) => errors.push(e.message));
   await page.route('**/*.supabase.co/**', (r) => {
     const req = r.request(), u = req.url(), m = req.method();
     const ok = (body, status = 200) => r.fulfill({ status, headers: cors, contentType: 'application/json', body: JSON.stringify(body) });
     if (m === 'OPTIONS') return r.fulfill({ status: 204, headers: cors });
-    if (u.includes('/auth/v1/otp')) return ok({});
+    if (u.includes('/auth/v1/otp')) { otpCalls++; return ok({}); }
     if (u.includes('/auth/v1/verify')) {
       verifyToken = JSON.parse(req.postData() || '{}').token;
       if (verifyToken === '00000000') return ok({ code: 403, error_code: 'otp_expired', msg: 'Token has expired or is invalid' }, 403);
@@ -50,6 +51,13 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
 
   await page.getByText('Continuer avec un e-mail').click();
   await page.getByPlaceholder('prenom@exemple.com').fill('test@exemple.com');
+
+  // « J'ai déjà reçu un code » : ouvre la saisie du code SANS redemander d'e-mail
+  await page.getByText('J’ai déjà reçu un code').click();
+  await page.getByPlaceholder('········').waitFor({ timeout: 10000 });
+  await must(otpCalls === 0, "« J'ai déjà reçu un code » ne doit pas envoyer de nouvel e-mail");
+  await page.getByText("Changer d'e-mail").click();
+
   await page.getByText('Recevoir mon code').click();
   await page.getByPlaceholder('········').waitFor({ timeout: 10000 });
 
