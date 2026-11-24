@@ -801,12 +801,13 @@ export default function Onboarding() {
 
   function friendlyAuthError(msg?: string, sending = false): string {
     const m = (msg || '').toLowerCase();
-    if (m.includes('fetch') || m.includes('network') || m.includes('timeout') || m.includes('retryable') || m.includes('unavailable')) {
+    if (m.includes('fetch') || m.includes('load failed') || m.includes('network') || m.includes('timeout') || m.includes('retryable') || m.includes('unavailable')) {
       return 'Service momentanément indisponible. Réessaie dans quelques instants.';
     }
     if (m.includes('rate') || m.includes('seconds') || m.includes('too many')) {
       return 'Trop de tentatives. Patiente une minute puis réessaie.';
     }
+    if (m.includes('error sending')) return 'L’envoi de l’e-mail a échoué. Réessaie dans quelques minutes.';
     if (sending && m.includes('email')) return 'Adresse e-mail invalide.';
     if (m.includes('expired') || m.includes('invalid') || m.includes('token')) {
       return 'Code invalide ou expiré. Vérifie-le ou demande-en un nouveau.';
@@ -837,7 +838,7 @@ export default function Onboarding() {
 
   async function verifyEmailCode() {
     const token = otp.replace(/\D/g, '');
-    if (token.length < 6) { setAuthError('Entre le code à 6 chiffres reçu par e-mail.'); return; }
+    if (token.length < 6) { setAuthError('Entre le code reçu par e-mail.'); return; }
     setAuthBusy(true); setAuthError('');
     try {
       const { data, error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
@@ -1703,14 +1704,14 @@ export default function Onboarding() {
                   <TouchableOpacity
                     style={{
                       flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 10,
-                      backgroundColor: '#FAFAFA', borderRadius: 12, paddingVertical: 16,
+                      backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 16,
                       borderWidth: 1.5, borderColor: '#E5E7EB',
                     }}
                     onPress={() => { setEmailOpen(true); setAuthError(''); }}
                     activeOpacity={0.88}
                   >
-                    <Mail size={17} color="#6B7280" strokeWidth={2} />
-                    <Text style={{ fontSize: 15, fontWeight: '500', color: '#374151' }}>
+                    <Mail size={20} color="#0D1117" strokeWidth={2} />
+                    <Text style={{ fontSize: 16, fontWeight: '600', color: '#0D1117' }}>
                       Continuer avec un e-mail
                     </Text>
                   </TouchableOpacity>
@@ -1740,6 +1741,9 @@ export default function Onboarding() {
                           returnKeyType="send"
                           onSubmitEditing={sendEmailCode}
                         />
+                        {!!authError && (
+                          <Text style={{ fontSize: 13, color: '#DC2626', lineHeight: 18 }}>{authError}</Text>
+                        )}
                         <TouchableOpacity
                           style={{ backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 14, alignItems: 'center', opacity: authBusy ? 0.7 : 1 }}
                           onPress={sendEmailCode}
@@ -1754,26 +1758,29 @@ export default function Onboarding() {
                     ) : (
                       <>
                         <Text style={{ fontSize: 14, color: '#374151', lineHeight: 20 }}>
-                          Code envoyé à <Text style={{ fontWeight: '700' }}>{email}</Text>. Entre les 6 chiffres reçus.
+                          Code envoyé à <Text style={{ fontWeight: '700' }}>{email}</Text>. Entre le code reçu.
                         </Text>
                         <TextInput
                           style={{
                             fontSize: 24, fontWeight: '800', color: '#0D1117', backgroundColor: '#FFFFFF',
                             borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
-                            paddingHorizontal: 16, paddingVertical: 14, letterSpacing: 8, textAlign: 'center' as any,
+                            paddingHorizontal: 16, paddingVertical: 14, letterSpacing: 6, textAlign: 'center' as any,
                             ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
                           }}
                           value={otp}
-                          onChangeText={(v) => { setOtp(v.replace(/\D/g, '').slice(0, 6)); setAuthError(''); }}
-                          placeholder="······"
+                          onChangeText={(v) => { setOtp(v.replace(/\D/g, '').slice(0, 8)); setAuthError(''); }}
+                          placeholder="········"
                           placeholderTextColor="#C4C4C4"
                           keyboardType="number-pad"
                           inputMode="numeric"
                           autoComplete="one-time-code"
                           textContentType="oneTimeCode"
-                          maxLength={6}
+                          maxLength={8}
                           onSubmitEditing={verifyEmailCode}
                         />
+                        {!!authError && (
+                          <Text style={{ fontSize: 13, color: '#DC2626', lineHeight: 18 }}>{authError}</Text>
+                        )}
                         <TouchableOpacity
                           style={{ backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 14, alignItems: 'center', opacity: authBusy ? 0.7 : 1 }}
                           onPress={verifyEmailCode}
@@ -1795,9 +1802,6 @@ export default function Onboarding() {
                           </TouchableOpacity>
                         </View>
                       </>
-                    )}
-                    {!!authError && (
-                      <Text style={{ fontSize: 13, color: '#DC2626', lineHeight: 18 }}>{authError}</Text>
                     )}
                   </View>
                 )}
