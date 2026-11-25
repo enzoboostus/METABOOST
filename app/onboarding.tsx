@@ -58,10 +58,10 @@ const PROFILES = [
   },
 ];
 
-type Step = 'login' | 'welcome' | 'goal' | 'measures';
+type Step = 'login' | 'signin' | 'welcome' | 'goal' | 'measures';
 // Parcours : accueil → "Crée ton compte" (goal) → "Bienvenue" (welcome) → mesures
 const STEPS: Step[] = ['login', 'goal', 'welcome', 'measures'];
-const PROGRESS: Record<Step, number> = { login: 0, goal: 0.33, welcome: 0.66, measures: 1 };
+const PROGRESS: Record<Step, number> = { login: 0, signin: 0, goal: 0.33, welcome: 0.66, measures: 1 };
 
 interface GoalDef { key: Goal; label: string; sub: string; color: string; icon: React.ReactNode }
 const GOALS: GoalDef[] = [
@@ -745,6 +745,12 @@ export default function Onboarding() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileError, setProfileError] = useState('');
 
+  // Connexion par mot de passe + création d'un mot de passe
+  const [pwd, setPwd]                 = useState('');
+  const [pwdShow, setPwdShow]         = useState(false);
+  const [signinError, setSigninError] = useState('');
+  const [newPwd, setNewPwd]           = useState('');
+
   const vals: Record<string, string>              = { weight, height, waist, thigh, arm };
   const sets: Record<string, (v: string) => void> = { weight: setWeight, height: setHeight, waist: setWaist, thigh: setThigh, arm: setArm };
 
@@ -859,9 +865,49 @@ export default function Onboarding() {
     }
   }
 
+  function passwordErrorMessage(err: any): string {
+    const code = String(err?.code || '').toLowerCase();
+    const m = String(err?.message || err || '').toLowerCase();
+    const status = Number(err?.status) || 0;
+    if (m.includes('fetch') || m.includes('load failed') || m.includes('network') || m.includes('timeout') || m.includes('retryable') || m.includes('unavailable')) {
+      return 'Service momentanément indisponible. Réessaie dans quelques instants.';
+    }
+    if (code === 'invalid_credentials' || m.includes('invalid login credentials')) return 'E-mail ou mot de passe incorrect.';
+    if (code === 'email_not_confirmed' || m.includes('not confirmed')) return 'Adresse e-mail non confirmée. Reçois un code par e-mail pour la confirmer.';
+    if (status === 429 || code.includes('rate_limit') || m.includes('rate limit') || m.includes('too many')) return 'Trop de tentatives. Patiente quelques minutes puis réessaie.';
+    if (code === 'same_password') return 'Choisis un mot de passe différent de l’ancien.';
+    if (code === 'weak_password') return 'Mot de passe trop faible. Choisis-en un plus long ou plus varié.';
+    return 'Opération impossible pour le moment. Réessaie.';
+  }
+
+  async function signInWithPassword() {
+    const addr = email.trim().toLowerCase().replace(/[\s.]+$/, '');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr)) { setSigninError('Entre une adresse e-mail valide.'); return; }
+    if (!pwd) { setSigninError('Entre ton mot de passe.'); return; }
+    setAuthBusy(true); setSigninError('');
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email: addr, password: pwd });
+      if (error || !data?.session?.user) { setSigninError(passwordErrorMessage(error)); return; }
+      const uid = data.session.user.id;
+      setPwd('');
+      useUserStore.getState().setSupabaseUserId(uid);
+      try { await useUserStore.getState().loadFromSupabase(); } catch {}
+      try {
+        const { data: prof } = await supabase.from('profiles').select('name').eq('id', uid).maybeSingle();
+        if (prof?.name) { router.replace('/(tabs)/'); return; }
+      } catch {}
+      transitionTo('welcome');
+    } catch (e: any) {
+      setSigninError(passwordErrorMessage(e));
+    } finally {
+      setAuthBusy(false);
+    }
+  }
+
   async function saveProfileAndContinue() {
     const name = userName.trim();
     if (!name) { setProfileError('Entre ton prénom pour continuer.'); return; }
+    if (newPwd && newPwd.length < 8) { setProfileError('Le mot de passe doit contenir au moins 8 caractères.'); return; }
     setSavingProfile(true); setProfileError('');
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -880,6 +926,11 @@ export default function Onboarding() {
         height_cm: parseFloat(height) || 175,
       });
       if (error) { setProfileError('Impossible d’enregistrer ton profil pour le moment. Réessaie.'); return; }
+      if (newPwd) {
+        const { error: pwErr } = await supabase.auth.updateUser({ password: newPwd });
+        if (pwErr) { setProfileError('Profil enregistré, mais le mot de passe n’a pas pu être défini. ' + passwordErrorMessage(pwErr)); return; }
+        setNewPwd('');
+      }
       useUserStore.getState().setSupabaseUserId(uid);
       setProfile({ name, gender, age, birthDate: birthDate || '' });
       transitionTo('measures');
@@ -1092,8 +1143,10 @@ export default function Onboarding() {
                       if (session?.user) {
                         const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
                         if (prof?.name) { router.replace('/(tabs)/'); return; }
+                        transitionTo('welcome');
+                        return;
                       }
-                      transitionTo('goal');
+                      transitionTo('signin');
                     }}
                   >
                     <Text style={styles.s1CTAOutlineTxt}>SE CONNECTER</Text>
@@ -1339,7 +1392,12 @@ export default function Onboarding() {
             }}>
 
               {/* Top content — left-aligned, editorial */}
-              <View style={{ ...(Platform.OS === 'web' ? { paddingBottom: 80 } : {}) }}>
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingBottom: 140 }}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
 
                 {/* Brand micro-label */}
                 <Text style={{
@@ -1491,7 +1549,32 @@ export default function Onboarding() {
                     );
                   })}
                 </View>
-              </View>
+
+                {/* Mot de passe (facultatif) — pour se reconnecter sans code */}
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase' as any, marginTop: 28, marginBottom: 8 }}>
+                  Mot de passe (facultatif)
+                </Text>
+                <TextInput
+                  style={{
+                    fontSize: 17, fontWeight: '500', color: '#0D1117',
+                    borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
+                    paddingHorizontal: 18, paddingVertical: 16, width: '100%',
+                    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+                  }}
+                  value={newPwd}
+                  onChangeText={(v) => { setNewPwd(v); setProfileError(''); }}
+                  placeholder="8 caractères minimum"
+                  placeholderTextColor="#C4C4C4"
+                  secureTextEntry
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="new-password"
+                  textContentType="newPassword"
+                />
+                <Text style={{ fontSize: 13, color: '#9CA3AF', lineHeight: 19, marginTop: 8 }}>
+                  Pour te reconnecter sans code, sur tous tes appareils.
+                </Text>
+              </ScrollView>
 
               {/* CTA */}
               <View style={Platform.OS === 'web' ? styles.ctaFixed : undefined}>
@@ -1521,6 +1604,113 @@ export default function Onboarding() {
                   )}
                 </TouchableOpacity>
               </View>
+            </View>
+          )}
+
+          {/* ══════════════ SIGNIN → Connexion e-mail + mot de passe ══════════════ */}
+          {step === 'signin' && (
+            <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: 28, paddingTop: 48, paddingBottom: 32 }}>
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingBottom: 40 }}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+              >
+                <TouchableOpacity
+                  onPress={() => transitionTo('login')}
+                  activeOpacity={0.7}
+                  style={{ alignSelf: 'flex-start', marginBottom: 32, padding: 8, borderRadius: 10, backgroundColor: '#F3F4F6' }}
+                >
+                  <ChevronLeft size={20} color="#0D1117" strokeWidth={2.5} />
+                </TouchableOpacity>
+
+                <Text style={{ fontSize: 30, fontWeight: '900', color: '#0D1117', letterSpacing: -0.8, lineHeight: 36, marginBottom: 12 }}>
+                  Content de te revoir.
+                </Text>
+                <Text style={{ fontSize: 14, color: '#6B7280', lineHeight: 21, marginBottom: 32 }}>
+                  Connecte-toi avec ton e-mail et ton mot de passe.
+                </Text>
+
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase' as any, marginBottom: 8 }}>
+                  Adresse e-mail
+                </Text>
+                <TextInput
+                  style={{
+                    fontSize: 17, fontWeight: '500', color: '#0D1117',
+                    borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
+                    paddingHorizontal: 18, paddingVertical: 16, width: '100%', marginBottom: 20,
+                    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+                  }}
+                  value={email}
+                  onChangeText={(v) => { setEmail(v); setSigninError(''); }}
+                  placeholder="prenom@exemple.com"
+                  placeholderTextColor="#C4C4C4"
+                  keyboardType="email-address"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="email"
+                  textContentType="username"
+                  returnKeyType="next"
+                />
+
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase' as any, marginBottom: 8 }}>
+                  Mot de passe
+                </Text>
+                <View style={{ flexDirection: 'row' as any, alignItems: 'center', borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12, marginBottom: 12 }}>
+                  <TextInput
+                    style={{
+                      flex: 1, fontSize: 17, fontWeight: '500', color: '#0D1117',
+                      paddingHorizontal: 18, paddingVertical: 16,
+                      ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+                    }}
+                    value={pwd}
+                    onChangeText={(v) => { setPwd(v); setSigninError(''); }}
+                    placeholder="Ton mot de passe"
+                    placeholderTextColor="#C4C4C4"
+                    secureTextEntry={!pwdShow}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    autoComplete="current-password"
+                    textContentType="password"
+                    returnKeyType="go"
+                    onSubmitEditing={signInWithPassword}
+                  />
+                  <TouchableOpacity onPress={() => setPwdShow((s) => !s)} activeOpacity={0.7} style={{ paddingHorizontal: 16, paddingVertical: 16 }}>
+                    <Text style={{ fontSize: 13, fontWeight: '600', color: '#6B7280' }}>{pwdShow ? 'Masquer' : 'Afficher'}</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {!!signinError && (
+                  <Text style={{ fontSize: 13, color: '#DC2626', lineHeight: 18, marginBottom: 12 }}>{signinError}</Text>
+                )}
+
+                <TouchableOpacity
+                  style={{ backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 18, alignItems: 'center', marginTop: 8, opacity: authBusy ? 0.7 : 1 }}
+                  onPress={signInWithPassword}
+                  disabled={authBusy}
+                  activeOpacity={0.88}
+                >
+                  {authBusy
+                    ? <ActivityIndicator size="small" color="#FFFFFF" />
+                    : <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.2 }}>Se connecter</Text>}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => { setEmailOpen(true); setAuthError(''); setOtpSent(false); transitionTo('goal'); }}
+                  activeOpacity={0.7}
+                  style={{ alignSelf: 'center', marginTop: 24 }}
+                >
+                  <Text style={{ fontSize: 14, color: '#6B7280', textDecorationLine: 'underline' as any, textAlign: 'center' as any }}>
+                    Mot de passe oublié ? Reçois un code par e-mail
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => transitionTo('goal')} activeOpacity={0.7} style={{ alignSelf: 'center', marginTop: 16 }}>
+                  <Text style={{ fontSize: 14, color: '#6B7280', textAlign: 'center' as any }}>
+                    Pas encore de compte ? <Text style={{ fontWeight: '700', color: '#0D1117' }}>S'inscrire</Text>
+                  </Text>
+                </TouchableOpacity>
+              </ScrollView>
             </View>
           )}
 

@@ -9,6 +9,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useShallow } from 'zustand/react/shallow';
 import { useUserStore, BodyMeasure } from '@/store/userStore';
+import { supabase } from '@/lib/supabase';
 import { useAvatarParams } from '@/hooks/useAvatarParams';
 import { Colors, Spacing, Radius, Shadow } from '@/constants/theme';
 
@@ -23,6 +24,37 @@ export default function Profile() {
   const [waist,    setWaist]    = useState(currentMeasure?.waist?.toString()  ?? '');
   const [saved,    setSaved]    = useState(false);
   const [tapCount, setTapCount] = useState(0);
+
+  const [pwd1,   setPwd1]   = useState('');
+  const [pwd2,   setPwd2]   = useState('');
+  const [pwdBusy, setPwdBusy] = useState(false);
+  const [pwdMsg, setPwdMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  async function handleSavePassword() {
+    if (pwd1.length < 8) { setPwdMsg({ ok: false, text: 'Le mot de passe doit contenir au moins 8 caractères.' }); return; }
+    if (pwd1 !== pwd2)   { setPwdMsg({ ok: false, text: 'Les deux mots de passe ne sont pas identiques.' }); return; }
+    setPwdBusy(true); setPwdMsg(null);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: pwd1 });
+      if (error) {
+        const code = String((error as any).code || '').toLowerCase();
+        const m = String(error.message || '').toLowerCase();
+        let text = 'Impossible de modifier le mot de passe pour le moment. Réessaie.';
+        if (code === 'same_password') text = 'Choisis un mot de passe différent de l’ancien.';
+        else if (code === 'weak_password') text = 'Mot de passe trop faible. Choisis-en un plus long ou plus varié.';
+        else if (m.includes('fetch') || m.includes('load failed') || m.includes('network')) text = 'Service momentanément indisponible. Réessaie dans quelques instants.';
+        else if (m.includes('session') || m.includes('not authenticated') || m.includes('reauth')) text = 'Reconnecte-toi puis réessaie.';
+        setPwdMsg({ ok: false, text });
+        return;
+      }
+      setPwd1(''); setPwd2('');
+      setPwdMsg({ ok: true, text: 'Mot de passe enregistré. Tu peux te connecter avec ton e-mail et ce mot de passe, sur tous tes appareils.' });
+    } catch {
+      setPwdMsg({ ok: false, text: 'Impossible de modifier le mot de passe pour le moment. Réessaie.' });
+    } finally {
+      setPwdBusy(false);
+    }
+  }
 
   function handleSave() {
     const w = parseFloat(weight), wa = parseFloat(waist);
@@ -152,6 +184,50 @@ export default function Profile() {
               </View>
             </>
           )}
+
+          {/* Mot de passe */}
+          <View style={[styles.card, Shadow.sm]}>
+            <Text style={styles.cardTitle}>Mot de passe</Text>
+            <Text style={{ fontSize: 13, color: Colors.textSecondary, lineHeight: 19, marginBottom: Spacing.md }}>
+              Définis un mot de passe pour te reconnecter sans code, sur tous tes appareils.
+            </Text>
+            <Text style={styles.inputLbl}>Nouveau mot de passe</Text>
+            <View style={[styles.inputBox, { marginBottom: Spacing.sm }]}>
+              <TextInput
+                style={[styles.input, { fontSize: 16 }]}
+                value={pwd1}
+                onChangeText={(v) => { setPwd1(v); setPwdMsg(null); }}
+                placeholder="8 caractères minimum"
+                placeholderTextColor={Colors.textTertiary}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="new-password"
+                textContentType="newPassword"
+              />
+            </View>
+            <Text style={styles.inputLbl}>Confirmer le mot de passe</Text>
+            <View style={[styles.inputBox, { marginBottom: Spacing.md }]}>
+              <TextInput
+                style={[styles.input, { fontSize: 16 }]}
+                value={pwd2}
+                onChangeText={(v) => { setPwd2(v); setPwdMsg(null); }}
+                placeholder="Retape-le"
+                placeholderTextColor={Colors.textTertiary}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="new-password"
+                textContentType="newPassword"
+              />
+            </View>
+            {!!pwdMsg && (
+              <Text style={{ fontSize: 13, lineHeight: 18, marginBottom: Spacing.sm, color: pwdMsg.ok ? Colors.success : Colors.red }}>{pwdMsg.text}</Text>
+            )}
+            <TouchableOpacity style={[styles.saveBtn, pwdBusy && { opacity: 0.7 }]} onPress={handleSavePassword} disabled={pwdBusy} activeOpacity={0.85}>
+              <Text style={styles.saveBtnTxt}>{pwdBusy ? 'Enregistrement…' : 'Enregistrer le mot de passe'}</Text>
+            </TouchableOpacity>
+          </View>
 
           {/* Legal links */}
           <View style={styles.legalRow}>

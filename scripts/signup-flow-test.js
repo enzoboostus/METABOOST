@@ -23,6 +23,7 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
   let upsertBody = null;
   let verifyToken = null;
   let otpCalls = 0;
+  let userPwd = null;
   let verifyEmail = null;
   page.on('pageerror', (e) => errors.push(e.message));
   await page.route('**/*.supabase.co/**', (r) => {
@@ -30,6 +31,7 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
     const ok = (body, status = 200) => r.fulfill({ status, headers: cors, contentType: 'application/json', body: JSON.stringify(body) });
     if (m === 'OPTIONS') return r.fulfill({ status: 204, headers: cors });
     if (u.includes('/auth/v1/otp')) { otpCalls++; return ok({}); }
+    if (u.includes('/auth/v1/user') && m === 'PUT') { userPwd = JSON.parse(req.postData() || '{}').password; return ok({ id: UID, aud: 'authenticated', role: 'authenticated', email: 'test@exemple.com', app_metadata: {}, user_metadata: {}, created_at: new Date().toISOString() }); }
     if (u.includes('/auth/v1/verify')) {
       const vb = JSON.parse(req.postData() || '{}'); verifyToken = vb.token; verifyEmail = vb.email;
       if (verifyToken === '00000000') return ok({ code: 403, error_code: 'otp_expired', msg: 'Token has expired or is invalid' }, 403);
@@ -77,10 +79,12 @@ const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers
   await must((await body()).includes('Bienvenue sur'), "après validation du code, 'Bienvenue sur MetaBoost' doit s'afficher");
 
   await page.getByPlaceholder('Ton prénom').fill('Remy');
+  await page.getByPlaceholder('8 caractères minimum').fill('motdepasse123');
   await page.getByText('Continuer', { exact: true }).click();
   await page.getByText('Tes mesures de départ').waitFor({ timeout: 10000 }).catch(() => {});
   await must((await body()).includes('Tes mesures de départ'), "après 'Continuer', l'écran des mesures doit s'afficher");
   await must(verifyEmail === 'test@exemple.com', "le point final de l'adresse doit être retiré avant la vérification : " + verifyEmail);
+  await must(userPwd === 'motdepasse123', 'le mot de passe choisi doit être enregistré sur le compte : ' + userPwd);
   await must(verifyToken === '12345678', 'le code complet de 8 chiffres doit être envoyé à Supabase : ' + verifyToken);
   await must(upsertBody && upsertBody.id === UID && upsertBody.name === 'Remy', 'le profil doit être enregistré avec le user.id : ' + JSON.stringify(upsertBody));
   await must(errors.length === 0, 'erreurs JS : ' + errors.join(' | '));
