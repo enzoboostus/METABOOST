@@ -35,7 +35,7 @@ export default function Profile() {
     if (pwd1 !== pwd2)   { setPwdMsg({ ok: false, text: 'Les deux mots de passe ne sont pas identiques.' }); return; }
     setPwdBusy(true); setPwdMsg(null);
     try {
-      const { error } = await supabase.auth.updateUser({ password: pwd1 });
+      const { error } = await supabase.auth.updateUser({ password: pwd1, data: { has_password: true } });
       if (error) {
         const code = String((error as any).code || '').toLowerCase();
         const m = String(error.message || '').toLowerCase();

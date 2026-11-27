@@ -58,10 +58,10 @@ const PROFILES = [
   },
 ];
 
-type Step = 'login' | 'signin' | 'welcome' | 'goal' | 'measures';
+type Step = 'login' | 'signin' | 'password' | 'welcome' | 'goal' | 'measures';
 // Parcours : accueil → "Crée ton compte" (goal) → "Bienvenue" (welcome) → mesures
 const STEPS: Step[] = ['login', 'goal', 'welcome', 'measures'];
-const PROGRESS: Record<Step, number> = { login: 0, signin: 0, goal: 0.33, welcome: 0.66, measures: 1 };
+const PROGRESS: Record<Step, number> = { login: 0, signin: 0, goal: 0.25, password: 0.5, welcome: 0.75, measures: 1 };
 
 interface GoalDef { key: Goal; label: string; sub: string; color: string; icon: React.ReactNode }
 const GOALS: GoalDef[] = [
@@ -749,7 +749,13 @@ export default function Onboarding() {
   const [pwd, setPwd]                 = useState('');
   const [pwdShow, setPwdShow]         = useState(false);
   const [signinError, setSigninError] = useState('');
-  const [newPwd, setNewPwd]           = useState('');
+  const [forgotMode, setForgotMode]   = useState(false);
+  const [hasProfile, setHasProfile]   = useState(false);
+  const [npw1, setNpw1]               = useState('');
+  const [npw2, setNpw2]               = useState('');
+  const [npwShow, setNpwShow]         = useState(false);
+  const [pwBusy, setPwBusy]           = useState(false);
+  const [pwError, setPwError]         = useState('');
 
   const vals: Record<string, string>              = { weight, height, waist, thigh, arm };
   const sets: Record<string, (v: string) => void> = { weight: setWeight, height: setHeight, waist: setWaist, thigh: setThigh, arm: setArm };
@@ -842,6 +848,46 @@ export default function Onboarding() {
     }
   }
 
+  // Après une connexion : mot de passe à créer ? profil à remplir ? ou directement l'application.
+  async function routeAfterAuth(user: any, mode: 'code' | 'password' | 'session') {
+    const hasPwd = !!user?.user_metadata?.has_password;
+    let hasProf = false;
+    try {
+      const { data: prof } = await supabase.from('profiles').select('name').eq('id', user.id).maybeSingle();
+      hasProf = !!prof?.name;
+    } catch {}
+    setHasProfile(hasProf);
+    useUserStore.getState().setSupabaseUserId(user.id);
+    const mustCreatePwd = mode === 'password' ? false : (forgotMode || !hasPwd);
+    if (mustCreatePwd) { transitionTo('password'); return; }
+    if (hasProf) {
+      try { await useUserStore.getState().loadFromSupabase(); } catch {}
+      router.replace('/(tabs)/');
+      return;
+    }
+    transitionTo('welcome');
+  }
+
+  async function savePassword() {
+    if (npw1.length < 8 || npw1 !== npw2) return;
+    setPwBusy(true); setPwError('');
+    try {
+      const { error } = await supabase.auth.updateUser({ password: npw1, data: { has_password: true } });
+      if (error) { setPwError(passwordErrorMessage(error)); return; }
+      setNpw1(''); setNpw2(''); setForgotMode(false);
+      if (hasProfile) {
+        try { await useUserStore.getState().loadFromSupabase(); } catch {}
+        router.replace('/(tabs)/');
+      } else {
+        transitionTo('welcome');
+      }
+    } catch (e: any) {
+      setPwError(passwordErrorMessage(e));
+    } finally {
+      setPwBusy(false);
+    }
+  }
+
   async function verifyEmailCode() {
     const token = otp.replace(/\D/g, '');
     if (token.length < 6) { setAuthError('Entre le code reçu par e-mail.'); return; }
@@ -849,15 +895,8 @@ export default function Onboarding() {
     try {
       const { data, error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
       if (error || !data?.session?.user) { setAuthError(friendlyAuthError(error?.message || 'invalid')); return; }
-      const uid = data.session.user.id;
-      useUserStore.getState().setSupabaseUserId(uid);
       setAccountReady(true);
-      // Compte déjà complet (connexion d'un utilisateur existant) → accueil directement
-      try {
-        const { data: prof } = await supabase.from('profiles').select('name').eq('id', uid).maybeSingle();
-        if (prof?.name) { router.replace('/(tabs)/'); return; }
-      } catch {}
-      transitionTo('welcome');
+      await routeAfterAuth(data.session.user, 'code');
     } catch (e: any) {
       setAuthError(friendlyAuthError(e?.message));
     } finally {
@@ -888,15 +927,8 @@ export default function Onboarding() {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email: addr, password: pwd });
       if (error || !data?.session?.user) { setSigninError(passwordErrorMessage(error)); return; }
-      const uid = data.session.user.id;
       setPwd('');
-      useUserStore.getState().setSupabaseUserId(uid);
-      try { await useUserStore.getState().loadFromSupabase(); } catch {}
-      try {
-        const { data: prof } = await supabase.from('profiles').select('name').eq('id', uid).maybeSingle();
-        if (prof?.name) { router.replace('/(tabs)/'); return; }
-      } catch {}
-      transitionTo('welcome');
+      await routeAfterAuth(data.session.user, 'password');
     } catch (e: any) {
       setSigninError(passwordErrorMessage(e));
     } finally {
@@ -907,7 +939,6 @@ export default function Onboarding() {
   async function saveProfileAndContinue() {
     const name = userName.trim();
     if (!name) { setProfileError('Entre ton prénom pour continuer.'); return; }
-    if (newPwd && newPwd.length < 8) { setProfileError('Le mot de passe doit contenir au moins 8 caractères.'); return; }
     setSavingProfile(true); setProfileError('');
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -926,11 +957,6 @@ export default function Onboarding() {
         height_cm: parseFloat(height) || 175,
       });
       if (error) { setProfileError('Impossible d’enregistrer ton profil pour le moment. Réessaie.'); return; }
-      if (newPwd) {
-        const { error: pwErr } = await supabase.auth.updateUser({ password: newPwd });
-        if (pwErr) { setProfileError('Profil enregistré, mais le mot de passe n’a pas pu être défini. ' + passwordErrorMessage(pwErr)); return; }
-        setNewPwd('');
-      }
       useUserStore.getState().setSupabaseUserId(uid);
       setProfile({ name, gender, age, birthDate: birthDate || '' });
       transitionTo('measures');
@@ -948,9 +974,8 @@ export default function Onboarding() {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!alive || !session?.user) return;
       setAccountReady(true);
-      const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
       if (!alive) return;
-      if (prof?.name) router.replace('/(tabs)/'); else transitionTo('welcome');
+      await routeAfterAuth(session.user, 'session');
     }).catch(() => {});
     return () => { alive = false; };
   }, [step]);
@@ -1132,7 +1157,7 @@ export default function Onboarding() {
 
                 {/* BENTO CARD — boutons auth */}
                 <View style={styles.s1BentoCard}>
-                  <TouchableOpacity style={styles.s1CTA} onPress={() => transitionTo('goal')} activeOpacity={0.9}>
+                  <TouchableOpacity style={styles.s1CTA} onPress={() => { setForgotMode(false); transitionTo('goal'); }} activeOpacity={0.9}>
                     <Text style={styles.s1CTATxt}>S'INSCRIRE →</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -1140,12 +1165,7 @@ export default function Onboarding() {
                     activeOpacity={0.8}
                     onPress={async () => {
                       const { data: { session } } = await supabase.auth.getSession();
-                      if (session?.user) {
-                        const { data: prof } = await supabase.from('profiles').select('name').eq('id', session.user.id).maybeSingle();
-                        if (prof?.name) { router.replace('/(tabs)/'); return; }
-                        transitionTo('welcome');
-                        return;
-                      }
+                      if (session?.user) { await routeAfterAuth(session.user, 'session'); return; }
                       transitionTo('signin');
                     }}
                   >
@@ -1549,31 +1569,6 @@ export default function Onboarding() {
                     );
                   })}
                 </View>
-
-                {/* Mot de passe (facultatif) — pour se reconnecter sans code */}
-                <Text style={{ fontSize: 12, fontWeight: '600', color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase' as any, marginTop: 28, marginBottom: 8 }}>
-                  Mot de passe (facultatif)
-                </Text>
-                <TextInput
-                  style={{
-                    fontSize: 17, fontWeight: '500', color: '#0D1117',
-                    borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
-                    paddingHorizontal: 18, paddingVertical: 16, width: '100%',
-                    ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
-                  }}
-                  value={newPwd}
-                  onChangeText={(v) => { setNewPwd(v); setProfileError(''); }}
-                  placeholder="8 caractères minimum"
-                  placeholderTextColor="#C4C4C4"
-                  secureTextEntry
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  autoComplete="new-password"
-                  textContentType="newPassword"
-                />
-                <Text style={{ fontSize: 13, color: '#9CA3AF', lineHeight: 19, marginTop: 8 }}>
-                  Pour te reconnecter sans code, sur tous tes appareils.
-                </Text>
               </ScrollView>
 
               {/* CTA */}
@@ -1606,6 +1601,121 @@ export default function Onboarding() {
               </View>
             </View>
           )}
+
+          {/* ══════════════ PASSWORD → Création du mot de passe ══════════════ */}
+          {step === 'password' && (() => {
+            const ok1 = npw1.length >= 8;
+            const match = ok1 && npw1 === npw2;
+            const mismatch = npw2.length > 0 && npw2.length >= npw1.length && npw1 !== npw2;
+            const GREEN = '#16A34A';
+            const fieldStyle = (good: boolean, bad: boolean) => ({
+              flexDirection: 'row' as any, alignItems: 'center' as any, borderRadius: 12,
+              borderWidth: 1.5, borderColor: good ? GREEN : bad ? '#DC2626' : '#D1D5DB',
+              backgroundColor: good ? '#F0FDF4' : '#FFFFFF',
+            });
+            const inputStyle: any = {
+              flex: 1, minWidth: 0, fontSize: 17, fontWeight: '500', color: '#0D1117',
+              paddingHorizontal: 18, paddingVertical: 16,
+              ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
+            };
+            return (
+              <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: 28, paddingTop: 48, paddingBottom: 32, justifyContent: 'space-between' }}>
+                <ScrollView
+                  style={{ flex: 1 }}
+                  contentContainerStyle={{ paddingBottom: 140 }}
+                  keyboardShouldPersistTaps="handled"
+                  showsVerticalScrollIndicator={false}
+                >
+                  <Text style={{ fontSize: 10, fontWeight: '800', color: '#C4C4C4', letterSpacing: 3.5, textTransform: 'uppercase' as any, marginBottom: 44 }}>
+                    METABOOST
+                  </Text>
+                  <Text style={{ fontSize: 30, fontWeight: '900', color: '#0D1117', letterSpacing: -0.8, lineHeight: 36, marginBottom: 12 }}>
+                    Crée ton mot de passe.
+                  </Text>
+                  <Text style={{ fontSize: 14, color: '#6B7280', lineHeight: 21, marginBottom: 32 }}>
+                    Pour te reconnecter sans code, sur tous tes appareils. Garde-le précieusement.
+                  </Text>
+
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase' as any, marginBottom: 8 }}>
+                    Mot de passe
+                  </Text>
+                  <View style={fieldStyle(match, false)}>
+                    <TextInput
+                      style={inputStyle}
+                      value={npw1}
+                      onChangeText={(v) => { setNpw1(v); setPwError(''); }}
+                      placeholder="8 caractères minimum"
+                      placeholderTextColor="#C4C4C4"
+                      secureTextEntry={!npwShow}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      autoComplete="new-password"
+                      textContentType="newPassword"
+                    />
+                    <TouchableOpacity onPress={() => setNpwShow((v) => !v)} activeOpacity={0.7} style={{ paddingHorizontal: 16, paddingVertical: 16 }}>
+                      <Text style={{ fontSize: 13, fontWeight: '600', color: '#6B7280' }}>{npwShow ? 'Masquer' : 'Afficher'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={{ fontSize: 13, lineHeight: 19, marginTop: 8, marginBottom: 24, color: ok1 ? GREEN : '#9CA3AF' }}>
+                    {ok1 ? '✓ ' : ''}8 caractères minimum, lettres et/ou chiffres.
+                  </Text>
+
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase' as any, marginBottom: 8 }}>
+                    Confirmer le mot de passe
+                  </Text>
+                  <View style={fieldStyle(match, mismatch)}>
+                    <TextInput
+                      style={inputStyle}
+                      value={npw2}
+                      onChangeText={(v) => { setNpw2(v); setPwError(''); }}
+                      placeholder="Retape-le"
+                      placeholderTextColor="#C4C4C4"
+                      secureTextEntry={!npwShow}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      autoComplete="new-password"
+                      textContentType="newPassword"
+                      returnKeyType="go"
+                      onSubmitEditing={savePassword}
+                    />
+                    {match && <Text style={{ fontSize: 18, fontWeight: '800', color: GREEN, paddingHorizontal: 16 }}>✓</Text>}
+                  </View>
+                  {match && (
+                    <Text style={{ fontSize: 13, lineHeight: 19, marginTop: 8, color: GREEN }}>✓ Les mots de passe sont identiques.</Text>
+                  )}
+                  {mismatch && (
+                    <Text style={{ fontSize: 13, lineHeight: 19, marginTop: 8, color: '#DC2626' }}>Les mots de passe ne sont pas identiques.</Text>
+                  )}
+                </ScrollView>
+
+                <View style={Platform.OS === 'web' ? styles.ctaFixed : undefined}>
+                  {!!pwError && (
+                    <Text style={{ fontSize: 13, color: '#DC2626', textAlign: 'center' as any, marginBottom: 10 }}>{pwError}</Text>
+                  )}
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row' as any, alignItems: 'center', justifyContent: 'center', gap: 8,
+                      backgroundColor: '#0D1117', borderRadius: 100, paddingVertical: 18,
+                      opacity: match && !pwBusy ? 1 : 0.35,
+                      ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(0,0,0,0.14)' } as any : {}),
+                    }}
+                    onPress={savePassword}
+                    disabled={!match || pwBusy}
+                    activeOpacity={0.88}
+                  >
+                    {pwBusy ? (
+                      <ActivityIndicator size="small" color="#FFFFFF" />
+                    ) : (
+                      <>
+                        <Text style={{ fontSize: 17, fontWeight: '800', color: '#FFFFFF', letterSpacing: 0.2 }}>Continuer</Text>
+                        <ChevronRight size={20} color="#FFFFFF" strokeWidth={2.5} />
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+            );
+          })()}
 
           {/* ══════════════ SIGNIN → Connexion e-mail + mot de passe ══════════════ */}
           {step === 'signin' && (
@@ -1660,7 +1770,7 @@ export default function Onboarding() {
                 <View style={{ flexDirection: 'row' as any, alignItems: 'center', borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12, marginBottom: 12 }}>
                   <TextInput
                     style={{
-                      flex: 1, fontSize: 17, fontWeight: '500', color: '#0D1117',
+                      flex: 1, minWidth: 0, fontSize: 17, fontWeight: '500', color: '#0D1117',
                       paddingHorizontal: 18, paddingVertical: 16,
                       ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
                     }}
@@ -1697,7 +1807,7 @@ export default function Onboarding() {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={() => { setEmailOpen(true); setAuthError(''); setOtpSent(false); transitionTo('goal'); }}
+                  onPress={() => { setForgotMode(true); setEmailOpen(true); setAuthError(''); setOtpSent(false); transitionTo('goal'); }}
                   activeOpacity={0.7}
                   style={{ alignSelf: 'center', marginTop: 24 }}
                 >
@@ -1705,7 +1815,7 @@ export default function Onboarding() {
                     Mot de passe oublié ? Reçois un code par e-mail
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => transitionTo('goal')} activeOpacity={0.7} style={{ alignSelf: 'center', marginTop: 16 }}>
+                <TouchableOpacity onPress={() => { setForgotMode(false); transitionTo('goal'); }} activeOpacity={0.7} style={{ alignSelf: 'center', marginTop: 16 }}>
                   <Text style={{ fontSize: 14, color: '#6B7280', textAlign: 'center' as any }}>
                     Pas encore de compte ? <Text style={{ fontWeight: '700', color: '#0D1117' }}>S'inscrire</Text>
                   </Text>
@@ -2018,7 +2128,10 @@ export default function Onboarding() {
                     ...(Platform.OS === 'web' ? { boxShadow: '0 4px 20px rgba(0,0,0,0.14)' } as any : {}),
                   }}
                   onPress={() => {
-                    if (accountReady) { goNext(); return; }
+                    if (accountReady) {
+                      supabase.auth.getSession().then(({ data: { session } }) => { if (session?.user) routeAfterAuth(session.user, 'session'); });
+                      return;
+                    }
                     setEmailOpen(true);
                     setAuthError(otpSent
                       ? 'Entre le code reçu par e-mail pour continuer.'
